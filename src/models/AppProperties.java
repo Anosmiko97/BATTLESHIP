@@ -12,6 +12,7 @@ public class AppProperties {
 
     // Estilos del juego
     private Color backgroundColor = hexToColor("#111D2E");
+    private Color headerColor = hexToColor("#102644");
 
     // Parametros de socket
     private int port = 12345;
@@ -22,6 +23,12 @@ public class AppProperties {
     public Color getBackgroundColor() {
         return this.backgroundColor;
     }public void setBackgroundColor(Color color) {
+        this.backgroundColor = color;
+    }
+
+    public Color getHeaderColor() {
+        return this.backgroundColor;
+    }public void setHeaderColor(Color color) {
         this.backgroundColor = color;
     }
 
