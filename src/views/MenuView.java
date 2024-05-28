@@ -6,11 +6,11 @@ import javax.swing.JPanel;
 /* Clases propias */
 import models.AppProperties;
 
-public class ViewMenu extends JPanel{
+public class MenuView extends JPanel{
 
     AppProperties properties = new AppProperties();
     
-    public ViewMenu() {
+    public MenuView() {
         setBackground(properties.getBackgroundColor());
     }
 
