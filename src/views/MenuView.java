@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.ImageIcon;
@@ -135,6 +136,12 @@ public class MenuView extends JPanel {
 
         return panel;
     }
+
+    // Asignar listeners en el controlador
+    public void buttonActionListener(ActionListener listener) {
+		pveButton.addActionListener(listener);
+		pvpButton.addActionListener(listener);
+	}
     
     @Override
     protected void paintComponent(Graphics g) {
