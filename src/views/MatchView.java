@@ -26,15 +26,7 @@ public class MatchView extends JPanel {
 
         add(createHeaderPanel(), BorderLayout.NORTH);
         add(createCenterPanel(), BorderLayout.CENTER);
-
-        // Parte inferior de la pagina
-        exitButton = new JButton("Salir de la partida");
-        exitButton.setBackground(properties.getHeaderColor());
-        exitButton.setForeground(Color.WHITE);
-        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        exitPanel.setBackground(Color.decode("#1F3A64"));
-        exitPanel.add(exitButton);
-        add(exitPanel, BorderLayout.SOUTH);
+        add(createFooterPanel(), BorderLayout.SOUTH);
     }
 
     private JPanel createScorePanel() {
@@ -157,6 +149,18 @@ public class MatchView extends JPanel {
         gridPanel.add(grid, BorderLayout.CENTER);
 
         return gridPanel;
+    }
+
+    public JPanel createFooterPanel() {
+        exitButton = new JButton("Salir de la partida");
+        exitButton.setBackground(properties.getButtonColor());
+        exitButton.setFont(new Font("ARIAL", Font.PLAIN, 30));
+        exitButton.setForeground(Color.WHITE);
+        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        exitPanel.setBackground(properties.getHeaderColor());
+        exitPanel.add(exitButton);
+
+        return exitPanel;
     }
 }
 

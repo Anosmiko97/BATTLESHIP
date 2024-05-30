@@ -14,6 +14,7 @@ public class AppProperties {
     private Color backgroundColor = Color.decode("#111D2E");
     private Color headerColor = Color.decode("#102644");
     private Color namesPanelColor = Color.decode("#224E8B");
+    private Color buttonColor = Color.decode("#173764");
     private String fontApp = "Arial";
 
     // Parametros de socket
@@ -38,19 +39,29 @@ public class AppProperties {
 
     public Color getNamesPanelColor() {
         return this.namesPanelColor;
-    }public void setNamesPanelColor(String color) {
+    }
+    public void setNamesPanelColor(String color) {
         this.namesPanelColor = Color.decode(color);
     }
 
     public String getFontApp() {
         return this.fontApp;
-    }public void setFontApp(String font) {
+    }
+    public void setFontApp(String font) {
         this.fontApp = font;
     }
 
     public int getPort() {
         return this.port;
-    }public void setPort(int port) {
+    } 
+    public void setPort(int port) {
         this.port = port;
+    }
+
+    public Color getButtonColor() {
+        return this.buttonColor;
+    }
+    public void setButtonColor(String color) {
+        this.buttonColor = Color.decode(color);
     }
 }

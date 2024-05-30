@@ -10,6 +10,7 @@ import java.awt.Cursor;
 
 /* Clases propias */
 import models.AppProperties;
+import models.User;
 import views.MenuView;
 import views.MatchView;
 
@@ -23,10 +24,14 @@ public class MainWindow extends JFrame{
         getContentPane().setBackground(properties.getBackgroundColor());
         setTitle("battleship");
 
-        
-        MenuView menu = new MenuView();
-        MatchView match = new MatchView();
-        add(match);
+        // Modelos
+        User userModel = new User(1, "Uriel");
+
+        // Vistas
+        MenuView menuView = new MenuView(userModel);
+        MatchView matchView = new MatchView();
+        add(menuView);
+        MenuControler menuControler = new MenuControler(userModel, menuView);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
