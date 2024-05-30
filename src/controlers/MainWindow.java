@@ -68,6 +68,7 @@ public class MainWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Salir")) {
             System.out.println("Boton de salir [menu]");
+            dispose();
 
         } else if (e.getSource() == menuView.getPveButton()) {
             System.out.println("BOT button");
@@ -82,7 +83,7 @@ public class MainWindow extends JFrame implements ActionListener {
             changePanel(menuView);
         }
     }
-    
+
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
     }
