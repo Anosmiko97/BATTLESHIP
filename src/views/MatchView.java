@@ -1,6 +1,8 @@
 package views;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -12,13 +14,12 @@ public class MatchView extends JPanel {
 
     AppProperties properties = new AppProperties();
 
-    /* Texto del panel */
+    // Texto del panel
     private String userName = "Uriel";
     private String opponentName = "Ale";
 
-    /* Botones */
+    // Botones
     JButton exitButton;
-
 
     public MatchView() {
         setLayout(new BorderLayout());
@@ -154,13 +155,28 @@ public class MatchView extends JPanel {
     public JPanel createFooterPanel() {
         exitButton = new JButton("Salir de la partida");
         exitButton.setBackground(properties.getButtonColor());
-        exitButton.setFont(new Font("ARIAL", Font.PLAIN, 30));
+        exitButton.setFont(new Font("ARIAL", Font.PLAIN, 25));
         exitButton.setForeground(Color.WHITE);
+
         JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         exitPanel.setBackground(properties.getHeaderColor());
+        exitPanel.setBorder(new EmptyBorder(5, 0, 5, 30));
         exitPanel.add(exitButton);
 
         return exitPanel;
+    }
+
+    /* Getters y setters */
+    public JButton getExitButton() {
+        return this.exitButton;
+    }
+    public void setExitButton(JButton exitButton) {
+        this.exitButton = exitButton;
+    }
+
+    /* ActionListeners */
+    public void addExitButtonListener(ActionListener listener) {
+        exitButton.addActionListener(listener);
     }
 }
 

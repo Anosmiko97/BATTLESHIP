@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import views.MenuView;
 import models.User;
 
-public class MenuControler implements ActionListener{
+public class MenuControler implements ActionListener {
 
     private MenuView menuView; 
     private User userModel;

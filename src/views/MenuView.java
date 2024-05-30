@@ -215,8 +215,6 @@ public class MenuView extends JPanel {
     }
 
     public JPanel createFooterPanel() {
-        int padding = 30;
-
         exitButton = new JButton("Salir");
         exitButton.setBackground(properties.getButtonColor());
         exitButton.setFont(new Font("ARIAL", Font.PLAIN, 25));
@@ -224,7 +222,7 @@ public class MenuView extends JPanel {
 
         JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         exitPanel.setBackground(properties.getHeaderColor());
-        exitPanel.setBorder(new EmptyBorder(10, 0, 10, padding));
+        exitPanel.setBorder(new EmptyBorder(10, 0, 10, 30));
         exitPanel.add(exitButton);
 
         return exitPanel;
