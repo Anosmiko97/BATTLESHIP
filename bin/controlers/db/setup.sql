@@ -16,4 +16,12 @@ CREATE TABLE match (
     opponent_name VARCHAR(255),
 
     FOREIGN KEY (user_id) REFERENCES user(id)
+
+    INSERT INTO users (name) VALUES ("Uriel");
+    INSERT INTO match (user_id, 
+                    victory,
+                    sunken_boats,
+                    score,
+                    number_of_shots,
+                    opponent_name) VALUES (1, TRUE, 5, 20, 27, "ale");
 );

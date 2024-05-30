@@ -11,8 +11,10 @@ import java.awt.Color;
 public class AppProperties {
 
     // Estilos del juego
-    private Color backgroundColor = hexToColor("#111D2E");
-    private Color headerColor = hexToColor("#102644");
+    private Color backgroundColor = Color.decode("#111D2E");
+    private Color headerColor = Color.decode("#102644");
+    private Color namesPanelColor = Color.decode("#224E8B");
+    private String fontApp = "Arial";
 
     // Parametros de socket
     private int port = 12345;
@@ -22,28 +24,33 @@ public class AppProperties {
     // Getters y setters
     public Color getBackgroundColor() {
         return this.backgroundColor;
-    }public void setBackgroundColor(Color color) {
-        this.backgroundColor = color;
+    }
+    public void setBackgroundColor(String color) {
+        this.backgroundColor =  Color.decode(color);
     }
 
     public Color getHeaderColor() {
-        return this.backgroundColor;
-    }public void setHeaderColor(Color color) {
-        this.backgroundColor = color;
+        return this.headerColor;
+    }
+    public void setHeaderColor(String color) {
+        this.headerColor =  Color.decode(color);
+    }
+
+    public Color getNamesPanelColor() {
+        return this.namesPanelColor;
+    }public void setNamesPanelColor(String color) {
+        this.namesPanelColor = Color.decode(color);
+    }
+
+    public String getFontApp() {
+        return this.fontApp;
+    }public void setFontApp(String font) {
+        this.fontApp = font;
     }
 
     public int getPort() {
         return this.port;
     }public void setPort(int port) {
         this.port = port;
-    }
-
-    public Color hexToColor(String hexColor) {
-        if (hexColor.startsWith("#") && hexColor.length() == 7) {
-            int rgb = Integer.parseInt(hexColor.substring(1), 16);
-            return new Color(rgb);
-        } else {
-            throw new IllegalArgumentException("El formato del color hexadecimal es inválido. Debe ser #RRGGBB.");
-        }
     }
 }
