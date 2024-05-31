@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 /* Clases propias */
 import views.MenuView;
+import views.SettingsView;
 import models.User;
 
 public class MenuControler implements ActionListener {
@@ -16,19 +17,14 @@ public class MenuControler implements ActionListener {
         this.menuView = menuView;
         this.userModel = userModel;
 
-        this.menuView.addPvpButtonListener(this);
-        this.menuView.addPveButtonListener(this);
-        this.menuView.addExitButtonListener(this);
+        this.menuView.addSettingsButtonListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Salir")) {
-            System.out.println("Boton de salir");
-        } else if (e.getSource() == menuView.getPveButton()) {
-            System.out.println("BOT button");
-        } else if (e.getSource() == menuView.getPvpButton()) {
-            System.out.println("lan button");
-        }
+        if (e.getSource() == menuView.getSettingsButton()) {
+            System.out.println("Boton de settings");
+            SettingsView settingsMenu = new SettingsView();
+        } 
     }
 }

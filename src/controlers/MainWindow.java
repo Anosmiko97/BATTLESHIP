@@ -57,13 +57,7 @@ public class MainWindow extends JFrame implements ActionListener {
         repaint();
     }
 
-    private void changePanel(JPanel panel) {
-        getContentPane().removeAll();
-        getContentPane().add(panel);
-        revalidate();
-        repaint();
-    }
-
+    /* Botones de vistas */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Salir")) {
@@ -82,6 +76,13 @@ public class MainWindow extends JFrame implements ActionListener {
             System.out.println("Boton de salir [match]");
             changePanel(menuView);
         }
+    }
+
+    private void changePanel(JPanel panel) {
+        getContentPane().removeAll();
+        getContentPane().add(panel);
+        revalidate();
+        repaint();
     }
 
     public static void main(String[] args) {

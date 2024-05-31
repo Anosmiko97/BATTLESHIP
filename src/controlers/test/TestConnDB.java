@@ -1,8 +1,10 @@
-package controlers.db;
+package controlers.test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
+import controlers.db.ConnectionDB;
 
 /* Clases propias */
 

@@ -32,7 +32,6 @@ import models.AppProperties;
 import models.User;
 
 public class MenuView extends JPanel {
-
     private AppProperties properties = new AppProperties();
     private User userModel;
     private JButton pveButton;
@@ -40,7 +39,7 @@ public class MenuView extends JPanel {
     private JTextField title;
     private Image imagenFondo;
     private Font customFontBold;
-    private JButton lanButton;
+    private JButton settingsButton;
     private JButton exitButton;
 
     public MenuView(User userModel) {
@@ -54,6 +53,48 @@ public class MenuView extends JPanel {
         
         ImageIcon imageIcon = new ImageIcon("media/images/background.jpg");
         imagenFondo = imageIcon.getImage();
+    }
+
+    private void menuUser() {
+        JPanel menuPanel = new JPanel();
+        setBackground(properties.getBackgroundColor());
+
+        
+    }
+
+    private JPanel createSettingsPanel() {
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setBackground(properties.getHeaderColor());
+        settingsPanel.setLayout(new FlowLayout());
+
+        UIManager.put("Menu.background", Color.BLUE);
+        UIManager.put("Menu.foreground", properties.getHeaderColor());
+        UIManager.put("Menu.opaque", true);
+        UIManager.put("MenuItem.background", properties.getButtonColor()); 
+        UIManager.put("MenuItem.foreground", Color.WHITE);
+
+        settingsButton = new JButton();
+        settingsButton.setBorder(BorderFactory.createEmptyBorder());
+
+        // Crear icono de menu
+        ImageIcon gearIcon = new ImageIcon("media/images/gear.png");
+        Image gearImage = gearIcon.getImage();
+        Image scaledGearImage = gearImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledGearImage);
+        
+        settingsButton.setIcon(scaledIcon);
+        settingsButton.setBackground(properties.getHeaderColor());
+
+        // Label de "Configuracion"
+        JLabel settingsLabel = new JLabel("Configuracion"); 
+        settingsLabel.setFont(new Font("ARIAL", Font.PLAIN, 30)); 
+        settingsLabel.setForeground(Color.WHITE);  
+
+        // Agregar al panel padre
+        settingsPanel.add(settingsButton);
+        settingsPanel.add(settingsLabel);
+
+        return settingsPanel;
     }
 
     private JPanel createInfoPanel(String name) {
@@ -71,51 +112,6 @@ public class MenuView extends JPanel {
         infoPanel.add(namelabel);    
 
         return infoPanel;
-    }
-
-    private JPanel createSettingsPanel() {
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(properties.getHeaderColor());
-        settingsPanel.setLayout(new FlowLayout());
-
-        UIManager.put("Menu.background", Color.BLUE);
-        UIManager.put("Menu.foreground", properties.getHeaderColor());
-        UIManager.put("Menu.opaque", true);
-        UIManager.put("MenuItem.background", properties.getButtonColor()); 
-        UIManager.put("MenuItem.foreground", Color.WHITE);
-
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.setBorder(BorderFactory.createEmptyBorder());
-
-        // Crear icono de menu
-        ImageIcon gearIcon = new ImageIcon("media/images/gear.png");
-        Image gearImage = gearIcon.getImage();
-        Image scaledGearImage = gearImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledGearImage);
-        
-        JMenu settingsMenu = new JMenu();
-        settingsMenu.setIcon(scaledIcon);
-        settingsMenu.setBackground(properties.getHeaderColor());
-
-        // Opciones de menu
-        JMenuItem item1 = new JMenuItem("Opción 1");
-        JMenuItem item2 = new JMenuItem("Opción 2");
-        JMenuItem item3 = new JMenuItem("Opción 3");
-        settingsMenu.add(item1);
-        settingsMenu.add(item2);
-        settingsMenu.add(item3);
-        menuBar.add(settingsMenu);
-
-        // Label de "Configuracion"
-        JLabel settingsLabel = new JLabel("Configuracion"); 
-        settingsLabel.setFont(new Font("ARIAL", Font.PLAIN, 30)); 
-        settingsLabel.setForeground(Color.WHITE);  
-
-        // Agregar al panel padre
-        settingsPanel.add(menuBar);
-        settingsPanel.add(settingsLabel);
-
-        return settingsPanel;
     }
 
     private JPanel createHeaderPanel() {
@@ -241,6 +237,10 @@ public class MenuView extends JPanel {
 		exitButton.addActionListener(listener);
 	}
 
+    public void addSettingsButtonListener(ActionListener listener) {
+		settingsButton.addActionListener(listener);
+	}
+
     /* Getters y setters */
     public JButton getPveButton() {
         return this.pveButton;
@@ -254,5 +254,12 @@ public class MenuView extends JPanel {
     }
     public void setPvpButton(JButton pvpButton) {
         this.pvpButton = pvpButton;
+    }
+
+    public JButton getSettingsButton() {
+        return this.settingsButton;
+    }
+    public void setSettingsButton(JButton settingsButton) {
+        this.settingsButton = settingsButton;
     }
 }
