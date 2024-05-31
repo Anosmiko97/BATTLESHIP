@@ -3,15 +3,19 @@ package controlers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /* Clases propias */
 import views.SettingsView;
+import models.AppProperties;
+import models.User;
 
 public class SettingsController implements ActionListener {
+    private AppProperties properties = new AppProperties();
     private SettingsView settingsView;
-    private String name;
-    private String flagFile;
+    private User user;
 
     public SettingsController(SettingsView settingsView) {
         this.settingsView = settingsView;
@@ -24,12 +28,14 @@ public class SettingsController implements ActionListener {
             System.out.println("boton de aplicar");
 
             if (checkFields()) {
-                name = settingsView.getNameField().getText();
-                settingsView.getFlagFile();
+                String name = settingsView.getNameField().getText();
+                String flag = settingsView.getFlagFile();
+                user = new User(name);
+                user.setFlag(flag);
                 settingsView.dispose();
 
             } else {
-                 JOptionPane.showMessageDialog(settingsView, "LLENE TODOS LOS CAMPOS", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(settingsView, "LLENE TODOS LOS CAMPOS", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     } 
@@ -39,17 +45,10 @@ public class SettingsController implements ActionListener {
     }
     
     /* Getters y setters */
-    public String getName() {
-        return this.name;
+    public User getUser() {
+        return this.user;
     }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFlagFile() {
-        return this.flagFile;
-    }
-    public void setFlagFile(String file) {
-        this.flagFile = file;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

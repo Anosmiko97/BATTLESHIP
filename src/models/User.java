@@ -1,11 +1,11 @@
 package models;
 
 public class User {
-    private int id;
     private String name;
+    private String flag;
+    private int id;
 
-    public User(int id, String name) {
-        this.id = id;
+    public User(String name) {
         this.name = name;
     }
 
@@ -22,5 +22,16 @@ public class User {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFlag() {
+        return this.flag;
+    }
+    public void setFlag(String route) {
+        this.flag = route;
+    }
+
+    public String toString() {
+        return "Id: " + id + "\nName: " + name + "\nFlag: " + flag;
     }
 }

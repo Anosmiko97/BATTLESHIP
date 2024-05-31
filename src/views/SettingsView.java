@@ -11,6 +11,7 @@ import java.util.concurrent.Flow;
 import javax.management.loading.PrivateClassLoader;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,7 +24,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /* Clases propias */
 import models.AppProperties;
 
-public class SettingsView extends JFrame {
+public class SettingsView extends JDialog {
     AppProperties properties = new AppProperties();
     private JTextField nameField;
     private String flagFile;
@@ -45,8 +46,6 @@ public class SettingsView extends JFrame {
 
         add(mainPanel);
         setLocationRelativeTo(null);
-
-        setVisible(true);
     }
 
     private JPanel createHeaderPanel() {
