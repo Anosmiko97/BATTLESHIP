@@ -32,7 +32,6 @@ public class UserDAO {
             PreparedStatement stmt =  conn.prepareStatement("DELETE FROM user");
         ) {
             stmt.executeUpdate();
-            System.out.println("Usuario eliminado");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,5 +60,22 @@ public class UserDAO {
         }
 
         return user;
+    }
+
+    public boolean isEmptyTable() {
+        try (Connection conn = ConnectionDB.createConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM user");
+        ) {
+            if (result.next()) {
+                int count = result.getInt(1);
+                return count == 0;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

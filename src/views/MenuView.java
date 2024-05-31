@@ -42,18 +42,23 @@ public class MenuView extends JPanel {
     private Font customFontBold;
     private JButton settingsButton;
     private JButton exitButton;
+    private JPanel headerPanel;
 
     public MenuView(User userModel) {
         this.userModel = userModel;
         setBackground(properties.getBackgroundColor());
         setLayout(new BorderLayout());
-
-        add(createHeaderPanel(), BorderLayout.NORTH);
+        
+        headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
         add(mainWindow(), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
         
         ImageIcon imageIcon = new ImageIcon("media/images/background.jpg");
         imagenFondo = imageIcon.getImage();
+
+        validate();
+        repaint();
     }
 
     private JPanel createSettingsPanel() {
@@ -107,7 +112,12 @@ public class MenuView extends JPanel {
         makeLabel(userPanel, name, new Font("Arial", Font.PLAIN, 30), new int[]{0, 10, 0, 10});
     
         // Cargar la imagen de la bandera del jugador
-        ImageIcon flagIcon = new ImageIcon(userModel.getFlag());
+        ImageIcon flagIcon = null;
+        try {
+            flagIcon = new ImageIcon(userModel.getFlag());
+        } catch (Exception e) {
+            flagIcon = new ImageIcon("./media/images/defaultflag.png");
+        } 
         Image flagImage = flagIcon.getImage();
         Image scaledFlagImage = flagImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledFlagImage);
@@ -129,6 +139,16 @@ public class MenuView extends JPanel {
         headerPanel.add(createSettingsPanel(), BorderLayout.WEST);
 
         return headerPanel;
+    }
+
+    public void refreshHeader() {
+        remove(headerPanel); 
+
+        headerPanel = createHeaderPanel(); // Crear un nuevo header con la información actualizada
+        add(headerPanel, BorderLayout.NORTH);
+
+        revalidate();
+        repaint();
     }
     
     public JPanel mainWindow() {
@@ -212,7 +232,6 @@ public class MenuView extends JPanel {
         
         // Dibuja la imagen de fondo
         if (imagenFondo != null) {
-            // Escala la imagen para que se ajuste al tamaño del JPanel
             g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
         }
     }
@@ -268,5 +287,12 @@ public class MenuView extends JPanel {
     }
     public void setSettingsButton(JButton settingsButton) {
         this.settingsButton = settingsButton;
+    }
+
+    public void setUserModel(User userModel) {
+        this.userModel = userModel;
+    }
+    public User getUserModel() {
+        return this.userModel;
     }
 }

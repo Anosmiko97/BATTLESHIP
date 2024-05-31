@@ -2,6 +2,7 @@ package controlers;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.awt.Image;
@@ -42,7 +43,7 @@ public class MainWindow extends JFrame implements ActionListener {
         setTitle("battleship");
 
         userDAO = new UserDAO();
-        userModel = userDAO.getUser();
+        userModel = setNameAndFlag();
         menuView = new MenuView(userModel);
         matchView = new MatchView();
         //menuControler = new MenuControler(userModel, menuView);
@@ -63,7 +64,19 @@ public class MainWindow extends JFrame implements ActionListener {
         repaint();
     }
 
-    /* Botones de vistas */
+    private User setNameAndFlag() {
+        User user = null;
+
+        if (!userDAO.isEmptyTable()) {
+            user = userDAO.getUser();
+        } else {
+            user = new User("User");
+            user.setFlag("./media/images/defaultflag.png");
+        }
+
+        return user;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Salir")) {
@@ -84,16 +97,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getSettingsButton()) {
             System.out.println("Boton de settings");
-            SettingsView settingsView = new SettingsView();
-            SettingsController settingsController = new SettingsController(settingsView);
-            settingsView.setModal(true);
-            settingsView.setVisible(true);
-            System.out.println((settingsController.getUser().toString()));
-
-            User userUpdated = settingsController.getUser();
-            userDAO.deleteUser();
-            userDAO.insertUser(userUpdated);
-            userModel = userUpdated;
+            saveNewUser();
         } 
     }
 
@@ -102,6 +106,24 @@ public class MainWindow extends JFrame implements ActionListener {
         getContentPane().add(panel);
         revalidate();
         repaint();
+    }
+
+    private void saveNewUser() {
+        // Abrir ventana de settings
+        SettingsView settingsView = new SettingsView();
+        SettingsController settingsController = new SettingsController(settingsView);
+        settingsView.setModal(true);
+        settingsView.setVisible(true);
+
+        // Establecer usuario consultado
+        User userUpdated = settingsController.getUser();
+        userDAO.deleteUser();
+        userDAO.insertUser(userUpdated);
+        this.userModel = userUpdated; 
+
+        this.menuView.setUserModel(userModel);
+        this.menuView.refreshHeader();
+        System.out.println(this.userModel.toString());
     }
 
     public static void main(String[] args) {
