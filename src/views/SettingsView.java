@@ -137,7 +137,7 @@ public class SettingsView extends JDialog {
         return applyChangesButton;
     }
 
-    /* Gtters y setters */
+    /* Getters y setters */
     public JTextField getNameField() {
         return this.nameField;
     }

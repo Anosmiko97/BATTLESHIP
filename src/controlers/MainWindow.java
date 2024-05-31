@@ -89,7 +89,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getPvpButton()) {
             System.out.println("lan button");
-            changePanel(matchView);
+            menuView.refreshMainToLan();
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");

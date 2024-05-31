@@ -9,6 +9,7 @@ import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -43,6 +44,10 @@ public class MenuView extends JPanel {
     private JButton settingsButton;
     private JButton exitButton;
     private JPanel headerPanel;
+    private JPanel mainPanel;
+    private JPanel lanMenuPanel;
+    private JButton makeMatchButton;
+    private JButton joinMatchButton;
 
     public MenuView(User userModel) {
         this.userModel = userModel;
@@ -51,7 +56,8 @@ public class MenuView extends JPanel {
         
         headerPanel = createHeaderPanel();
         add(headerPanel, BorderLayout.NORTH);
-        add(mainWindow(), BorderLayout.CENTER);
+        mainPanel = createMainPanel();
+        add(mainPanel, BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
         
         ImageIcon imageIcon = new ImageIcon("media/images/background.jpg");
@@ -140,18 +146,8 @@ public class MenuView extends JPanel {
 
         return headerPanel;
     }
-
-    public void refreshHeader() {
-        remove(headerPanel); 
-
-        headerPanel = createHeaderPanel(); // Crear un nuevo header con la información actualizada
-        add(headerPanel, BorderLayout.NORTH);
-
-        revalidate();
-        repaint();
-    }
     
-    public JPanel mainWindow() {
+    public JPanel createMainPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout()); 
         panel.setOpaque(false);
@@ -181,16 +177,10 @@ public class MenuView extends JPanel {
         pveButton.setFocusPainted(false);
         
         try {
-            // Ruta al archivo de la fuente
             File fontFile = new File("media/fonts/quickynick.ttf");
-
-            // Cargar la fuente desde el archivo
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-
-            // Opcional: Derivar una nueva fuente con el estilo y tamaño deseado
             customFontBold = customFont.deriveFont(Font.BOLD, 60);
           
-            // label.setFont(customFontBold); // Asegúrate de que label esté definido y quitar esta línea si no lo está
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
@@ -209,21 +199,97 @@ public class MenuView extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;   
-        gbc.gridwidth = 2; // Ancho de la celda
-        gbc.insets = new java.awt.Insets(5, 5, 5, 5); // Espaciado entre botones
+        gbc.gridwidth = 2; 
+        gbc.insets = new java.awt.Insets(5, 5, 5, 5); 
                 
         panel.add(title, gbc);
 
-        gbc.gridy = 1; // Siguiente fila
-        gbc.gridwidth = 1; // Restauramos el ancho de la celda a 1
+        gbc.gridy = 1; 
+        gbc.gridwidth = 1; 
         
-        gbc.insets = new java.awt.Insets(5, 26, 5, 5); // Espaciado entre botones
+        gbc.insets = new java.awt.Insets(5, 26, 5, 5); 
         panel.add(pveButton, gbc);
 
         gbc.gridx = 1;
         panel.add(pvpButton, gbc);
 
         return panel;
+    }
+
+    public JPanel createLanMenu() {
+        lanMenuPanel = new JPanel();
+        lanMenuPanel.setBackground(properties.getBackgroundColor());
+        lanMenuPanel.setLayout(new BorderLayout());
+        int padding = 70;
+        lanMenuPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
+
+        // Crear titulo
+        JLabel titleLabel = new JLabel("PARTIDA LAN", JLabel.CENTER);
+        titleLabel.setFont(new Font("ARIAL", Font.BOLD, 60));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBorder(new EmptyBorder(0, 20, 40 , 20));
+
+        // Crear panel para titulo y botones
+        JPanel panel = new JPanel();
+        panel.setBackground(properties.getBackgroundColor());
+        panel.setLayout(new BorderLayout());
+
+        // Imagenes de los lados
+        ImageIcon warshipImage = new ImageIcon("./media/images/warship.png");
+        Image scaledImage = warshipImage.getImage().getScaledInstance(160, 160, Image.SCALE_SMOOTH);
+        ImageIcon warshipIcon = new ImageIcon(scaledImage);
+        JLabel imgLabel = new JLabel(warshipIcon);
+        JLabel imgLabel1 = new JLabel(warshipIcon);
+        imgLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        imgLabel1.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        // Agregar al panel los elementos
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(createOptionsLanPanel(), BorderLayout.CENTER);
+        panel.add(imgLabel, BorderLayout.EAST);
+        panel.add(imgLabel1, BorderLayout.WEST);
+
+        lanMenuPanel.add(panel);
+
+        return lanMenuPanel;
+    }
+
+    public JPanel createOptionsLanPanel() {
+        JPanel optionsLanPanel = new JPanel();
+        int padding = 40;  
+        optionsLanPanel.setBackground(properties.getHeaderColor());
+        optionsLanPanel.setLayout(new GridLayout(2, 1, 20, 20));  
+        optionsLanPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
+        
+        // Reducción del tamaño de la fuente de los botones
+        makeMatchButton = createButton("UNIRSE A PARTIDA", new Font("ARIAL", Font.PLAIN, 25));
+        joinMatchButton = createButton("CREAR PARTIDA", new Font("ARIAL", Font.PLAIN, 25));  
+        
+        // Agregar paneles
+        JPanel container = createContainer();
+        optionsLanPanel.add(makeMatchButton);
+        optionsLanPanel.add(joinMatchButton);
+        container.add(optionsLanPanel);
+    
+        return container;
+    }
+    
+    public JButton createButton(String text, Font font) {
+        JButton button = new JButton(text);
+        button.setBackground(properties.getButtonColor());
+        button.setFont(font);
+        button.setForeground(Color.WHITE);
+
+        return button;
+    }
+
+    private JPanel createContainer() {
+        JPanel container = new JPanel();
+        container.setBackground(properties.getBackgroundColor());
+        container.setLayout(new FlowLayout(FlowLayout.CENTER));
+        container.setBorder(new EmptyBorder(10, 10, 10, 10));
+        
+        return container;
     }
     
     @Override
@@ -237,10 +303,7 @@ public class MenuView extends JPanel {
     }
 
     public JPanel createFooterPanel() {
-        exitButton = new JButton("Salir");
-        exitButton.setBackground(properties.getButtonColor());
-        exitButton.setFont(new Font("ARIAL", Font.PLAIN, 25));
-        exitButton.setForeground(Color.WHITE);
+        exitButton = createButton("Salir", new Font("ARIAL", Font.PLAIN, 25));
 
         JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         exitPanel.setBackground(properties.getHeaderColor());
@@ -248,6 +311,27 @@ public class MenuView extends JPanel {
         exitPanel.add(exitButton);
 
         return exitPanel;
+    }
+
+    /* Metodos para refrescar paneles */
+    public void refreshHeader() {
+        remove(headerPanel); 
+
+        headerPanel = createHeaderPanel(); 
+        add(headerPanel, BorderLayout.NORTH);
+
+        revalidate();
+        repaint();
+    }
+
+    public void refreshMainToLan() {
+        remove(mainPanel); 
+
+        lanMenuPanel = createOptionsLanPanel(); 
+        add(lanMenuPanel, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     /* ActionListeners */

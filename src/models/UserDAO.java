@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import com.mysql.cj.xdevapi.PreparableStatement;
 
 /* Clases propias */
@@ -14,7 +13,6 @@ import controlers.db.ConnectionDB;
 public class UserDAO {
 
     public void insertUser(User user) {
-        System.out.println("SQLCONN" + user.toString());
         try (Connection conn = ConnectionDB.createConnection();
              PreparedStatement pstmt = conn.prepareStatement("INSERT INTO user (name, flag) VALUES (?,?)")
         ) {
@@ -54,7 +52,6 @@ public class UserDAO {
                     user.setFlag(flag);
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -71,7 +68,6 @@ public class UserDAO {
                 int count = result.getInt(1);
                 return count == 0;
             }
-            
         } catch (Exception e) {
             e.printStackTrace();
         }
