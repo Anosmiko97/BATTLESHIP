@@ -327,7 +327,7 @@ public class MenuView extends JPanel {
     public void refreshMainToLan() {
         remove(mainPanel); 
 
-        lanMenuPanel = createOptionsLanPanel(); 
+        lanMenuPanel = createLanMenu(); 
         add(lanMenuPanel, BorderLayout.CENTER);
 
         revalidate();
