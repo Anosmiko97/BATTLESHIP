@@ -15,10 +15,15 @@ CREATE TABLE match_party (
     score INT,
     number_of_shots INT,
     opponent_name VARCHAR(255),
+
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-/* INSERT INTO users (name) VALUES ("Uriel");
+/*
+    INSERT INTO user (name, flag) VALUES ("Uriel", "./src/controlers/test/mexico.png") 
+*/
+
+/* 
     INSERT INTO match (user_id, 
                     victory,
                     sunken_boats,

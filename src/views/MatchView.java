@@ -11,7 +11,6 @@ import javax.swing.border.EmptyBorder;
 import models.AppProperties;
 
 public class MatchView extends JPanel {
-
     AppProperties properties = new AppProperties();
 
     // Texto del panel
