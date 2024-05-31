@@ -24,7 +24,9 @@ public class MenuControler implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == menuView.getSettingsButton()) {
             System.out.println("Boton de settings");
-            SettingsView settingsMenu = new SettingsView();
+            SettingsView settingsView = new SettingsView();
+            SettingsController settingsController = new SettingsController(settingsView);
+            //System.out.println((settingsController.getName()));
         } 
     }
 }

@@ -25,7 +25,7 @@ import models.AppProperties;
 
 public class SettingsView extends JFrame {
     AppProperties properties = new AppProperties();
-    private String name;
+    private JTextField nameField;
     private String flagFile;
     private JButton applyChangesButton;
 
@@ -45,6 +45,7 @@ public class SettingsView extends JFrame {
 
         add(mainPanel);
         setLocationRelativeTo(null);
+
         setVisible(true);
     }
 
@@ -83,7 +84,7 @@ public class SettingsView extends JFrame {
         nameUserPanel.setLayout(new FlowLayout());
     
         JLabel nameLabel = new JLabel("Nombre");
-        JTextField nameField = new JTextField(20);
+        nameField = new JTextField(20);
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setFont(new Font("ARIAL", Font.PLAIN, 20));
         nameUserPanel.add(nameLabel);
@@ -138,11 +139,11 @@ public class SettingsView extends JFrame {
     }
 
     /* Gtters y setters */
-    public String getName() {
-        return this.name;
+    public JTextField getNameField() {
+        return this.nameField;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setNameField(JTextField nameField) {
+        this.nameField = nameField;
     }
 
     public String getFlagFile() {
