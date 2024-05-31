@@ -48,35 +48,6 @@ public class LanView extends JPanel {
         repaint();
     }
 
-    private JPanel createSettingsPanel() {
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBackground(properties.getHeaderColor());
-        settingsPanel.setLayout(new FlowLayout());
-
-        UIManager.put("Menu.background", Color.BLUE);
-        UIManager.put("Menu.foreground", properties.getHeaderColor());
-        UIManager.put("Menu.opaque", true);
-        UIManager.put("MenuItem.background", properties.getButtonColor()); 
-        UIManager.put("MenuItem.foreground", Color.WHITE);
-
-        settingsButton = new JButton();
-        settingsButton.setBorder(BorderFactory.createEmptyBorder());
-
-        // Crear icono de menu
-        ImageIcon gearIcon = new ImageIcon("media/images/gear.png");
-        Image gearImage = gearIcon.getImage();
-        Image scaledGearImage = gearImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledGearImage);
-        settingsButton.setIcon(scaledIcon);
-        settingsButton.setBackground(properties.getHeaderColor());
-        settingsPanel.add(settingsButton);
-
-        // Label de configuracion
-        makeLabel(settingsPanel, "Configuracion", new Font("Arial", Font.PLAIN, 30), new int[]{0, 10, 0, 10});
-
-        return settingsPanel;
-    }
-
     private void makeLabel(JPanel fatherPanel, String text, Font font, int[] border) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -121,9 +92,7 @@ public class LanView extends JPanel {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(properties.getHeaderColor());
-  
         headerPanel.add(createInfoPanel(userModel.getName()), BorderLayout.EAST);
-        headerPanel.add(createSettingsPanel(), BorderLayout.WEST);
 
         return headerPanel;
     }
@@ -227,10 +196,6 @@ public class LanView extends JPanel {
     }
 
     /* ActionListeners */
-    public void addSettingsButtonListener(ActionListener listener) {
-		settingsButton.addActionListener(listener);
-	}
-
     public void addMakeMatchButtonListener(ActionListener listener) {
 		makeMatchButton.addActionListener(listener);
 	}
