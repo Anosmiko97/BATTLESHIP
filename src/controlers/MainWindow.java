@@ -53,6 +53,8 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.addPveButtonListener(this);
         this.menuView.addExitButtonListener(this);
         this.menuView.addSettingsButtonListener(this);
+        //this.menuView.addReturnButtonListener(this);
+        //this.menuView.addMakeMatchButtonListener(this);
 
         // Listeners de matchView
         this.matchView.addExitButtonListener(this);        
@@ -89,7 +91,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getPvpButton()) {
             System.out.println("lan button");
-            menuView.refreshMainToLan();
+            menuView.refreshToLanPanels();
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
@@ -98,7 +100,10 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getSource() == menuView.getSettingsButton()) {
             System.out.println("Boton de settings");
             saveNewUser();
-        } 
+
+        } else if (e.getSource().equals("Regresar")) {
+            System.out.println("Regresar al menu [desde lan]");
+        }
     }
 
     private void changePanel(JPanel panel) {

@@ -14,7 +14,6 @@ import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -48,6 +47,9 @@ public class MenuView extends JPanel {
     private JPanel lanMenuPanel;
     private JButton makeMatchButton;
     private JButton joinMatchButton;
+    private JPanel footerPanel;
+    private JPanel footerReturnPanel;
+    private JButton returnButton;
 
     public MenuView(User userModel) {
         this.userModel = userModel;
@@ -58,7 +60,8 @@ public class MenuView extends JPanel {
         add(headerPanel, BorderLayout.NORTH);
         mainPanel = createMainPanel();
         add(mainPanel, BorderLayout.CENTER);
-        add(createFooterPanel(), BorderLayout.SOUTH);
+        footerPanel = createFooterPanel();
+        add(footerPanel, BorderLayout.SOUTH);
         
         ImageIcon imageIcon = new ImageIcon("media/images/background.jpg");
         imagenFondo = imageIcon.getImage();
@@ -313,6 +316,17 @@ public class MenuView extends JPanel {
         return exitPanel;
     }
 
+    public JPanel createFooterReturn() {
+        returnButton = createButton("Regresar", new Font("ARIAL", Font.PLAIN, 25));
+
+        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        exitPanel.setBackground(properties.getHeaderColor());
+        exitPanel.setBorder(new EmptyBorder(10, 0, 10, 30));
+        exitPanel.add(returnButton);
+
+        return exitPanel;
+    }
+
     /* Metodos para refrescar paneles */
     public void refreshHeader() {
         remove(headerPanel); 
@@ -324,11 +338,14 @@ public class MenuView extends JPanel {
         repaint();
     }
 
-    public void refreshMainToLan() {
+    public void refreshToLanPanels() {
         remove(mainPanel); 
+        remove(footerPanel);
 
         lanMenuPanel = createLanMenu(); 
         add(lanMenuPanel, BorderLayout.CENTER);
+        footerReturnPanel = createFooterReturn();
+        add(footerReturnPanel, BorderLayout. SOUTH);
 
         revalidate();
         repaint();
@@ -344,11 +361,23 @@ public class MenuView extends JPanel {
 	}
 
     public void addExitButtonListener(ActionListener listener) {
-		exitButton.addActionListener(listener);
+		this.exitButton.addActionListener(listener);
+	}
+
+    public void addReturnButtonListener(ActionListener listener) {
+		this.returnButton.addActionListener(listener);
 	}
 
     public void addSettingsButtonListener(ActionListener listener) {
 		settingsButton.addActionListener(listener);
+	}
+
+    public void addMakeMatchButtonListener(ActionListener listener) {
+		makeMatchButton.addActionListener(listener);
+	}
+
+    public void addJoinMatchButtonListener(ActionListener listener) {
+		joinMatchButton.addActionListener(listener);
 	}
 
     /* Getters y setters */
@@ -378,5 +407,12 @@ public class MenuView extends JPanel {
     }
     public User getUserModel() {
         return this.userModel;
+    }
+
+    public JButton getMakeMatchButton() {
+        return this.makeMatchButton;
+    }
+    public void setMakeMatchButton(JButton button) {
+       this.makeMatchButton = button; 
     }
 }
