@@ -20,6 +20,7 @@ import models.UserDAO;
 import views.MenuView;
 import views.SettingsView;
 import views.MatchView;
+import views.LanView;
 
 public class MainWindow extends JFrame implements ActionListener {
     AppProperties properties = new AppProperties();
@@ -34,6 +35,7 @@ public class MainWindow extends JFrame implements ActionListener {
     // Vistas
     MenuView menuView;
     MatchView matchView;
+    LanView lanView;
     SettingsView settingsView;
 
     public MainWindow() {
@@ -46,6 +48,7 @@ public class MainWindow extends JFrame implements ActionListener {
         userModel = setNameAndFlag();
         menuView = new MenuView(userModel);
         matchView = new MatchView();
+        lanView = new LanView(userModel);
         //menuControler = new MenuControler(userModel, menuView);
 
         // Listeners de menuView
@@ -53,8 +56,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.addPveButtonListener(this);
         this.menuView.addExitButtonListener(this);
         this.menuView.addSettingsButtonListener(this);
-        //this.menuView.addReturnButtonListener(this);
-        //this.menuView.addMakeMatchButtonListener(this);
+        this.lanView.addReturnButtonListener(this);
 
         // Listeners de matchView
         this.matchView.addExitButtonListener(this);        
@@ -91,7 +93,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getPvpButton()) {
             System.out.println("lan button");
-            menuView.refreshToLanPanels();
+            changePanel(lanView);
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
@@ -101,8 +103,9 @@ public class MainWindow extends JFrame implements ActionListener {
             System.out.println("Boton de settings");
             saveNewUser();
 
-        } else if (e.getSource().equals("Regresar")) {
+        } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
+            changePanel(menuView);
         }
     }
 
