@@ -41,8 +41,8 @@ public class MainWindow extends JFrame implements ActionListener {
         getContentPane().setBackground(properties.getBackgroundColor());
         setTitle("battleship");
 
-        User userModel = new User("Uriel");
         userDAO = new UserDAO();
+        userModel = userDAO.getUser();
         menuView = new MenuView(userModel);
         matchView = new MatchView();
         //menuControler = new MenuControler(userModel, menuView);
@@ -90,9 +90,10 @@ public class MainWindow extends JFrame implements ActionListener {
             settingsView.setVisible(true);
             System.out.println((settingsController.getUser().toString()));
 
-            User user = settingsController.getUser();
+            User userUpdated = settingsController.getUser();
             userDAO.deleteUser();
-            userDAO.insertUser(user);
+            userDAO.insertUser(userUpdated);
+            userModel = userUpdated;
         } 
     }
 

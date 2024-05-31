@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -55,13 +56,6 @@ public class MenuView extends JPanel {
         imagenFondo = imageIcon.getImage();
     }
 
-    private void menuUser() {
-        JPanel menuPanel = new JPanel();
-        setBackground(properties.getBackgroundColor());
-
-        
-    }
-
     private JPanel createSettingsPanel() {
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(properties.getHeaderColor());
@@ -81,36 +75,49 @@ public class MenuView extends JPanel {
         Image gearImage = gearIcon.getImage();
         Image scaledGearImage = gearImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledGearImage);
-        
         settingsButton.setIcon(scaledIcon);
         settingsButton.setBackground(properties.getHeaderColor());
-
-        // Label de "Configuracion"
-        JLabel settingsLabel = new JLabel("Configuracion"); 
-        settingsLabel.setFont(new Font("ARIAL", Font.PLAIN, 30)); 
-        settingsLabel.setForeground(Color.WHITE);  
-
-        // Agregar al panel padre
         settingsPanel.add(settingsButton);
-        settingsPanel.add(settingsLabel);
+
+        // Label de configuracion
+        makeLabel(settingsPanel, "Configuracion", new Font("Arial", Font.PLAIN, 30), new int[]{0, 10, 0, 10});
 
         return settingsPanel;
     }
 
+    private void makeLabel(JPanel fatherPanel, String text, Font font, int[] border) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.WHITE);
+        label.setBorder(new EmptyBorder(border[0], border[1], border[2], border[3])); 
+        
+        fatherPanel.add(label);
+    }
+
     private JPanel createInfoPanel(String name) {
-        JPanel infoPanel = new JPanel(new FlowLayout());
+        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         infoPanel.setBackground(properties.getHeaderColor());
-
-        // Panel de bandera y nombre
-        JPanel userPanel = new JPanel(new FlowLayout());
-        JLabel namelabel = new JLabel(name);
-        namelabel.setFont(new Font("ARIAL", Font.PLAIN, 30));
-        namelabel.setForeground(Color.WHITE);
-        int padding = 30;
-        namelabel.setBorder(new EmptyBorder(10, 0, 10, padding));
-        userPanel.add(namelabel);
-        infoPanel.add(namelabel);    
-
+    
+        // Panel para el icono y el nombre del usuario
+        JPanel userPanel = new JPanel();
+        userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.X_AXIS));
+        userPanel.setBackground(properties.getHeaderColor());
+    
+        // Agregar el label del nombre de usuario
+        makeLabel(userPanel, name, new Font("Arial", Font.PLAIN, 30), new int[]{0, 10, 0, 10});
+    
+        // Cargar la imagen de la bandera del jugador
+        ImageIcon flagIcon = new ImageIcon(userModel.getFlag());
+        Image flagImage = flagIcon.getImage();
+        Image scaledFlagImage = flagImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledFlagImage);
+        JLabel flagLabel = new JLabel(scaledIcon);
+        
+        userPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
+        userPanel.add(flagLabel);
+    
+        infoPanel.add(userPanel);
+    
         return infoPanel;
     }
 
@@ -126,9 +133,9 @@ public class MenuView extends JPanel {
     
     public JPanel mainWindow() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout()); // Usamos GridBagLayout para centrar los botones
+        panel.setLayout(new GridBagLayout()); 
         panel.setOpaque(false);
-        Dimension buttonSize = new Dimension(100, 50); // Tamaño personalizado
+        Dimension buttonSize = new Dimension(100, 50); 
 
         ImageIcon pveImage = new ImageIcon("media/images/PVE.png");
         ImageIcon pvpImage = new ImageIcon("media/images/PVP.png");
