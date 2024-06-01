@@ -2,16 +2,16 @@ package models;
 
 public class Match {
     private int id;
-    private User user;
+    private String userId;
     private boolean victory;
     private int sunkenBoats;
     private int score;
     private int numberOfShots;
     private String opponentName; 
 
-    public Match(int id, User user, boolean victory, int sunkenBoats, int score, int numberOfShots, String opponentName) {
+    public Match(int id, String userId, boolean victory, int sunkenBoats, int score, int numberOfShots, String opponentName) {
         this.id = id;
-        this.user = user;
+        this.userId = userId;
         this.victory = victory;
         this.sunkenBoats = sunkenBoats;
         this.score = score;
@@ -27,14 +27,14 @@ public class Match {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(String userId) {
+        this.userId = userId;
     }
 
-    public boolean isVictory() {
+    public boolean getVictory() {
         return victory;
     }
     public void setVictory(boolean victory) {
