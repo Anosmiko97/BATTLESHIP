@@ -15,12 +15,13 @@ public class Cell {
     private int corY;
     private JButton button;
 
-    public Cell() {
+    public Cell(Color cellColor) {
         button = new JButton();
         Font fontCells = new Font(properties.getFontApp(), Font.PLAIN, 20);
         button.setForeground(Color.WHITE);
         button.setFont(fontCells);
         button.setOpaque(true);
+        this.cellColor = cellColor;
         button.setBackground(cellColor);
         button.setBorder(BorderFactory.createLineBorder(Color.white));
     }

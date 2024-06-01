@@ -2,6 +2,8 @@ package controlers;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
@@ -155,19 +157,19 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     private void initMatch() { 
-        Cell[][] cellsRigth = initCells();
-        Cell[][] cellsLeft = initCells();
+        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
         matchView = new MatchView(cellsRigth, cellsLeft);   
         matchController = new MatchController(matchView, cellsRigth, cellsLeft);
         this.matchView.addExitButtonListener(this); 
     }
 
-    private Cell[][] initCells() {
+    private Cell[][] initCells(Color color) {
         Cell[][] cells = new Cell[11][11];
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells.length; j++) {
-                cells[i][j] = new Cell();
+                cells[i][j] = new Cell(color);
             }
         }
 

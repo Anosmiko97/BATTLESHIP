@@ -23,6 +23,7 @@ public class MatchController implements ActionListener {
         for (int i = 0; i < cellsRigth.length; i++) {
             for (int j = 0; j < cellsRigth.length; j++) {
                 cellsRigth[i][j].getButton().addActionListener((ActionListener) this);
+                cellsLeft[i][j].getButton().addActionListener((ActionListener) this);
             }
         }
     }
@@ -33,6 +34,9 @@ public class MatchController implements ActionListener {
             for (int j = 0; j < cellsRigth[i].length; j++) {  
                 if (e.getSource() == cellsRigth[i][j].getButton()) {
                     System.out.println("Disparo en: [" + i + ", " + j + "]");
+                    return; 
+                } else if (e.getSource() == cellsLeft[i][j].getButton()) {
+                    System.out.println("Barco en: [" + i + ", " + j + "]");
                     return; 
                 } 
             }

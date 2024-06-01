@@ -107,9 +107,9 @@ public class MatchView extends JPanel {
         centerPanel.setBackground(properties.getBackgroundColor());
 
         int padding = 40;
-        JPanel leftPanel = createGridPanel("BARCOS", cellsLeft,Color.decode("#A6A6A6"));
+        JPanel leftPanel = createGridPanel("BARCOS", cellsLeft);
         leftPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
-        JPanel rightPanel = createGridPanel("DISPAROS", cellsRigth, Color.decode("#A6A6A6"));
+        JPanel rightPanel = createGridPanel("DISPAROS", cellsRigth);
         rightPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
 
         centerPanel.add(leftPanel);
@@ -118,7 +118,7 @@ public class MatchView extends JPanel {
         return centerPanel;
     }
 
-    private JPanel createGridPanel(String title, Cell[][] cells,Color cellColor) {
+    private JPanel createGridPanel(String title, Cell[][] cells) {
         JPanel gridPanel = new JPanel(new BorderLayout());
         gridPanel.setBackground(properties.getBackgroundColor());
     
@@ -130,13 +130,6 @@ public class MatchView extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel);
         gridPanel.add(titlePanel, BorderLayout.NORTH);
-
-        // Establecer color de fonto para las celdas 
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells.length; j++) {
-                cells[i][j].setCellColor(cellColor);
-            }
-        }
     
         // Panel de la cuadrícula
         JPanel grid = new JPanel(new GridLayout(cells.length, cells[0].length));
