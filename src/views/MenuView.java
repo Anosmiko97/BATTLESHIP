@@ -14,6 +14,8 @@ import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -45,6 +47,7 @@ public class MenuView extends JPanel {
     private JPanel headerPanel;
     private JPanel mainPanel;
     private JPanel footerPanel;
+    private JButton makeReportButton;
 
     public MenuView(User userModel) {
         this.userModel = userModel;
@@ -67,6 +70,7 @@ public class MenuView extends JPanel {
 
     private JPanel createSettingsPanel() {
         JPanel settingsPanel = new JPanel();
+        settingsPanel.setBorder(new EmptyBorder(10, 15, 0, 0));
         settingsPanel.setBackground(properties.getHeaderColor());
         settingsPanel.setLayout(new FlowLayout());
 
@@ -76,20 +80,10 @@ public class MenuView extends JPanel {
         UIManager.put("MenuItem.background", properties.getButtonColor()); 
         UIManager.put("MenuItem.foreground", Color.WHITE);
 
-        settingsButton = new JButton();
-        settingsButton.setBorder(BorderFactory.createEmptyBorder());
-
-        // Crear icono de menu
-        ImageIcon gearIcon = new ImageIcon("media/images/gear.png");
-        Image gearImage = gearIcon.getImage();
-        Image scaledGearImage = gearImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledGearImage);
-        settingsButton.setIcon(scaledIcon);
-        settingsButton.setBackground(properties.getHeaderColor());
+        settingsButton = createButton("Configuracion", new Font("Arial", Font.PLAIN, 20));
         settingsPanel.add(settingsButton);
-
-        // Label de configuracion
-        makeLabel(settingsPanel, "Configuracion", new Font("Arial", Font.PLAIN, 30), new int[]{0, 10, 0, 10});
+        makeReportButton = createButton("Crear reporte", new Font("Arial", Font.PLAIN, 20));
+        settingsPanel.add(makeReportButton);
 
         return settingsPanel;
     }
@@ -138,9 +132,7 @@ public class MenuView extends JPanel {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(properties.getHeaderColor());
-  
         headerPanel.add(createInfoPanel(userModel.getName()), BorderLayout.EAST);
-        headerPanel.add(createSettingsPanel(), BorderLayout.WEST);
 
         return headerPanel;
     }
@@ -236,10 +228,11 @@ public class MenuView extends JPanel {
     public JPanel createFooterPanel() {
         exitButton = createButton("Salir", new Font("ARIAL", Font.PLAIN, 25));
 
-        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel exitPanel = new JPanel(new BorderLayout());
+        exitPanel.add(createSettingsPanel(), BorderLayout.WEST);
         exitPanel.setBackground(properties.getHeaderColor());
         exitPanel.setBorder(new EmptyBorder(10, 0, 10, 30));
-        exitPanel.add(exitButton);
+        exitPanel.add(exitButton, BorderLayout.EAST);
 
         return exitPanel;
     }
@@ -271,6 +264,10 @@ public class MenuView extends JPanel {
     public void addSettingsButtonListener(ActionListener listener) {
 		settingsButton.addActionListener(listener);
 	}
+
+    public void addMakeReportListener(ActionListener listener) {
+        makeReportButton.addActionListener(listener);
+    }
 
     /* Getters y setters */
     public JButton getPveButton() {

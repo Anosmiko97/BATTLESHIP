@@ -54,6 +54,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.addPveButtonListener(this);
         this.menuView.addExitButtonListener(this);
         this.menuView.addSettingsButtonListener(this);
+        this.menuView.addMakeReportListener(this);
         this.lanView.addReturnButtonListener(this);
         this.lanView.addJoinMatchButtonListener(this);
         this.lanView.addMakeMatchButtonListener(this);
@@ -115,6 +116,9 @@ public class MainWindow extends JFrame implements ActionListener {
             System.out.println("crear partida");
             keyMatch = generateKey();
             CreateMatchView createMatchView = new CreateMatchView(keyMatch);
+        
+        } else if (e.getActionCommand().equals("Crear reporte")) {
+            System.out.println("boton de pdf");
         }
     }
 
@@ -133,12 +137,14 @@ public class MainWindow extends JFrame implements ActionListener {
 
         // Establecer usuario consultado
         User userUpdated = settingsController.getUser();
-        userDAO.deleteUser();
-        userDAO.insertUser(userUpdated);
-        this.userModel = userUpdated; 
+        if (userUpdated != null) {
+            userDAO.deleteUser();
+            userDAO.insertUser(userUpdated);
+            this.userModel = userUpdated; 
 
-        this.menuView.setUserModel(userModel);
-        this.menuView.refreshHeader();
+            this.menuView.setUserModel(userModel);
+            this.menuView.refreshHeader();
+        }
     }
 
     private String generateKey() {
