@@ -14,6 +14,8 @@ import views.MenuView;
 import views.SettingsView;
 import views.MatchView;
 import views.LanView;
+import views.CreateMatchView;
+import views.JoinMatchView;
 
 public class MainWindow extends JFrame implements ActionListener {
     AppProperties properties = new AppProperties();
@@ -32,7 +34,7 @@ public class MainWindow extends JFrame implements ActionListener {
     SettingsView settingsView;
 
     // Atributos
-    private int keyMatch;
+    private String keyMatch;
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -107,10 +109,12 @@ public class MainWindow extends JFrame implements ActionListener {
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
             System.out.println("unirse a partida");
+            JoinMatchView joinMatchView = new JoinMatchView();
 
         } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
             System.out.println("crear partida");
             keyMatch = generateKey();
+            CreateMatchView createMatchView = new CreateMatchView(keyMatch);
         }
     }
 
@@ -122,7 +126,6 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     private void saveNewUser() {
-        // Abrir ventana de settings
         SettingsView settingsView = new SettingsView();
         SettingsController settingsController = new SettingsController(settingsView);
         settingsView.setModal(true);
@@ -138,9 +141,11 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.refreshHeader();
     }
 
-    private int generateKey() {
+    private String generateKey() {
         Random random = new Random();
-        return 1000 + random.nextInt(9000);
+        int num = 1000 + random.nextInt(9000);
+
+        return String.valueOf(num);
     }
 
     public static void main(String[] args) {
