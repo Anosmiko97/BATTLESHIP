@@ -31,7 +31,7 @@ public class MatchController implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         for (int i = 0; i < cellsRigth.length; i++) {
-            for (int j = 0; j < cellsRigth[i].length; j++) {  
+            for (int j = 0; j < cellsRigth.length; j++) {  
                 if (e.getSource() == cellsRigth[i][j].getButton()) {
                     System.out.println("Disparo en: [" + i + ", " + j + "]");
                     return; 

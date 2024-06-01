@@ -19,6 +19,8 @@ import views.MatchView;
 import views.LanView;
 import views.CreateMatchView;
 import views.JoinMatchView;
+import controlers.socket.ServerControler;
+import controlers.socket.ClientControler;
 
 public class MainWindow extends JFrame implements ActionListener {
     AppProperties properties = new AppProperties();
@@ -50,7 +52,6 @@ public class MainWindow extends JFrame implements ActionListener {
         userModel = setNameAndFlag();
         menuView = new MenuView(userModel);
         lanView = new LanView(userModel);
-        //menuControler = new MenuControler(userModel, menuView);
 
         // Listeners 
         this.menuView.addPvpButtonListener(this);
@@ -95,7 +96,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getPvpButton()) {
             System.out.println("lan button");
-            initMatch();
+            //initMatch();
             changePanel(lanView);
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
@@ -113,12 +114,14 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
             System.out.println("unirse a partida");
             JoinMatchView joinMatchView = new JoinMatchView();
+            ClientControler client = new ClientControler();
+            client.sendKey();
 
         } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
             System.out.println("crear partida");
             keyMatch = generateKey();
-            CreateMatchView createMatchView = new CreateMatchView(keyMatch);
-        
+            CreateMatchControler createMatchControler = new CreateMatchControler(keyMatch);
+
         } else if (e.getActionCommand().equals("Crear reporte")) {
             System.out.println("boton de pdf");
         }
