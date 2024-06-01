@@ -2,13 +2,13 @@ package views;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 /* Clases propias */
 import models.AppProperties;
+import models.Cell;
 
 public class MatchView extends JPanel {
     AppProperties properties = new AppProperties();
@@ -20,9 +20,16 @@ public class MatchView extends JPanel {
     // Botones
     JButton exitButton;
 
-    public MatchView() {
+    // Propierdades
+    private Cell[][] cellsRigth;
+    private Cell[][] cellsLeft;
+
+    public MatchView(Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
         setBackground(properties.getBackgroundColor());  
+
+        this.cellsRigth = cells1;
+        this.cellsLeft = cells2;
 
         add(createHeaderPanel(), BorderLayout.NORTH);
         add(createCenterPanel(), BorderLayout.CENTER);
@@ -100,9 +107,9 @@ public class MatchView extends JPanel {
         centerPanel.setBackground(properties.getBackgroundColor());
 
         int padding = 40;
-        JPanel leftPanel = createGridPanel("BARCOS", Color.decode("#033A84"));
+        JPanel leftPanel = createGridPanel("BARCOS", cellsLeft,Color.decode("#A6A6A6"));
         leftPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
-        JPanel rightPanel = createGridPanel("DISPAROS", Color.decode("#A6A6A6"));
+        JPanel rightPanel = createGridPanel("DISPAROS", cellsRigth, Color.decode("#A6A6A6"));
         rightPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
 
         centerPanel.add(leftPanel);
@@ -111,10 +118,11 @@ public class MatchView extends JPanel {
         return centerPanel;
     }
 
-    private JPanel createGridPanel(String title, Color cellColor) {
+    private JPanel createGridPanel(String title, Cell[][] cells,Color cellColor) {
         JPanel gridPanel = new JPanel(new BorderLayout());
         gridPanel.setBackground(properties.getBackgroundColor());
-
+    
+        // Panel del título
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(Color.decode("#545454"));
         JLabel titleLabel = new JLabel(title, JLabel.CENTER);
@@ -123,34 +131,39 @@ public class MatchView extends JPanel {
         titlePanel.add(titleLabel);
         gridPanel.add(titlePanel, BorderLayout.NORTH);
 
-        JPanel grid = new JPanel(new GridLayout(11, 11));
-        for (int row = 0; row < 11; row++) {
-            for (int col = 0; col < 11; col++) {
-                JLabel cell = new JLabel("", JLabel.CENTER);
-                Font fontCells = new Font(properties.getFontApp(), Font.PLAIN, 20);
-                cell.setForeground(Color.WHITE);
-                cell.setFont(fontCells);
-                cell.setOpaque(true);
-                cell.setBackground(cellColor);
-
-                cell.setBorder(BorderFactory.createLineBorder(Color.white));
-                if (row == 0 && col == 0) {
-                    cell.setBackground(Color.decode("#173764"));
-                } else if (row == 0) {
-                    cell.setText(Integer.toString(col));
-                    cell.setBackground(Color.decode("#173764"));
-                } else if (col == 0) {
-                    cell.setText(Character.toString((char) ('A' + row - 1)));
-                    cell.setBackground(Color.decode("#173764"));
+        // Establecer color de fonto para las celdas 
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+                cells[i][j].setCellColor(cellColor);
+            }
+        }
+    
+        // Panel de la cuadrícula
+        JPanel grid = new JPanel(new GridLayout(cells.length, cells[0].length));
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+    
+                if (i == 0 && j == 0) {
+                    cells[i][j].getButton().setBackground(Color.decode("#173764"));
+                    cells[i][j].getButton().setEnabled(false); 
+                } else if (i == 0) {
+                    cells[i][j].getButton().setText(Integer.toString(j));
+                    cells[i][j].getButton().setBackground(Color.decode("#173764"));
+                    cells[i][j].getButton().setEnabled(false);
+                } else if (j == 0) {
+                    cells[i][j].getButton().setText(Character.toString((char) ('A' + i - 1)));
+                    cells[i][j].getButton().setBackground(Color.decode("#173764"));
+                    cells[i][j].getButton().setEnabled(false); 
                 }
-                grid.add(cell);
+    
+                grid.add(cells[i][j].getButton());
             }
         }
         gridPanel.add(grid, BorderLayout.CENTER);
-
+    
         return gridPanel;
     }
-
+    
     public JPanel createFooterPanel() {
         exitButton = new JButton("Salir de la partida");
         exitButton.setBackground(properties.getButtonColor());
@@ -171,6 +184,20 @@ public class MatchView extends JPanel {
     }
     public void setExitButton(JButton exitButton) {
         this.exitButton = exitButton;
+    }
+
+    public Cell[][] getCellsRigth() {
+        return this.cellsRigth;
+    }
+    public void setCellsRigth(Cell[][] cells) {
+        this.cellsRigth = cells;
+    }
+
+    public Cell[][] getCellsLeft() {
+        return this.cellsLeft;
+    }
+    public void setCellsLeft(Cell[][] cells) {
+        this.cellsLeft = cells;
     }
 
     /* ActionListeners */

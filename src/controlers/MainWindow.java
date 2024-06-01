@@ -8,6 +8,7 @@ import java.util.Random;
 
 /* Clases propias */
 import models.AppProperties;
+import models.Cell;
 import models.User;
 import models.UserDAO;
 import views.MenuView;
@@ -26,6 +27,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
     // Controladores
     SettingsController settingsController;
+    MatchController matchController;
 
     // Vistas
     MenuView menuView;
@@ -45,7 +47,6 @@ public class MainWindow extends JFrame implements ActionListener {
         userDAO = new UserDAO();
         userModel = setNameAndFlag();
         menuView = new MenuView(userModel);
-        matchView = new MatchView();
         lanView = new LanView(userModel);
         //menuControler = new MenuControler(userModel, menuView);
 
@@ -57,10 +58,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.addMakeReportListener(this);
         this.lanView.addReturnButtonListener(this);
         this.lanView.addJoinMatchButtonListener(this);
-        this.lanView.addMakeMatchButtonListener(this);
-
-        // Listeners de matchView
-        this.matchView.addExitButtonListener(this);        
+        this.lanView.addMakeMatchButtonListener(this);      
 
         add(menuView);
 
@@ -90,10 +88,12 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getPveButton()) {
             System.out.println("BOT button");
+            initMatch();
             changePanel(matchView);
 
         } else if (e.getSource() == menuView.getPvpButton()) {
             System.out.println("lan button");
+            initMatch();
             changePanel(lanView);
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
@@ -152,6 +152,26 @@ public class MainWindow extends JFrame implements ActionListener {
         int num = 1000 + random.nextInt(9000);
 
         return String.valueOf(num);
+    }
+
+    private void initMatch() { 
+        Cell[][] cellsRigth = initCells();
+        Cell[][] cellsLeft = initCells();
+
+        matchView = new MatchView(cellsRigth, cellsLeft);   
+        matchController = new MatchController(matchView, cellsRigth, cellsLeft);
+        this.matchView.addExitButtonListener(this); 
+    }
+
+    private Cell[][] initCells() {
+        Cell[][] cells = new Cell[11][11];
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+                cells[i][j] = new Cell();
+            }
+        }
+
+        return cells;
     }
 
     public static void main(String[] args) {
