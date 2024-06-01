@@ -1,17 +1,10 @@
 package controlers;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
-import java.awt.Cursor;
+import java.util.Random;
 
 /* Clases propias */
 import models.AppProperties;
@@ -38,6 +31,9 @@ public class MainWindow extends JFrame implements ActionListener {
     LanView lanView;
     SettingsView settingsView;
 
+    // Atributos
+    private int keyMatch;
+
     public MainWindow() {
         setBounds(500, 100, 900, 675);
         setResizable(true);
@@ -51,12 +47,14 @@ public class MainWindow extends JFrame implements ActionListener {
         lanView = new LanView(userModel);
         //menuControler = new MenuControler(userModel, menuView);
 
-        // Listeners de menuView
+        // Listeners 
         this.menuView.addPvpButtonListener(this);
         this.menuView.addPveButtonListener(this);
         this.menuView.addExitButtonListener(this);
         this.menuView.addSettingsButtonListener(this);
         this.lanView.addReturnButtonListener(this);
+        this.lanView.addJoinMatchButtonListener(this);
+        this.lanView.addMakeMatchButtonListener(this);
 
         // Listeners de matchView
         this.matchView.addExitButtonListener(this);        
@@ -106,6 +104,13 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
             changePanel(menuView);
+        
+        } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
+            System.out.println("unirse a partida");
+
+        } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
+            System.out.println("crear partida");
+            keyMatch = generateKey();
         }
     }
 
@@ -131,7 +136,11 @@ public class MainWindow extends JFrame implements ActionListener {
 
         this.menuView.setUserModel(userModel);
         this.menuView.refreshHeader();
-        System.out.println(this.userModel.toString());
+    }
+
+    private int generateKey() {
+        Random random = new Random();
+        return 1000 + random.nextInt(9000);
     }
 
     public static void main(String[] args) {

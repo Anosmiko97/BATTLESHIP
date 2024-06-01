@@ -2,9 +2,10 @@ package controlers.test;
 
 /* Clases propias */
 import views.SettingsView;
+import views.JoinMatchView;
 
 public class TestSettingsMenu {
     public static void main(String[] args) {
-        SettingsView settings = new SettingsView();
+        JoinMatchView l = new JoinMatchView();
     }
 }
