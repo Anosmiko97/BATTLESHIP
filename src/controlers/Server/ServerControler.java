@@ -1,4 +1,4 @@
-package controlers.socket;
+package controlers.Server;
 
 import java.io.*;
 import java.net.*;
@@ -49,19 +49,6 @@ public class ServerControler {
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
 
-                    String inputLine;
-                    while ((inputLine = in.readLine()) != null) {
-                        System.out.println("Recibido: " + inputLine);
-                        if (key.equals(inputLine)) {
-                            System.out.println("La clave coincide");
-                            out.println(true);
-                            System.out.println("conexion cerrada");
-                            return true;
-                        } else {
-                            System.out.println("La clave no coincide");
-                            out.println(false);
-                        }
-                    }
                 } catch (IOException e) {
                     System.out.println("Error al manejar la conexión del cliente: " + e.getMessage());
                 }

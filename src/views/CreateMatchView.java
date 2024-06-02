@@ -5,11 +5,12 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 /* Clases propias */
@@ -50,7 +51,7 @@ public class CreateMatchView extends JDialog {
         titleLabel.setFont(new Font("ARIAL", Font.BOLD, 30));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
-         
+
         headerPanel.add(titleLabel, BorderLayout.CENTER);
 
         return headerPanel;
@@ -76,12 +77,20 @@ public class CreateMatchView extends JDialog {
         button.setBackground(properties.getButtonColor());
         button.setFont(new Font("ARIAL", Font.PLAIN, 20));
         button.setForeground(Color.WHITE);
-        
+
         return button;
+    }
+
+    public boolean isViewVisible() {
+        return isVisible();
     }
 
     /* ActionListeners */
     public void addCancelButtonListener(ActionListener listener) {
         cancelButton.addActionListener(listener);
+    }
+
+    public void addWindowCloseListener(WindowAdapter adapter) {
+        addWindowListener(adapter);
     }
 }

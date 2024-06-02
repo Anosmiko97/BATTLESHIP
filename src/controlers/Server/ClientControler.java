@@ -1,4 +1,4 @@
-package controlers.socket;
+package controlers.Server;
 
 import java.io.*;
 import java.net.*;

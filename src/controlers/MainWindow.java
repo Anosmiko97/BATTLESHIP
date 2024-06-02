@@ -7,9 +7,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import controlers.Server.ClientControler;
+import controlers.Server.ServerControler;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,8 +34,6 @@ import views.MatchView;
 import views.LanView;
 import views.CreateMatchView;
 import views.JoinMatchView;
-import controlers.socket.ServerControler;
-import controlers.socket.ClientControler;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -131,6 +134,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
+            isRunningServer();
             changePanel(menuView);
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
@@ -210,6 +214,12 @@ public class MainWindow extends JFrame implements ActionListener {
         javax.swing.SwingUtilities.invokeLater(() -> {
             createMatchView = new CreateMatchView(host);
             createMatchView.addCancelButtonListener(this);
+            createMatchView.addWindowCloseListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    stopServer();
+                }
+            });
         });
     }
 
@@ -239,13 +249,18 @@ public class MainWindow extends JFrame implements ActionListener {
     private void runLanMatch() {
         createMatchView.dispose();
         serverThread.interrupt();
-        initMatch();
-        changePanel(matchView);
 
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            initMatch();                    
+            initMatch(); 
+            changePanel(matchView);                   
         });
+    }
+
+    public void isRunningServer() {
+        if (running == true) {
+            stopServer();
+        }
     }
 
     public void stopServer() {

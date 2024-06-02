@@ -1,7 +1,6 @@
 package controlers.test;
 
-/*Clase propias */
-import controlers.socket.ClientControler;
+import controlers.Server.ClientControler;
 
 public class TestClient {
     public static void main(String[] args) {

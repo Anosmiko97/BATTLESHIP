@@ -1,7 +1,6 @@
 package controlers.test;
 
-/* Clases propias */
-import controlers.socket.ServerControler;
+import controlers.Server.ServerControler;
 
 public class TestServer {
     public static void main(String[] args) {
