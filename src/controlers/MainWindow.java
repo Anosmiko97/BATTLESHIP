@@ -1,7 +1,11 @@
 package controlers;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -32,15 +36,19 @@ public class MainWindow extends JFrame implements ActionListener {
     // Controladores
     SettingsController settingsController;
     MatchController matchController;
+    ServerControler serverControler;
 
     // Vistas
     MenuView menuView;
     MatchView matchView;
     LanView lanView;
     SettingsView settingsView;
+    CreateMatchView createMatchView;
 
     // Atributos
     private String keyMatch;
+    private boolean showlanView;
+    private Thread serverThread;
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -52,6 +60,7 @@ public class MainWindow extends JFrame implements ActionListener {
         userModel = setNameAndFlag();
         menuView = new MenuView(userModel);
         lanView = new LanView(userModel);
+        serverControler = new ServerControler();
 
         // Listeners 
         this.menuView.addPvpButtonListener(this);
@@ -114,16 +123,20 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
             System.out.println("unirse a partida");
             JoinMatchView joinMatchView = new JoinMatchView();
-            ClientControler client = new ClientControler();
-            client.sendKey();
+            JoinMatchController joinMatch = new JoinMatchController(joinMatchView);
 
         } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
             System.out.println("crear partida");
-            keyMatch = generateKey();
-            CreateMatchControler createMatchControler = new CreateMatchControler(keyMatch);
+            initLanMatch(e);
 
         } else if (e.getActionCommand().equals("Crear reporte")) {
             System.out.println("boton de pdf");
+
+        } else if (e.getActionCommand().equals("CANCELAR")) {
+            System.out.println("boton de cancelar [CREAR PARTIDA]");
+            createMatchView.dispose();
+            serverControler.stopServer();
+            serverThread.interrupt();
         }
     }
 
@@ -177,6 +190,43 @@ public class MainWindow extends JFrame implements ActionListener {
         }
 
         return cells;
+    }
+
+    private void initLanMatch(ActionEvent e) {
+        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
+
+        createMatch();
+        if (showlanView) {
+            matchView = new MatchView(cellsRigth, cellsLeft);
+            matchController = new MatchController(matchView, cellsRigth, cellsLeft);  
+            this.matchView.addExitButtonListener(this);
+            changePanel(matchView);
+        }
+    }
+
+    private void createMatch() {
+        keyMatch = generateKey();  
+
+        // Ejecutar de manera paralela la vista y el servidor
+        serverControler = new ServerControler();
+        serverThread = new Thread(() -> {
+            boolean result = serverControler.compareKey(keyMatch);
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                if (result) {
+                    JOptionPane.showMessageDialog(null, "La clave coincide", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+                    createMatchView.dispose();
+                    serverControler.stopServer();
+                    serverThread.interrupt();
+                    showlanView = true;
+                } 
+            });
+        });
+        serverThread.start();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            createMatchView = new CreateMatchView(keyMatch);
+            createMatchView.addCancelButtonListener(this);
+        });
     }
 
     public static void main(String[] args) {
