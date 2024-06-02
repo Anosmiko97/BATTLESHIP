@@ -17,11 +17,11 @@ import models.AppProperties;
 
 public class CreateMatchView extends JDialog {
     AppProperties properties = new AppProperties();
-    private String key;
+    private String ip;
     private JButton cancelButton;
 
-    public CreateMatchView(String key) {
-        this.key = key;
+    public CreateMatchView(String ip) {
+        this.ip = ip;
         setTitle("Crear una partida");
         setBackground(properties.getBackgroundColor());
         setSize(400, 180);
@@ -60,7 +60,7 @@ public class CreateMatchView extends JDialog {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout(FlowLayout.CENTER));
         panel.setBackground(properties.getBackgroundColor());
-        JLabel keyLabel = new JLabel(key);
+        JLabel keyLabel = new JLabel(ip);
         keyLabel.setFont(new Font("Arial", Font.PLAIN, 25));
         keyLabel.setForeground(Color.WHITE);
         panel.add(keyLabel);

@@ -10,6 +10,12 @@ import javax.swing.SwingWorker;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Random;
 
 /* Clases propias */
@@ -27,28 +33,35 @@ import controlers.socket.ServerControler;
 import controlers.socket.ClientControler;
 
 public class MainWindow extends JFrame implements ActionListener {
-    AppProperties properties = new AppProperties();
+    private AppProperties properties = new AppProperties();
 
     // Modelos
-    User userModel;
-    UserDAO userDAO;
+    private User userModel;
+    private UserDAO userDAO;
 
     // Controladores
-    SettingsController settingsController;
-    MatchController matchController;
-    ServerControler serverControler;
+    private SettingsController settingsController;
+    private MatchController matchController;
+    private ServerControler serverControler;
 
     // Vistas
-    MenuView menuView;
-    MatchView matchView;
-    LanView lanView;
-    SettingsView settingsView;
-    CreateMatchView createMatchView;
+    private MenuView menuView;
+    private MatchView matchView;
+    private LanView lanView;
+    private SettingsView settingsView;
+    private CreateMatchView createMatchView;
 
     // Atributos
     private String keyMatch;
     private boolean showlanView;
     private Thread serverThread;
+
+    // Atributos para servidor
+    private boolean running;
+    private ServerSocket serverSocket;
+    private int port = properties.getPort();
+    private String wifiInter = properties.getWlan();
+    private String host = "localhost"; //properties.getWifiIp(wifiInter);
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -127,7 +140,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
             System.out.println("crear partida");
-            initLanMatch(e);
+            LanServer();
 
         } else if (e.getActionCommand().equals("Crear reporte")) {
             System.out.println("boton de pdf");
@@ -135,7 +148,7 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("CANCELAR")) {
             System.out.println("boton de cancelar [CREAR PARTIDA]");
             createMatchView.dispose();
-            serverControler.stopServer();
+            stopServer();
             serverThread.interrupt();
         }
     }
@@ -165,12 +178,6 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-    private String generateKey() {
-        Random random = new Random();
-        int num = 1000 + random.nextInt(9000);
-
-        return String.valueOf(num);
-    }
 
     private void initMatch() { 
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
@@ -192,41 +199,67 @@ public class MainWindow extends JFrame implements ActionListener {
         return cells;
     }
 
-    private void initLanMatch(ActionEvent e) {
-        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
-        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
-
-        createMatch();
-        if (showlanView) {
-            matchView = new MatchView(cellsRigth, cellsLeft);
-            matchController = new MatchController(matchView, cellsRigth, cellsLeft);  
-            this.matchView.addExitButtonListener(this);
-            changePanel(matchView);
-        }
-    }
-
-    private void createMatch() {
-        keyMatch = generateKey();  
-
-        // Ejecutar de manera paralela la vista y el servidor
-        serverControler = new ServerControler();
+    /* Parte de servidor */
+    public void LanServer() {
+        running = true;
+        
         serverThread = new Thread(() -> {
-            boolean result = serverControler.compareKey(keyMatch);
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                if (result) {
-                    JOptionPane.showMessageDialog(null, "La clave coincide", "Resultado", JOptionPane.INFORMATION_MESSAGE);
-                    createMatchView.dispose();
-                    serverControler.stopServer();
-                    serverThread.interrupt();
-                    showlanView = true;
-                } 
-            });
+            runServer();
         });
         serverThread.start();
         javax.swing.SwingUtilities.invokeLater(() -> {
-            createMatchView = new CreateMatchView(keyMatch);
+            createMatchView = new CreateMatchView(host);
             createMatchView.addCancelButtonListener(this);
         });
+
+    }
+
+    private void runServer() {
+        try {
+            serverSocket = new ServerSocket(port);
+            System.out.println("Servidor escuchando en el puerto " + port);
+            while (running) {
+                try (Socket clientSocket = serverSocket.accept();
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+                    ) {
+                        System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
+                        JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
+                        createMatchView.dispose();
+                        serverThread.interrupt();
+                        initMatch();
+                        changePanel(matchView);
+
+                        // Desplegar juego
+                         SwingUtilities.invokeLater(() -> {
+                            initMatch();
+                            
+                        });
+
+                        String inputLine;
+                        while ((inputLine = in.readLine()) != null) {
+                            System.out.println("Recibido: " + inputLine);
+                            out.println(inputLine);
+                        }
+                } catch (IOException e) {
+                    System.out.println("Error al manejar la conexión del cliente: " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error al iniciar el servidor: " + e.getMessage());
+        }
+    }
+
+    public void stopServer() {
+        running = false;
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+                System.out.println("Servidor detenido");
+            } catch (IOException e) {
+                System.out.println("Error al cerrar el servidor: " + e.getMessage());
+            }
+        }
     }
 
     public static void main(String[] args) {
