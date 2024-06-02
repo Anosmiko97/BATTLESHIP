@@ -211,7 +211,6 @@ public class MainWindow extends JFrame implements ActionListener {
             createMatchView = new CreateMatchView(host);
             createMatchView.addCancelButtonListener(this);
         });
-
     }
 
     private void runServer() {
@@ -225,22 +224,9 @@ public class MainWindow extends JFrame implements ActionListener {
                     ) {
                         System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
                         JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
-                        createMatchView.dispose();
-                        serverThread.interrupt();
-                        initMatch();
-                        changePanel(matchView);
+                        runLanMatch();
 
-                        // Desplegar juego
-                         SwingUtilities.invokeLater(() -> {
-                            initMatch();
-                            
-                        });
-
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null) {
-                            System.out.println("Recibido: " + inputLine);
-                            out.println(inputLine);
-                        }
+            
                 } catch (IOException e) {
                     System.out.println("Error al manejar la conexión del cliente: " + e.getMessage());
                 }
@@ -248,6 +234,18 @@ public class MainWindow extends JFrame implements ActionListener {
         } catch (IOException e) {
             System.out.println("Error al iniciar el servidor: " + e.getMessage());
         }
+    }
+
+    private void runLanMatch() {
+        createMatchView.dispose();
+        serverThread.interrupt();
+        initMatch();
+        changePanel(matchView);
+
+        // Desplegar juego
+        SwingUtilities.invokeLater(() -> {
+            initMatch();                    
+        });
     }
 
     public void stopServer() {
