@@ -133,7 +133,6 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
             isRunningServer();
-            closeConn = true;
             changePanel(menuView);
 
         } else if (e.getSource() == menuView.getSettingsButton()) {
@@ -267,9 +266,10 @@ public class MainWindow extends JFrame implements ActionListener {
                             // Verificar si se debe cerrar la conexión
                             if (closeConn) {
                                 sendResponse(out, "close");
+                                isConnected = false;
                                 break;
                             }
-                            isConnected = false;
+                            
                         }         
                 } catch (IOException e) {
                     isConnected = false;
@@ -300,6 +300,8 @@ public class MainWindow extends JFrame implements ActionListener {
     private void isRunningServer() {
         if (runningServer == true) {
             stopServer();
+        } else if (isConnected == true) {
+            closeConn = true;
         }
     }
 
