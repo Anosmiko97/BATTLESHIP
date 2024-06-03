@@ -267,6 +267,7 @@ public class MainWindow extends JFrame implements ActionListener {
                             if (closeConn) {
                                 sendResponse(out, "close");
                                 isConnected = false;
+                                stopServer();
                                 break;
                             }
                             
@@ -299,10 +300,12 @@ public class MainWindow extends JFrame implements ActionListener {
 
     private void isRunningServer() {
         if (runningServer == true) {
-            stopServer();
-        } else if (isConnected == true) {
-            closeConn = true;
-        }
+            if (isConnected == true) {
+                closeConn = true;
+            } else {
+                stopServer();
+            }
+        } 
     }
 
     private void stopServer() {
