@@ -43,18 +43,18 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) throws IOException {
+    public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         totalShips = 17;
         cellsShips = 0;
 
         if (this.mode.equals("server")) {
             System.out.println("modo servidor");
-            this.serverSocket = new ServerSocket();
+           // this.serverSocket = new ServerSocket();
             
 
         } else if (this.mode.equals("client")) {
-            this.clientSocket = new Socket();
+            //this.clientSocket = new Socket();
             System.out.println("modo cliente");
         }
 

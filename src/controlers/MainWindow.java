@@ -269,17 +269,12 @@ public class MainWindow extends JFrame implements ActionListener {
     
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            try {
-                initLanMatch("server");
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            changePanel(lanMatchView);                   
+            initLanMatch("server");                   
         });
+        changePanel(lanMatchView);   
     }
 
-    private void initLanMatch(String mode) throws IOException { 
+    private void initLanMatch(String mode) { 
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
@@ -374,14 +369,10 @@ public class MainWindow extends JFrame implements ActionListener {
         
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            try {
-                initLanMatch("client");
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            changePanel(lanMatchView);                   
+            
+            initLanMatch("client");                   
         });
+        changePanel(lanMatchView);
     }
 
     public static void main(String[] args) {
