@@ -43,8 +43,8 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
-        this.mode = mode;
+    public LanMatchController(/*String ipHost,*/ LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft /*String mode*/) {
+        //this.mode = mode;
         totalShips = 17;
         cellsShips = 0;
 
@@ -108,7 +108,7 @@ public class LanMatchController implements ActionListener {
     public void gameActions(int i, int j) {
         if (cellsShips >= 17) {
             System.out.println("A JUGAR");
-            sendBoats();
+           
 
         }
     }

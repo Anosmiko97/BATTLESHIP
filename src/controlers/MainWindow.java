@@ -6,10 +6,12 @@ import javax.swing.JPanel;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+
 import controlers.Lan.LanMatchController;
 import controlers.Local.MatchController;
 import controlers.Server.ClientControler;
 import controlers.Server.ServerControler;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,8 +72,6 @@ public class MainWindow extends JFrame implements ActionListener {
     private String host = AppProperties.getWifiIp(wifiInter);
     private Thread serverThread;
     private Thread clientThread;
-    private boolean isConnected = false;
-    private boolean closeConn = false;
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -133,7 +133,7 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
             isRunningServer();
-            closeConn = true;
+            isRunningClient();
             changePanel(menuView);
 
         } else if (e.getSource() == menuView.getSettingsButton()) {
@@ -209,7 +209,7 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
         lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
-        lanMatchController = new LanMatchController("192.168.1.101",lanMatchView, cellsRigth, cellsLeft, "server");
+        lanMatchController = new LanMatchController(lanMatchView, cellsRigth, cellsLeft);
         this.lanMatchView.addExitButtonListener(this); 
     }
 
@@ -254,25 +254,11 @@ public class MainWindow extends JFrame implements ActionListener {
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
                     ) {
-                        isConnected = true;
                         System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
                         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
-
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null) {
-                            System.out.println("Recibido del cliente: " + inputLine);
-                            out.println("Servidor: " + inputLine); // Enviar respuesta al cliente
-        
-                            // Verificar si se debe cerrar la conexión
-                            if (closeConn) {
-                                sendResponse(out, "close");
-                                break;
-                            }
-                            isConnected = false;
-                        }         
+            
                 } catch (IOException e) {
-                    isConnected = false;
                     e.printStackTrace();
                 }
             }
@@ -293,19 +279,14 @@ public class MainWindow extends JFrame implements ActionListener {
         });
     }
 
-    private void sendResponse(PrintWriter out, String message) {
-        out.println(message);
-    }
-
-    private void isRunningServer() {
+    public void isRunningServer() {
         if (runningServer == true) {
             stopServer();
         }
     }
 
-    private void stopServer() {
+    public void stopServer() {
         runningServer = false;
-
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
                 serverSocket.close();
@@ -383,12 +364,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 out.println(userInput);
                 String response = in.readLine();
                 System.out.println("Respuesta del servidor: " + response);
-                
-                if (response == "close") {
-                    JOptionPane.showMessageDialog(createMatchView, "El host abandono la partida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("CONEXION CON HOST CERRADA");
-                }
-            
             }
         } catch (UnknownHostException e) {
             System.err.println("No se puede encontrar el host: " + host);
