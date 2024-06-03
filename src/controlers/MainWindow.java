@@ -143,6 +143,7 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
             isRunningServer();
+            isRunningClient();
             changePanel(menuView);
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
@@ -372,31 +373,32 @@ public class MainWindow extends JFrame implements ActionListener {
     private void runClient() {
         runningClient = true;
         String host = joinMatchView.getKeyField().getText();
-        try {clientSocket = new Socket(host, port);
-             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+        while (runningClient) {
+            try {clientSocket = new Socket(host, port);
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
-            String userInput;
-            System.out.println("Introduce un texto (\"exit\" para salir): ");
-            while ((userInput = stdIn.readLine()) != null && !userInput.equalsIgnoreCase("exit")) {
-                out.println(userInput);
-                String response = in.readLine();
-                System.out.println("Respuesta del servidor: " + response);
-                
-                if (response == "close") {
-                    JOptionPane.showMessageDialog(createMatchView, "El host abandono la partida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("CONEXION CON HOST CERRADA");
+                String userInput;
+                System.out.println("Introduce un texto (\"exit\" para salir): ");
+                while ((userInput = stdIn.readLine()) != null && !userInput.equalsIgnoreCase("exit")) {
+                    out.println(userInput);
+                    String response = in.readLine();
+                    System.out.println("Respuesta del servidor: " + response);
+                    
+                    if (response == "close") {
+                        JOptionPane.showMessageDialog(createMatchView, "El host abandono la partida", "Status", JOptionPane.INFORMATION_MESSAGE);
+                        System.out.println("CONEXION CON HOST CERRADA");
+                    }    
                 }
-            
-            }
-        } catch (UnknownHostException e) {
-            System.err.println("No se puede encontrar el host: " + host);
-            JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } catch (UnknownHostException e) {
+                System.err.println("No se puede encontrar el host: " + host);
+                JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
 
-        } catch (IOException e) {
-            System.err.println("Error al comunicar con el host: " + host);
-            JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                System.err.println("Error al comunicar con el host: " + host);
+                JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
