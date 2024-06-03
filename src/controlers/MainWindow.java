@@ -271,7 +271,7 @@ public class MainWindow extends JFrame implements ActionListener {
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
             initLanMatch(); 
-            changePanel(matchView);                   
+            changePanel(lanMatchView);                   
         });
     }
 
@@ -370,7 +370,7 @@ public class MainWindow extends JFrame implements ActionListener {
     private void runLanMatchClient() {
         JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
         initLanMatch(); 
-        changePanel(matchView);                   
+        changePanel(lanMatchView);                   
     }
 
     public void isRunningClient() {
