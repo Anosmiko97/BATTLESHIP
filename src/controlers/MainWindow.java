@@ -270,8 +270,7 @@ public class MainWindow extends JFrame implements ActionListener {
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
             initLanMatch("server");                   
-        });
-        changePanel(lanMatchView);   
+        });  
     }
 
     private void initLanMatch(String mode) { 
@@ -284,7 +283,8 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (mode.equals("server")) {
             lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, "server");
         }
-        this.lanMatchView.addExitButtonListener(this);  
+        this.lanMatchView.addExitButtonListener(this);
+        changePanel(lanMatchView);   
     }
 
     private void isRunningServer(boolean message) {
