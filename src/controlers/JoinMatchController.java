@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import controlers.Server.ClientControler;
+
 /* Clases propias */
 import views.JoinMatchView;
 import models.AppProperties;
@@ -14,31 +16,40 @@ import models.User;
 public class JoinMatchController implements ActionListener {
     private AppProperties properties = new AppProperties();
     private JoinMatchView joinMatchView;
+    private ClientControler clientControler;
     private String key;
 
     public JoinMatchController(JoinMatchView joinMatchView) {
         this.joinMatchView = joinMatchView;
+        clientControler = new ClientControler("localhost");
         this.joinMatchView.addJoinButtonListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("APLICAR")) {
-            System.out.println("boton de aplicar");
+        if (e.getActionCommand().equals("UNIRSE")) {
+            System.out.println("boton de unirse a partida");
 
             if (checkFields()) {
-                key = joinMatchView.getKeyField().getText();
-                joinMatchView.dispose();
-
+                clientControler.setHostName(key);
+                sendData(e);
             } else {
                 JOptionPane.showMessageDialog(joinMatchView, "INGRESE UN NUMERO", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     } 
 
+    private void sendData(ActionEvent e) {
+        if (e.getActionCommand().equals("UNIRSE")) {
+            System.out.println("boton de unirse [UNIRSE PARTIDA]");
+            clientControler.connect();
+        }
+    }
+
     private boolean checkFields() {
         String keyStr = joinMatchView.getKeyField().getText();
-        return keyStr != null && isNumber(keyStr);
+        //return keyStr != null && isNumber(keyStr);
+        return true;
     }
 
     private boolean isNumber(String str) {

@@ -7,9 +7,9 @@ import java.net.*;
 import models.AppProperties;
 
 public class ClientControler {
-    String hostName;
     AppProperties properties = new AppProperties();
     int port = properties.getPort();
+    String hostName;
 
     public ClientControler(String host) {
         this.hostName = host;
@@ -36,5 +36,12 @@ public class ClientControler {
         }
     }
 
+    /* Getters y setters */
+    public String getHostName() {
+        return this.hostName;
+    }
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
 }
 

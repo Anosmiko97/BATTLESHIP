@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 /* Clases propias */
@@ -53,18 +54,22 @@ public class MainWindow extends JFrame implements ActionListener {
     private LanView lanView;
     private SettingsView settingsView;
     private CreateMatchView createMatchView;
+    private JoinMatchView joinMatchView;
 
     // Atributos
     private String keyMatch;
     private boolean showlanView;
-    private Thread serverThread;
 
-    // Atributos para servidor
-    private boolean running;
+    // Atributos para servidor y cliente
+    private boolean runningServer;
+    private boolean runningClient;
     private ServerSocket serverSocket;
+    private Socket clientSocket;
     private int port = properties.getPort();
     private String wifiInter = properties.getWlan();
     private String host = "localhost"; //properties.getWifiIp(wifiInter);
+    private Thread serverThread;
+    private Thread clientThread;
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -139,8 +144,8 @@ public class MainWindow extends JFrame implements ActionListener {
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
             System.out.println("unirse a partida");
-            JoinMatchView joinMatchView = new JoinMatchView();
-            JoinMatchController joinMatch = new JoinMatchController(joinMatchView);
+            joinMatchView = new JoinMatchView();
+            this.joinMatchView.addJoinButtonListener(this);
 
         } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
             System.out.println("crear partida");
@@ -154,6 +159,10 @@ public class MainWindow extends JFrame implements ActionListener {
             createMatchView.dispose();
             stopServer();
             serverThread.interrupt();
+
+        } else if (e.getActionCommand().equals("UNIRSE")) {
+            System.out.println("boton de unirse a partida");
+            LanClient(); 
         }
     }
 
@@ -205,8 +214,9 @@ public class MainWindow extends JFrame implements ActionListener {
 
     /* Parte de servidor */
     public void LanServer() {
-        running = true;
+        runningServer = true;
         
+        // Ejecutar servidor y vistas de manera paralela
         serverThread = new Thread(() -> {
             runServer();
         });
@@ -227,15 +237,14 @@ public class MainWindow extends JFrame implements ActionListener {
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Servidor escuchando en el puerto " + port);
-            while (running) {
+            while (runningServer) {
                 try (Socket clientSocket = serverSocket.accept();
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
                     ) {
                         System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
                         JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
-                        runLanMatch();
-
+                        runServerLanMatch();
             
                 } catch (IOException e) {
                     System.out.println("Error al manejar la conexión del cliente: " + e.getMessage());
@@ -246,7 +255,7 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-    private void runLanMatch() {
+    private void runServerLanMatch() {
         createMatchView.dispose();
         serverThread.interrupt();
 
@@ -258,13 +267,13 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     public void isRunningServer() {
-        if (running == true) {
+        if (runningServer == true) {
             stopServer();
         }
     }
 
-    public void stopServer() {
-        running = false;
+    public void stopClient() {
+        runningServer = false;
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
                 serverSocket.close();
@@ -274,6 +283,94 @@ public class MainWindow extends JFrame implements ActionListener {
             }
         }
     }
+
+    /* Parte de cliente */
+    public void LanClient() {
+        if (checkFields()) {
+            System.out.println("pasamos al cliente");
+            joinMatchView.dispose();
+
+            // Ejecutar cliente y vistas de manera paralela
+            clientThread = new Thread(() -> {
+                runClient();
+            });
+            clientThread.start();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                runLanMatchClient();
+                /*joinMatchView.addWindowCloseListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        stopServer();
+                    }
+                });*/
+            }); 
+        } else {
+            JOptionPane.showMessageDialog(joinMatchView, "INGRESE UN NUMERO", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    // CAMBIAR ESTO A IP, EL TRUE ES SOLO PA PRUEBAS
+    private boolean checkFields() {
+        String ip = joinMatchView.getKeyField().getText();
+        //return ip != null && isIp(ip); 
+        return true;
+    }
+
+    private boolean isIp(String ip) {
+        // Expresión regular para validar direcciones IPv4
+        String ipPattern = 
+            "^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\.){3}" +
+            "(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
+    
+        return ip.matches(ipPattern);
+    }
+    
+    private void runClient() {
+        runningClient = true;
+        String host = joinMatchView.getKeyField().getText();
+        try {clientSocket = new Socket(host, port);
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+
+            String userInput;
+            System.out.println("Introduce un texto (\"exit\" para salir): ");
+            while ((userInput = stdIn.readLine()) != null && !userInput.equalsIgnoreCase("exit")) {
+                out.println(userInput);
+                String response = in.readLine();
+                System.out.println("Respuesta del servidor: " + response);
+            }
+        } catch (UnknownHostException e) {
+            System.err.println("No se puede encontrar el host: " + host);
+        } catch (IOException e) {
+            System.err.println("Error al comunicar con el host: " + host);
+        }
+    }
+
+    private void runLanMatchClient() {
+        JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
+        initMatch(); 
+        changePanel(matchView);                   
+    }
+
+    public void isRunningClient() {
+        if (runningClient == true) {
+            stopServer();
+        }
+    }  
+
+    public void stopServer() {
+        runningClient = false;
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+                System.out.println("Servidor detenido");
+            } catch (IOException e) {
+                System.out.println("Error al cerrar el servidor: " + e.getMessage());
+            }
+        }
+    }
+
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
