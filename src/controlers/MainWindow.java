@@ -271,6 +271,7 @@ public class MainWindow extends JFrame implements ActionListener {
         SwingUtilities.invokeLater(() -> {
             initLanMatch("server");                   
         });  
+        changePanel(lanMatchView);
     }
 
     private void initLanMatch(String mode) { 
@@ -280,11 +281,13 @@ public class MainWindow extends JFrame implements ActionListener {
         lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
         if (mode.equals("client")) {
             lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, "client");
+            
         } else if (mode.equals("server")) {
             lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, "server");
+            
         }
         this.lanMatchView.addExitButtonListener(this);
-        changePanel(lanMatchView);   
+           
     }
 
     private void isRunningServer(boolean message) {
@@ -369,7 +372,6 @@ public class MainWindow extends JFrame implements ActionListener {
         
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            
             initLanMatch("client");                   
         });
         changePanel(lanMatchView);
