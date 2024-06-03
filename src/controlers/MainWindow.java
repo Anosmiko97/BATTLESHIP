@@ -247,13 +247,13 @@ public class MainWindow extends JFrame implements ActionListener {
     private void runServer() {
         try {
             serverSocket = new ServerSocket(port);
+            isConnected = true;
             System.out.println("Servidor escuchando en el puerto " + port);
             while (runningServer) {
                 try (Socket clientSocket = serverSocket.accept();
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
                     ) {
-                        isConnected = true;
                         System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
                         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
