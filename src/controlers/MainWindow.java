@@ -250,11 +250,12 @@ public class MainWindow extends JFrame implements ActionListener {
                         System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
                         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
-
+                        
+                        /* 
                         if (closeConn) {
                             sendResponse(out, "close");
                             break;
-                        }                   
+                        }  */                 
                 } catch (IOException e) {
                     isConnected = false;
                     e.printStackTrace();
