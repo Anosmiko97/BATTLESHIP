@@ -1,5 +1,6 @@
 package controlers.Lan;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.ServerSocket;
@@ -22,8 +23,10 @@ public class LanMatchController implements ActionListener {
         this.mode = mode;
         if (this.mode == "server") {
             this.serverSocket = serverSocket;
+            System.out.println("modo servidor");
         } else if (this.mode == "client") {
             this.clientSocket = clientSocket;
+            System.out.println("modo cliente");
         }
 
         this.matchView = matchView;
@@ -50,6 +53,7 @@ public class LanMatchController implements ActionListener {
                     return; 
                 } else if (e.getSource() == cellsLeft[i][j].getButton()) {
                     System.out.println("Barco en: [" + i + ", " + j + "]");
+                    cellsLeft[i][j].setCellColor(Color.decode("#343434"));
                     return; 
                 } 
             }

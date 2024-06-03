@@ -1,6 +1,9 @@
 package controlers.test;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import javax.swing.JFrame;
 
@@ -20,11 +23,11 @@ import models.User;
 public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         TestView t = new TestView();
     }
     
-    public TestView() {
+    public TestView() throws IOException {
         setBounds(500, 100, 900, 675);
         setResizable(true);
         getContentPane().setBackground(properties.getBackgroundColor());
@@ -33,9 +36,11 @@ public class TestView extends JFrame{
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
+        Socket client = new Socket();
+        ServerSocket server = new ServerSocket();
         User user = new User("Uriel");
         LanMatchView v = new LanMatchView(user,cellsRigth, cellsLeft);   
-        LanMatchController c = new LanMatchController(v, cellsRigth, cellsLeft);
+        LanMatchController c = new LanMatchController(server,client,v, cellsRigth, cellsLeft, "cliente");
 
         add(v);
 

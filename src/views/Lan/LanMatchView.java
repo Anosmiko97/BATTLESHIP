@@ -24,20 +24,25 @@ public class LanMatchView extends JPanel {
     // Botones
     JButton exitButton;
 
-    // Propierdades
+    // Atributos
     private Cell[][] cellsRigth;
     private Cell[][] cellsLeft;
+    private String message;
+    private JLabel messagePanel;
+    private JPanel headerPanel;
 
     public LanMatchView(User userModel, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
         setBackground(properties.getBackgroundColor());  
 
+        this.message = "COLOQUEN SUS BARCOS";
         this.userModel = userModel;
         this.userName = userModel.getName();
         this.cellsRigth = cells1;
         this.cellsLeft = cells2;
 
-        add(createHeaderPanel(), BorderLayout.NORTH);
+        headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
         add(createCenterPanel(), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
     }
@@ -90,21 +95,40 @@ public class LanMatchView extends JPanel {
     }
 
     private JPanel createHeaderPanel() {
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(properties.getHeaderColor());
-  
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(properties.getHeaderColor());
+
         JPanel userPanel = createInfoPanel(userName, "left");
         JPanel opponentPanel = createInfoPanel(opponentName, "rigth");
 
-        JLabel vsLabel = new JLabel("VS", JLabel.CENTER);
-        vsLabel.setFont(new Font("ARIAL", Font.BOLD, 50));
-        vsLabel.setForeground(Color.WHITE);
+        panel.add(userPanel, BorderLayout.WEST);
+        messagePanel = createMessagePanel();
+        panel.add(messagePanel, BorderLayout.CENTER);
+        panel.add(opponentPanel, BorderLayout.EAST);
 
-        headerPanel.add(userPanel, BorderLayout.WEST);
-        headerPanel.add(vsLabel, BorderLayout.CENTER);
-        headerPanel.add(opponentPanel, BorderLayout.EAST);
+        return panel;
+    }
 
-        return headerPanel;
+    public JLabel createMessagePanel() {
+        JLabel label = new JLabel(message, JLabel.CENTER);
+        if (message.length() > 5) {
+            label.setFont(new Font("ARIAL", Font.BOLD, 20));
+        } else {
+            label.setFont(new Font("ARIAL", Font.BOLD, 50));
+        }
+        label.setForeground(Color.WHITE);
+
+        return label;
+    }
+
+    public void refreshMessagePanel() {
+        remove(messagePanel);
+
+        messagePanel = createMessagePanel();
+        headerPanel.add(messagePanel, BorderLayout.CENTER);
+        
+        revalidate();
+        repaint();
     }
 
     /* Metodos para el centro el panel central */
@@ -175,6 +199,16 @@ public class LanMatchView extends JPanel {
         exitPanel.add(exitButton);
 
         return exitPanel;
+    }
+
+    public void refreshPanel() {
+        remove(headerPanel); 
+
+        headerPanel = createHeaderPanel(); 
+        add(headerPanel, BorderLayout.NORTH);
+
+        revalidate();
+        repaint();
     }
 
     /* Getters y setters */

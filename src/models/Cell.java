@@ -8,8 +8,9 @@ import java.awt.Font;
 
 public class Cell {
     AppProperties properties = new AppProperties();
-    private Color colorRed = Color.decode("#FF0000");;
-    private Color colorWhite = Color.decode("#FFFFFF");
+    //private Color colorRed = Color.decode("#FF0000");;
+    //private Color colorWhite = Color.decode("#FFFFFF");
+    //private Color colorShip = Color.decode("#343434");
     private Color cellColor;
     private int corX; 
     private int corY;
@@ -47,22 +48,8 @@ public class Cell {
     public void setCellColor(Color color) {
         this.cellColor = color;
         button.setBackground(cellColor);
-    }
-
-    public Color getColorRed() {
-        return colorRed;
-    }
-    public void setColorRed(Color colorRed) {
-        this.colorRed = colorRed;
-        button.setBackground(colorRed);
-    }
-
-    public Color getColorWhite() {
-        return colorWhite;
-    }
-    public void setColorWhite(Color colorWhite) {
-        this.colorWhite = colorWhite;
-        button.setBackground(colorWhite);
+        button.revalidate();
+        button.repaint();
     }
 
     public JButton getButton() {
