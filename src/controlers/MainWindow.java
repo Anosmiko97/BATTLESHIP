@@ -242,40 +242,54 @@ public class MainWindow extends JFrame implements ActionListener {
             serverSocket = new ServerSocket(port);
             System.out.println("Servidor escuchando en el puerto " + port);
             while (runningServer) {
-                try (Socket clientSocket = serverSocket.accept();
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
-                    ) {
-                        isConnected = true;
-                        System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
-                        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                        runServerLanMatch();
-                        
-                        /* 
-                        if (closeConn) {
-                            sendResponse(out, "close");
-                            break;
-                        }  */                 
-                } catch (IOException e) {
-                    isConnected = false;
-                    e.printStackTrace();
-                }
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
+                JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
+                isConnected = true;
+                runServerLanMatch(clientSocket);
             }
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(createMatchView, "Error al iniciar el servidor", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    private void runServerLanMatch() {
+    
+    private void runServerLanMatch(Socket clientSocket) {
         createMatchView.dispose();
         serverThread.interrupt();
-
+    
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            initLanMatch(); 
+            initLanMatch();
             changePanel(lanMatchView);                   
         });
+    
+        try (
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+        ) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println("Mensaje del cliente: " + inputLine);
+                // Aquí puedes procesar los mensajes recibidos y enviar respuestas
+                if (inputLine.equalsIgnoreCase("exit")) {
+                    sendResponse(out, "close");
+                    break;
+                } else {
+                    // Lógica para manejar otros mensajes
+                    sendResponse(out, "Mensaje recibido: " + inputLine);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            isConnected = false;
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void initLanMatch() { 

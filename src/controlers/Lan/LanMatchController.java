@@ -79,6 +79,7 @@ public class LanMatchController implements ActionListener {
     }
 
     public void gameActions(int i, int j) {
+        // Posicion barcos
         if (!isDiagonal(i, j)) {
             if (cellsShips <= 16) {
                 System.out.println("Barco colocado en: [" + i + ", " + j + "]");
