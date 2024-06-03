@@ -8,9 +8,6 @@ import java.awt.Font;
 
 public class Cell {
     AppProperties properties = new AppProperties();
-    //private Color colorRed = Color.decode("#FF0000");;
-    //private Color colorWhite = Color.decode("#FFFFFF");
-    //private Color colorShip = Color.decode("#343434");
     private Color cellColor;
     private int corX; 
     private int corY;
