@@ -8,20 +8,26 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import models.AppProperties;
 /* Clases propias */
 import models.Cell;
 import views.Lan.LanMatchView;
 
 public class LanMatchController implements ActionListener {
+    private AppProperties properties;
     private LanMatchView matchView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
 
     /* Atributos para conexion */
-    ServerSocket serverSocket;
-    Socket clientConn;
+    private ServerSocket serverSocket;
     Socket clientSocket;
     String mode;
+    private int port = properties.getPort();
+    private String wifiInter = properties.getWlan();
+    private String host = AppProperties.getWifiIp(wifiInter);
+    private Thread serverThread;
+    private Thread clientThread;
 
     /* Atributos de juego */
     private Color colorRed = Color.decode("#FF0000");
@@ -37,14 +43,18 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(ServerSocket serverSocket, Socket clientConn, Socket clientSocket, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
+    public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) throws IOException {
         this.mode = mode;
+        totalShips = 17;
+        cellsShips = 0;
+
         if (this.mode.equals("server")) {
-            this.serverSocket = serverSocket;
-            this.clientConn = clientConn;
             System.out.println("modo servidor");
+            this.serverSocket = new ServerSocket();
+            
+
         } else if (this.mode.equals("client")) {
-            this.clientSocket = clientSocket;
+            this.clientSocket = new Socket();
             System.out.println("modo cliente");
         }
 
@@ -144,13 +154,6 @@ public class LanMatchController implements ActionListener {
     }
     public ServerSocket getServerSocket() {
         return this.serverSocket;
-    }
-
-    public void setClientConn(Socket socket) {
-        this.clientConn = socket;
-    }
-    public Socket getClientConn() {
-        return this.clientConn;
     }
 
     public void setClientSocket(Socket clientSocket) {
