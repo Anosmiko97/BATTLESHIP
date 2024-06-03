@@ -132,6 +132,8 @@ public class MainWindow extends JFrame implements ActionListener {
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
+            isRunningServer();
+            isRunningClient();
             changePanel(menuView);
 
         } else if (e.getSource() == menuView.getSettingsButton()) {
@@ -158,7 +160,8 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("CANCELAR")) {
             System.out.println("boton de cancelar [CREAR PARTIDA]");
             createMatchView.dispose();
-            stopServer();
+            isRunningClient();
+            isRunningServer();
             serverThread.interrupt();
 
         } else if (e.getActionCommand().equals("UNIRSE")) {
@@ -257,7 +260,6 @@ public class MainWindow extends JFrame implements ActionListener {
             
                 } catch (IOException e) {
                     e.printStackTrace();
-                    JOptionPane.showMessageDialog(createMatchView, "Error al manejar la conexion a cliente", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (IOException e) {
