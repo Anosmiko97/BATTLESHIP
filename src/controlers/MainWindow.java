@@ -261,7 +261,7 @@ public class MainWindow extends JFrame implements ActionListener {
                         String inputLine;
                         while ((inputLine = in.readLine()) != null) {
                             System.out.println("Recibido del cliente: " + inputLine);
-                            out.println("Servidor: " + inputLine); // Enviar respuesta al cliente
+                            //out.println("Servidor: " + inputLine); // Enviar respuesta al cliente
         
                             // Verificar si se debe cerrar la conexión
                             if (closeConn) {
