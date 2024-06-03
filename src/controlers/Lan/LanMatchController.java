@@ -44,7 +44,7 @@ public class LanMatchController implements ActionListener {
     private int destroyer = 2;
 
     public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
-        //this.mode = mode;
+        this.mode = mode;
         totalShips = 17;
         cellsShips = 0;
 
