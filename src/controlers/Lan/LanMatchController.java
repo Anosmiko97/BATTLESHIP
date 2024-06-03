@@ -20,11 +20,11 @@ public class LanMatchController implements ActionListener {
 
     public LanMatchController(ServerSocket serverSocket, Socket clientSocket, LanMatchView matchView, Cell[][] cellsRigth, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
-        //if (this.mode == "server") {
+        if (this.mode == "server") {
             this.serverSocket = serverSocket;
-        //} else if (this.mode == "client") {
+        } else if (this.mode == "client") {
             this.clientSocket = clientSocket;
-        //}
+        }
 
         this.matchView = matchView;
         this.cellsRigth = cellsRigth;

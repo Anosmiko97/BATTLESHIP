@@ -283,11 +283,11 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
         lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
-        //if (runningServer) {
-           // lanMatchController = new LanMatchController(serverSocket, clientSocket,lanMatchView, cellsRigth, cellsLeft, "server");
-       // } else if (runningClient) {
+        if (runningClient) {
             lanMatchController = new LanMatchController(serverSocket, clientSocket,lanMatchView, cellsRigth, cellsLeft, "client");
-        //}
+        } else {
+            lanMatchController = new LanMatchController(serverSocket, clientSocket,lanMatchView, cellsRigth, cellsLeft, "server");
+        }
         this.lanMatchView.addExitButtonListener(this); 
     }
 
