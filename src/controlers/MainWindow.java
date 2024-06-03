@@ -56,10 +56,6 @@ public class MainWindow extends JFrame implements ActionListener {
     private CreateMatchView createMatchView;
     private JoinMatchView joinMatchView;
 
-    // Atributos
-    private String keyMatch;
-    private boolean showlanView;
-
     // Atributos para servidor y cliente
     private boolean runningServer;
     private boolean runningClient;
@@ -67,7 +63,7 @@ public class MainWindow extends JFrame implements ActionListener {
     private Socket clientSocket;
     private int port = properties.getPort();
     private String wifiInter = properties.getWlan();
-    private String host = "localhost"; //properties.getWifiIp(wifiInter);
+    private String host = AppProperties.getWifiIp(wifiInter);
     private Thread serverThread;
     private Thread clientThread;
 
@@ -284,6 +280,18 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
+    public void stopServer() {
+        runningClient = false;
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+                System.out.println("Servidor detenido");
+            } catch (IOException e) {
+                System.out.println("Error al cerrar el servidor: " + e.getMessage());
+            }
+        }
+    }
+
     /* Parte de cliente */
     public void LanClient() {
         if (checkFields()) {
@@ -312,8 +320,7 @@ public class MainWindow extends JFrame implements ActionListener {
     // CAMBIAR ESTO A IP, EL TRUE ES SOLO PA PRUEBAS
     private boolean checkFields() {
         String ip = joinMatchView.getKeyField().getText();
-        //return ip != null && isIp(ip); 
-        return true;
+        return ip != null && isIp(ip); 
     }
 
     private boolean isIp(String ip) {
@@ -358,19 +365,6 @@ public class MainWindow extends JFrame implements ActionListener {
             stopServer();
         }
     }  
-
-    public void stopServer() {
-        runningClient = false;
-        if (serverSocket != null && !serverSocket.isClosed()) {
-            try {
-                serverSocket.close();
-                System.out.println("Servidor detenido");
-            } catch (IOException e) {
-                System.out.println("Error al cerrar el servidor: " + e.getMessage());
-            }
-        }
-    }
-
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
