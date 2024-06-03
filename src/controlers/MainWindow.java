@@ -81,7 +81,6 @@ public class MainWindow extends JFrame implements ActionListener {
         userModel = setNameAndFlag();
         menuView = new MenuView(userModel);
         lanView = new LanView(userModel);
-        serverControler = new ServerControler();
 
         // Listeners 
         this.menuView.addPvpButtonListener(this);
@@ -167,7 +166,7 @@ public class MainWindow extends JFrame implements ActionListener {
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
-            } 
+            }
         }
     }
 
@@ -244,7 +243,9 @@ public class MainWindow extends JFrame implements ActionListener {
             while (runningServer) {
                 Socket clientConn = serverSocket.accept(); // Acepta la conexión entrante
                 System.out.println("Usuario conectado: " + clientConn.getRemoteSocketAddress());
-    
+                JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
+                runServerLanMatch();
+
                 // Enviar la dirección IP del servidor al cliente
                 try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true)) {
                     String serverIP = clientConn.getLocalAddress().getHostAddress();
@@ -254,9 +255,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 } catch (IOException e) {
                     System.err.println("Error al enviar la dirección IP del servidor al cliente: " + e.getMessage());
                 }
-    
-                JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                runServerLanMatch();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -269,9 +267,9 @@ public class MainWindow extends JFrame implements ActionListener {
     
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            initLanMatch("server");                   
+            initLanMatch("server"); 
+            changePanel(lanMatchView);                  
         });  
-        changePanel(lanMatchView);
     }
 
     private void initLanMatch(String mode) { 
@@ -366,14 +364,8 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     public void runLanMatchClient() {
-        joinMatchView.dispose();
-        clientThread.interrupt();
         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida con el host", "Estado", JOptionPane.INFORMATION_MESSAGE);
-        
-        // Desplegar juego
-        SwingUtilities.invokeLater(() -> {
-            initLanMatch("client");                   
-        });
+        initLanMatch("client");
         changePanel(lanMatchView);
     }
 
