@@ -2,6 +2,9 @@ package controlers.Lan;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import models.Cell;
 import views.Lan.LanMatchView;
 
@@ -10,7 +13,19 @@ public class LanMatchController implements ActionListener {
     private Cell[][] cellsRigth;
     private Cell[][] cellsLeft;
 
-    public LanMatchController(LanMatchView matchView, Cell[][] cellsRigth, Cell[][] cellsLeft) {
+    /* Atributos para conexion */
+    ServerSocket serverSocket;
+    Socket clientSocket;
+    String mode;
+
+    public LanMatchController(ServerSocket serverSocket, Socket clientSocket, LanMatchView matchView, Cell[][] cellsRigth, Cell[][] cellsLeft, String mode) {
+        this.mode = mode;
+        if (this.mode == "server") {
+            this.serverSocket = serverSocket;
+        } else if (this.mode == "client") {
+            this.clientSocket = clientSocket;
+        }
+        
         this.matchView = matchView;
         this.cellsRigth = cellsRigth;
         this.cellsLeft = cellsLeft;
@@ -39,5 +54,19 @@ public class LanMatchController implements ActionListener {
                 } 
             }
         }
+    }
+
+    /* Getters y setters */
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+    public ServerSocket getServerSocket() {
+        return this.serverSocket;
+    }
+    public void setClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+    public Socket getClientSocket() {
+        return this.clientSocket;
     }
 }

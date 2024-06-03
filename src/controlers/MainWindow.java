@@ -205,15 +205,6 @@ public class MainWindow extends JFrame implements ActionListener {
         this.matchView.addExitButtonListener(this); 
     }
 
-    private void initLanMatch() { 
-        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
-        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
-
-        lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
-        lanMatchController = new LanMatchController(lanMatchView, cellsRigth, cellsLeft);
-        this.lanMatchView.addExitButtonListener(this); 
-    }
-
     private Cell[][] initCells(Color color) {
         Cell[][] cells = new Cell[11][11];
         for (int i = 0; i < cells.length; i++) {
@@ -260,18 +251,10 @@ public class MainWindow extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
 
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null) {
-                            System.out.println("Recibido del cliente: " + inputLine);
-                            out.println("Servidor: " + inputLine); // Enviar respuesta al cliente
-        
-                            // Verificar si se debe cerrar la conexión
-                            if (closeConn) {
-                                sendResponse(out, "close");
-                                break;
-                            }
-                            isConnected = false;
-                        }         
+                        if (closeConn) {
+                            sendResponse(out, "close");
+                            break;
+                        }                   
                 } catch (IOException e) {
                     isConnected = false;
                     e.printStackTrace();
@@ -292,6 +275,19 @@ public class MainWindow extends JFrame implements ActionListener {
             initLanMatch(); 
             changePanel(lanMatchView);                   
         });
+    }
+
+    private void initLanMatch() { 
+        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
+
+        lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
+        if (runningServer) {
+            lanMatchController = new LanMatchController(serverSocket, clientSocket,lanMatchView, cellsRigth, cellsLeft, "server");
+        } else if (runningClient) {
+            lanMatchController = new LanMatchController(serverSocket, clientSocket,lanMatchView, cellsRigth, cellsLeft, "client");
+        }
+        this.lanMatchView.addExitButtonListener(this); 
     }
 
     private void sendResponse(PrintWriter out, String message) {
@@ -374,7 +370,8 @@ public class MainWindow extends JFrame implements ActionListener {
         runningClient = true;
         String host = joinMatchView.getKeyField().getText();
         while (runningClient) {
-            try {clientSocket = new Socket(host, port);
+            try {
+                clientSocket = new Socket(host, port);
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
