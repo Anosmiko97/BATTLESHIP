@@ -258,20 +258,6 @@ public class MainWindow extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
 
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null) {
-                            System.out.println("Recibido del cliente: " + inputLine);
-                            //out.println("Servidor: " + inputLine); // Enviar respuesta al cliente
-        
-                            // Verificar si se debe cerrar la conexión
-                            if (closeConn) {
-                                sendResponse(out, "close");
-                                isConnected = false;
-                                stopServer();
-                                break;
-                            }
-                            
-                        }         
                 } catch (IOException e) {
                     isConnected = false;
                     e.printStackTrace();
@@ -300,11 +286,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
     private void isRunningServer() {
         if (runningServer == true) {
-            if (isConnected == true) {
-                closeConn = true;
-            } else {
-                stopServer();
-            }
+            stopServer();
         } 
     }
 
@@ -389,10 +371,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 String response = in.readLine();
                 System.out.println("Respuesta del servidor: " + response);
                 
-                if (response == "close") {
-                    JOptionPane.showMessageDialog(createMatchView, "El host abandono la partida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("CONEXION CON HOST CERRADA");
-                }
             
             }
         } catch (UnknownHostException e) {
@@ -402,6 +380,7 @@ public class MainWindow extends JFrame implements ActionListener {
         } catch (IOException e) {
             System.err.println("Error al comunicar con el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+            changePanel(menuView);
         }
     }
 
