@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import controlers.Lan.LanMatchController;
+import controlers.Local.MatchController;
 import controlers.Server.ClientControler;
 import controlers.Server.ServerControler;
 
@@ -31,10 +33,12 @@ import models.User;
 import models.UserDAO;
 import views.MenuView;
 import views.SettingsView;
-import views.MatchView;
-import views.LanView;
-import views.CreateMatchView;
-import views.JoinMatchView;
+import views.Lan.CreateMatchView;
+import views.Lan.JoinMatchView;
+import views.Lan.LanMatchView;
+import views.Lan.LanView;
+import views.Local.MatchView;
+import views.Lan.LanMatchView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -45,11 +49,13 @@ public class MainWindow extends JFrame implements ActionListener {
 
     // Controladores
     private SettingsController settingsController;
-    private MatchController matchController;
+    private LanMatchController lanMatchController;
     private ServerControler serverControler;
+    private MatchController matchController;
 
     // Vistas
     private MenuView menuView;
+    private LanMatchView lanMatchView;
     private MatchView matchView;
     private LanView lanView;
     private SettingsView settingsView;
@@ -122,7 +128,6 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getSource() == menuView.getPvpButton()) {
             System.out.println("lan button");
-            //initMatch();
             changePanel(lanView);
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
@@ -187,14 +192,22 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-
     private void initMatch() { 
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        matchView = new MatchView(cellsRigth, cellsLeft);   
+        matchView = new MatchView(userModel, cellsRigth, cellsLeft);   
         matchController = new MatchController(matchView, cellsRigth, cellsLeft);
         this.matchView.addExitButtonListener(this); 
+    }
+
+    private void initLanMatch() { 
+        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
+
+        lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
+        lanMatchController = new LanMatchController(lanMatchView, cellsRigth, cellsLeft);
+        this.lanMatchView.addExitButtonListener(this); 
     }
 
     private Cell[][] initCells(Color color) {
@@ -257,7 +270,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            initMatch(); 
+            initLanMatch(); 
             changePanel(matchView);                   
         });
     }
@@ -356,7 +369,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
     private void runLanMatchClient() {
         JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
-        initMatch(); 
+        initLanMatch(); 
         changePanel(matchView);                   
     }
 

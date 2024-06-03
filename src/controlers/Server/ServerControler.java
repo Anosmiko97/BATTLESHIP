@@ -5,7 +5,7 @@ import java.net.*;
 
 /* Clases propias */
 import models.AppProperties;
-import views.CreateMatchView;
+import views.Lan.CreateMatchView;
 
 public class ServerControler {
     private ServerSocket serverSocket;

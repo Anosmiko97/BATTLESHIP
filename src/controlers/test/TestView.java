@@ -4,42 +4,45 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
+import controlers.Lan.LanMatchController;
 /* Clases propias */
 import views.SettingsView;
-import views.JoinMatchView;
-import views.LanView;
+import views.Lan.CreateMatchView;
+import views.Lan.JoinMatchView;
+import views.Lan.LanView;
 import models.UserDAO;
-import views.CreateMatchView;
-import views.MatchView;
+import views.Lan.LanMatchView;
 import views.MenuView;
 import models.AppProperties;
 import models.Cell;
-import controlers.MatchController;
+import models.User;
 
 public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
-    /* 
+
+    public static void main(String[] args) {
+        TestView t = new TestView();
+    }
+    
     public TestView() {
         setBounds(500, 100, 900, 675);
         setResizable(true);
         getContentPane().setBackground(properties.getBackgroundColor());
         setTitle("battleship");
 
-        //Cell[][] cellsRigth = initCells();
-        //Cell[][] cellsLeft = initCells();
+        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-       // MatchView v = new MatchView(cellsRigth, cellsLeft);   
-        //MatchController c = new MatchController(v, cellsRigth, cellsLeft);
+        User user = new User("Uriel");
+        LanMatchView v = new LanMatchView(user,cellsRigth, cellsLeft);   
+        LanMatchController c = new LanMatchController(v, cellsRigth, cellsLeft);
 
         add(v);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         repaint();
-    } */
-    public static void main(String[] args) {
-        CreateMatchView c = new CreateMatchView("1232");
-    }
+    } 
 
     public Cell[][] initCells(Color color) {
         Cell[][] cells = new Cell[11][11];
@@ -51,4 +54,6 @@ public class TestView extends JFrame{
 
         return cells;
     }
+
+   
 }

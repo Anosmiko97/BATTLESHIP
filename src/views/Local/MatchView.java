@@ -1,4 +1,4 @@
-package views;
+package views.Local;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -9,12 +9,16 @@ import javax.swing.border.EmptyBorder;
 /* Clases propias */
 import models.AppProperties;
 import models.Cell;
+import models.UserDAO;
+import models.User;
 
 public class MatchView extends JPanel {
     AppProperties properties = new AppProperties();
+    UserDAO userDAO = new UserDAO();
+    User userModel;
 
     // Texto del panel
-    private String userName = "Uriel";
+    private String userName; 
     private String opponentName = "Ale";
 
     // Botones
@@ -24,10 +28,12 @@ public class MatchView extends JPanel {
     private Cell[][] cellsRigth;
     private Cell[][] cellsLeft;
 
-    public MatchView(Cell[][] cells1, Cell[][] cells2) {
+    public MatchView(User userModel, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
         setBackground(properties.getBackgroundColor());  
 
+        this.userModel = userModel;
+        this.userName = userModel.getName();
         this.cellsRigth = cells1;
         this.cellsLeft = cells2;
 
