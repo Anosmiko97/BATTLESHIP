@@ -252,15 +252,17 @@ public class MainWindow extends JFrame implements ActionListener {
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
                     ) {
                         System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
-                        JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
             
                 } catch (IOException e) {
-                    System.out.println("Error al manejar la conexión del cliente: " + e.getMessage());
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(createMatchView, "Error al manejar la conexion a cliente", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error al iniciar el servidor: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(createMatchView, "Error al iniciar el servidor", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -281,21 +283,22 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-    public void stopClient() {
+    public void stopServer() {
         runningServer = false;
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
                 serverSocket.close();
                 System.out.println("Servidor detenido");
+                JOptionPane.showMessageDialog(createMatchView, "Servidor detenido", "ERROR", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 System.out.println("Error al cerrar el servidor: " + e.getMessage());
             }
         }
     }
 
-    public void stopServer() {
+    public void stopClient() {
         runningClient = false;
-        if (serverSocket != null && !serverSocket.isClosed()) {
+        if (clientSocket != null && !clientSocket.isClosed()) {
             try {
                 serverSocket.close();
                 System.out.println("Servidor detenido");
@@ -362,13 +365,16 @@ public class MainWindow extends JFrame implements ActionListener {
             }
         } catch (UnknownHostException e) {
             System.err.println("No se puede encontrar el host: " + host);
+            JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+
         } catch (IOException e) {
             System.err.println("Error al comunicar con el host: " + host);
+            JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void runLanMatchClient() {
-        JOptionPane.showMessageDialog(createMatchView, "CONECCION ESTABLECIDA", "Status", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida con el host", "Estado", JOptionPane.INFORMATION_MESSAGE);
         initLanMatch(); 
         changePanel(lanMatchView);                   
     }
