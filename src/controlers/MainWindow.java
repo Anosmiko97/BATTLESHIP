@@ -132,6 +132,13 @@ public class MainWindow extends JFrame implements ActionListener {
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
+            if (runningServer) {
+                try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                    sendResponse(out, "EXIT_MATCH");
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
             isRunningServer();
             changePanel(menuView);
 
@@ -258,6 +265,12 @@ public class MainWindow extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                         runServerLanMatch();
 
+                        String inputLine;
+                        while ((inputLine = in.readLine()) != null) {
+                            System.out.println("Mensaje recibido del cliente: " + inputLine);
+                            // Puedes manejar mensajes específicos aquí
+                        }
+
                 } catch (IOException e) {
                     isConnected = false;
                     e.printStackTrace();
@@ -359,30 +372,37 @@ public class MainWindow extends JFrame implements ActionListener {
     private void runClient() {
         runningClient = true;
         String host = joinMatchView.getKeyField().getText();
-        try {clientSocket = new Socket(host, port);
+        try (Socket clientSocket = new Socket(host, port);
              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-
+             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
+    
             String userInput;
             System.out.println("Introduce un texto (\"exit\" para salir): ");
             while ((userInput = stdIn.readLine()) != null && !userInput.equalsIgnoreCase("exit")) {
                 out.println(userInput);
                 String response = in.readLine();
                 System.out.println("Respuesta del servidor: " + response);
-                
-            
+    
+                // Si el servidor envía "EXIT_MATCH", cambia al menú
+                if ("EXIT_MATCH".equals(response)) {
+                    SwingUtilities.invokeLater(() -> {
+                        changePanel(menuView);
+                    });
+                    break;
+                }
             }
         } catch (UnknownHostException e) {
             System.err.println("No se puede encontrar el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
-
+    
         } catch (IOException e) {
             System.err.println("Error al comunicar con el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
             changePanel(menuView);
         }
     }
+    
 
     private void runLanMatchClient() {
         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida con el host", "Estado", JOptionPane.INFORMATION_MESSAGE);
