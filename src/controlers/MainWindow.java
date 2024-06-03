@@ -218,7 +218,6 @@ public class MainWindow extends JFrame implements ActionListener {
 
     /* Parte de servidor */
     public void LanServer() {
-        runningServer = true;
         
         // Ejecutar servidor y vistas de manera paralela
         serverThread = new Thread(() -> {
@@ -238,6 +237,7 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     private void runServer() {
+        runningServer = true;
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Servidor escuchando en el puerto " + port);
