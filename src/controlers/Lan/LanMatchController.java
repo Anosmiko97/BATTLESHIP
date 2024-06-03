@@ -19,6 +19,7 @@ public class LanMatchController implements ActionListener {
 
     /* Atributos para conexion */
     ServerSocket serverSocket;
+    Socket clientConn;
     Socket clientSocket;
     String mode;
 
@@ -36,10 +37,11 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(ServerSocket serverSocket, Socket clientSocket, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
+    public LanMatchController(ServerSocket serverSocket, Socket clientConn, Socket clientSocket, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         if (this.mode.equals("server")) {
             this.serverSocket = serverSocket;
+            this.clientConn = clientConn;
             System.out.println("modo servidor");
         } else if (this.mode.equals("client")) {
             this.clientSocket = clientSocket;
@@ -143,6 +145,14 @@ public class LanMatchController implements ActionListener {
     public ServerSocket getServerSocket() {
         return this.serverSocket;
     }
+
+    public void setClientConn(Socket socket) {
+        this.clientConn = socket;
+    }
+    public Socket getClientConn() {
+        return this.clientConn;
+    }
+
     public void setClientSocket(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
