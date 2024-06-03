@@ -14,7 +14,7 @@ import models.Cell;
 import views.Lan.LanMatchView;
 
 public class LanMatchController implements ActionListener {
-    private AppProperties properties;
+    private AppProperties properties = new  AppProperties();
     private LanMatchView matchView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
@@ -43,7 +43,7 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(/*String ipHost,*/ LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft /*String mode*/) {
+    public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         //this.mode = mode;
         totalShips = 17;
         cellsShips = 0;
