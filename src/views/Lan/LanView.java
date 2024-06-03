@@ -116,13 +116,18 @@ public class LanView extends JPanel {
         panel.setLayout(new BorderLayout());
 
         // Imagenes de los lados
-        ImageIcon warshipImage = new ImageIcon("./media/images/warship.png");
-        Image scaledImage = warshipImage.getImage().getScaledInstance(160, 160, Image.SCALE_SMOOTH);
-        ImageIcon warshipIcon = new ImageIcon(scaledImage);
-        JLabel imgLabel = new JLabel(warshipIcon);
-        JLabel imgLabel1 = new JLabel(warshipIcon);
-        imgLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        imgLabel1.setBorder(new EmptyBorder(20, 20, 20, 20));
+        ImageIcon warshipImageRigth = new ImageIcon("./media/images/warshipLan.png");
+        ImageIcon warshipImageLeft = new ImageIcon("./media/images/warshipLan1.png");
+        Image scaledImageRigth = warshipImageRigth.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        Image scaledImageLeft = warshipImageLeft.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        ImageIcon warshipIconRigth = new ImageIcon(scaledImageRigth);
+        ImageIcon warshipIconLeft = new ImageIcon(scaledImageLeft);
+        JLabel imgLabel = new JLabel(warshipIconRigth);
+        JLabel imgLabel1 = new JLabel(warshipIconLeft);
+        imgLabel.setOpaque(false);
+        imgLabel1.setOpaque(false);
+        imgLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        imgLabel1.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Agregar al panel los elementos
         panel.add(titleLabel, BorderLayout.NORTH);
