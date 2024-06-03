@@ -3,13 +3,12 @@ package controlers;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+
 import controlers.Lan.LanMatchController;
 import controlers.Local.MatchController;
-import controlers.Server.ClientControler;
 import controlers.Server.ServerControler;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +21,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Random;
 
 /* Clases propias */
 import models.AppProperties;
@@ -36,7 +34,6 @@ import views.Lan.JoinMatchView;
 import views.Lan.LanMatchView;
 import views.Lan.LanView;
 import views.Local.MatchView;
-import views.Lan.LanMatchView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -71,7 +68,6 @@ public class MainWindow extends JFrame implements ActionListener {
     private Thread serverThread;
     private Thread clientThread;
     private boolean isConnected = false;
-    private boolean closeConn = false;
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -117,55 +113,66 @@ public class MainWindow extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Salir")) {
-            System.out.println("Boton de salir [menu]");
-            dispose();
+        switch (e.getActionCommand()) {
+            case "Salir":
+                System.out.println("Boton de salir [menu]");
+                dispose();
+                break;
 
-        } else if (e.getSource() == menuView.getPveButton()) {
-            System.out.println("BOT button");
-            initMatch();
-            changePanel(matchView);
+            case "Regresar":
+                System.out.println("Regresar al menu [desde lan]");
+                stopServer();
+                changePanel(menuView);
+                break;
 
-        } else if (e.getSource() == menuView.getPvpButton()) {
-            System.out.println("lan button");
-            changePanel(lanView);
-        
-        } else if (e.getActionCommand().equals("Salir de la partida")) {
-            System.out.println("Boton de salir [match]");
-            isRunningServer();
-            changePanel(menuView);
+            case "UNIRSE A PARTIDA":
+                System.out.println("unirse a partida");
+                joinMatchView = new JoinMatchView();
+                this.joinMatchView.addJoinButtonListener(this);
+                break;
 
-        } else if (e.getSource() == menuView.getSettingsButton()) {
-            System.out.println("Boton de settings");
-            saveNewUser();
+            case "CREAR PARTIDA":
+                System.out.println("crear partida");
+                LanServer();
+                break;
 
-        } else if (e.getActionCommand().equals("Regresar")) {
-            System.out.println("Regresar al menu [desde lan]");
-            isRunningServer();
-            changePanel(menuView);
-        
-        } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
-            System.out.println("unirse a partida");
-            joinMatchView = new JoinMatchView();
-            this.joinMatchView.addJoinButtonListener(this);
+            case "Crear reporte":
+                System.out.println("boton de pdf");
+                break;
 
-        } else if (e.getActionCommand().equals("CREAR PARTIDA")) {
-            System.out.println("crear partida");
-            LanServer();
+            case "CANCELAR":
+                System.out.println("boton de cancelar [CREAR PARTIDA]");
+                if (createMatchView != null) {
+                    createMatchView.dispose();
+                }
+                stopServer();
+                stopClient();
+                break;
 
-        } else if (e.getActionCommand().equals("Crear reporte")) {
-            System.out.println("boton de pdf");
+            case "UNIRSE":
+                System.out.println("boton de unirse a partida");
+                LanClient();
+                break;
 
-        } else if (e.getActionCommand().equals("CANCELAR")) {
-            System.out.println("boton de cancelar [CREAR PARTIDA]");
-            createMatchView.dispose();
-            isRunningClient();
-            isRunningServer();
-            serverThread.interrupt();
+            case "Salir de la partida":
+                System.out.println("Boton de salir [match]");
+                stopServer();
+                changePanel(menuView);
+                break;
 
-        } else if (e.getActionCommand().equals("UNIRSE")) {
-            System.out.println("boton de unirse a partida");
-            LanClient(); 
+            default:
+                if (e.getSource() == menuView.getPveButton()) {
+                    System.out.println("BOT button");
+                    initMatch();
+                    changePanel(matchView);
+                } else if (e.getSource() == menuView.getPvpButton()) {
+                    System.out.println("lan button");
+                    changePanel(lanView);
+                } else if (e.getSource() == menuView.getSettingsButton()) {
+                    System.out.println("Boton de settings");
+                    saveNewUser();
+                }
+                break;
         }
     }
 
@@ -195,20 +202,20 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     private void initMatch() { 
-        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsRight = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        matchView = new MatchView(userModel, cellsRigth, cellsLeft);   
-        matchController = new MatchController(matchView, cellsRigth, cellsLeft);
+        matchView = new MatchView(userModel, cellsRight, cellsLeft);   
+        matchController = new MatchController(matchView, cellsRight, cellsLeft);
         this.matchView.addExitButtonListener(this); 
     }
 
     private void initLanMatch() { 
-        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsRight = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
-        lanMatchController = new LanMatchController(lanMatchView, cellsRigth, cellsLeft);
+        lanMatchView = new LanMatchView(userModel, cellsRight, cellsLeft);   
+        lanMatchController = new LanMatchController(lanMatchView, cellsRight, cellsLeft);
         this.lanMatchView.addExitButtonListener(this); 
     }
 
@@ -219,7 +226,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 cells[i][j] = new Cell(color);
             }
         }
-
         return cells;
     }
 
@@ -228,11 +234,9 @@ public class MainWindow extends JFrame implements ActionListener {
         runningServer = true;
         
         // Ejecutar servidor y vistas de manera paralela
-        serverThread = new Thread(() -> {
-            runServer();
-        });
+        serverThread = new Thread(() -> runServer());
         serverThread.start();
-        javax.swing.SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
             createMatchView = new CreateMatchView(host);
             createMatchView.addCancelButtonListener(this);
             createMatchView.addWindowCloseListener(new WindowAdapter() {
@@ -253,10 +257,10 @@ public class MainWindow extends JFrame implements ActionListener {
                 try (Socket clientSocket = serverSocket.accept();
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
-                    ) {
-                        System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
-                        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                        runServerLanMatch();
+                ) {
+                    System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
+                    JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
+                    runServerLanMatch();
 
                 } catch (IOException e) {
                     isConnected = false;
@@ -271,11 +275,13 @@ public class MainWindow extends JFrame implements ActionListener {
 
     private void runServerLanMatch() {
         createMatchView.dispose();
-        serverThread.interrupt();
+        if (serverThread != null && !serverThread.isInterrupted()) {
+            serverThread.interrupt();
+        }
 
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            initLanMatch(); 
+            initLanMatch();
             changePanel(lanMatchView);                   
         });
     }
@@ -284,16 +290,8 @@ public class MainWindow extends JFrame implements ActionListener {
         out.println(message);
     }
 
-    private void isRunningServer() {
-        if (runningServer == true) {
-            stopServer();
-        } 
-    }
-
     private void stopServer() {
         runningServer = false;
-        notifyClientsToExit(); // Notificar a los clientes que deben salir
-    
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
                 serverSocket.close();
@@ -305,27 +303,17 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-    public void stopClient() {
+    private void stopClient() {
         runningClient = false;
         if (clientSocket != null && !clientSocket.isClosed()) {
             try {
-                serverSocket.close();
-                System.out.println("Servidor detenido");
+                clientSocket.close();
+                System.out.println("Cliente desconectado");
             } catch (IOException e) {
-                System.out.println("Error al cerrar el servidor: " + e.getMessage());
+                System.out.println("Error al cerrar el cliente: " + e.getMessage());
             }
         }
     }
-
-    private void notifyClientsToExit() {
-        if (clientSocket != null && !clientSocket.isClosed()) {
-            try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-                out.println("EXIT");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }   
 
     /* Parte de cliente */
     public void LanClient() {
@@ -334,19 +322,8 @@ public class MainWindow extends JFrame implements ActionListener {
             joinMatchView.dispose();
 
             // Ejecutar cliente y vistas de manera paralela
-            clientThread = new Thread(() -> {
-                runClient();
-            });
+            clientThread = new Thread(() -> runClient());
             clientThread.start();
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                runLanMatchClient();
-                /*joinMatchView.addWindowCloseListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        stopServer();
-                    }
-                });*/
-            }); 
         } else {
             JOptionPane.showMessageDialog(joinMatchView, "INGRESE UN NUMERO", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -386,12 +363,12 @@ public class MainWindow extends JFrame implements ActionListener {
             }
         } catch (UnknownHostException e) {
             System.err.println("No se puede encontrar el host: " + host);
-            JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(joinMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
     
         } catch (IOException e) {
             System.err.println("Error al comunicar con el host: " + host);
-            JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
-            changePanel(menuView);
+            JOptionPane.showMessageDialog(joinMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
+            SwingUtilities.invokeLater(() -> changePanel(menuView));
         }
     }    
 
@@ -399,12 +376,6 @@ public class MainWindow extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(createMatchView, "Conexion establecida con el host", "Estado", JOptionPane.INFORMATION_MESSAGE);
         initLanMatch(); 
         changePanel(lanMatchView);                   
-    } 
-
-    public void isRunningClient() {
-        if (runningClient == true) {
-            stopServer();
-        }
     }  
 
     public static void main(String[] args) {
