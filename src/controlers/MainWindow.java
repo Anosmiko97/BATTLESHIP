@@ -243,7 +243,6 @@ public class MainWindow extends JFrame implements ActionListener {
             while (runningServer) {
                 Socket clientConn = serverSocket.accept(); // Acepta la conexión entrante
                 System.out.println("Usuario conectado: " + clientConn.getRemoteSocketAddress());
-                JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
                 runServerLanMatch();
 
                 // Enviar la dirección IP del servidor al cliente
@@ -353,7 +352,7 @@ public class MainWindow extends JFrame implements ActionListener {
             // Recibir y almacenar la dirección IP del servidor
             ipHost = in.readLine();
             System.out.println("Dirección IP del servidor recibida: " + ipHost);
-            
+            stopClient();
             
         } catch (UnknownHostException e) {
             System.err.println("No se puede encontrar el host: " + host);
@@ -365,8 +364,6 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     public void runLanMatchClient() {
-        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida con el host", "Estado", JOptionPane.INFORMATION_MESSAGE);
-        stopClient();
         initLanMatch("client");
         changePanel(lanMatchView);
     }
