@@ -259,7 +259,7 @@ public class MainWindow extends JFrame implements ActionListener {
                     String userResponse = in.readLine();
 
                     // Esperar a recibir nombre
-                    if ("Maria".equalsIgnoreCase(userResponse)) {
+                    if (userResponse.equalsIgnoreCase("Maria")) {
                         opponentName = userResponse;
                         stopServer(false);
                         break;
@@ -361,6 +361,7 @@ public class MainWindow extends JFrame implements ActionListener {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out.println(userModel.getName());
+            System.out.println("Nombre enviado: " + userModel.getName());
 
             // Recibir y almacenar la dirección IP del servidor
             String response = in.readLine();
