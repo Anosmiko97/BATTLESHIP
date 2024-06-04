@@ -52,12 +52,12 @@ public class LanMatchController implements ActionListener {
     private int cruiser = 3;
     private int submarine = 3;
     private int destroyer = 2;
-    private int[][] fletShips;
+    private Cor[] fletShips;
 
     public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         this.ipHost = ipHost;
-        fletShips = new int[17][2];
+        fletShips = new Cor[17];
         totalShips = 17;
         cellsShips = 0;
 
@@ -68,11 +68,7 @@ public class LanMatchController implements ActionListener {
             });
             serverThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
-                System.out.println("Nombre d eoponente: "+ opponentName);
-                this.matchView = matchView;
-                this.cellsRight = cellsRight;
-                this.cellsLeft = cellsLeft;
-                addCellsListener();
+                initView(matchView, cellsRight, cellsLeft);
             });
         } else if (this.mode.equals("client")) {
             System.out.println("modo cliente");
@@ -81,13 +77,17 @@ public class LanMatchController implements ActionListener {
             });
             clientThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
-                this.matchView = matchView;
-                this.cellsRight = cellsRight;
-                this.cellsLeft = cellsLeft;
-                addCellsListener();
-                lockCells();
+                initView(matchView, cellsRight, cellsLeft);
             });
         }
+    }
+
+    private void initView( LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft) {
+        this.matchView = matchView;
+        this.cellsRight = cellsRight;
+        this.cellsLeft = cellsLeft;
+        addCellsListener();
+        lockCells();
     }
 
     private void lockCells() {
@@ -263,7 +263,7 @@ public class LanMatchController implements ActionListener {
             if (cellsShips <= 16) {
                 //System.out.println("Barco colocado en: [" + i + ", " + j + "]");
                 cellsLeft[i][j].setCellColor(colorShip);
-                int[] posShip = {i, j};
+                Cor posShip = new Cor(i, j);
                 addPos(posShip);
                 cellsShips += 1;
                 System.out.println("Largo de flet: " + len());
@@ -274,19 +274,16 @@ public class LanMatchController implements ActionListener {
     private int len() {
         int num = 0;
         for (int i = 0; i < 17; i++) {
-            for (int j = 0; j < 2; j++) {
-                num = i;
-            }
+            num = i;    
         }
 
         return num;
     }
 
-    private void addPos(int[] pos) {
+    private void addPos(Cor pos) {
         for (int i = 0; i < fletShips.length; i++) {
-            if (fletShips[i][0] == 0 && fletShips[i][1] == 0) {  
-                fletShips[i][0] = pos[0];
-                fletShips[i][1] = pos[1];
+            if (fletShips[i] == null) {  
+                fletShips[i] = pos;
                 break;
             }
         }    
@@ -344,5 +341,15 @@ public class LanMatchController implements ActionListener {
     }
     public Socket getClientSocket() {
         return this.clientSocket;
+    }
+}
+
+class Cor {
+    public int x;
+    public int y;
+
+    public Cor(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }
