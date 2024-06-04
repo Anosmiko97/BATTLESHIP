@@ -135,6 +135,10 @@ public class LanMatchController implements ActionListener {
                     if ("salir".equalsIgnoreCase(userInput)) {
                         break;
                     }
+
+                    if ("jugar".equals(response)) {
+                        System.out.println("¡A jugar!");
+                    }
                 }
             }
         } catch (UnknownHostException e) {
@@ -189,13 +193,12 @@ public class LanMatchController implements ActionListener {
                 //System.out.println("Barco colocado en: [" + i + ", " + j + "]");
                 cellsLeft[i][j].setCellColor(colorShip);
                 cellsShips += 1;
-                System.out.println("Cellships: " + cellsShips);
             }            
         }
     }
 
     public void gameActions(int i, int j) {
-        if (cellsShips >= 17) {
+        if (cellsShips == 17) {
             System.out.println("A JUGAR");
            
 
