@@ -3,10 +3,14 @@ package controlers.Lan;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
 import models.AppProperties;
 /* Clases propias */
@@ -26,6 +30,7 @@ public class LanMatchController implements ActionListener {
     private int port = properties.getPort();
     private String wifiInter = properties.getWlan();
     private String host = AppProperties.getWifiIp(wifiInter);
+    private String ipHost;
     private Thread serverThread;
     private Thread clientThread;
 
@@ -45,28 +50,112 @@ public class LanMatchController implements ActionListener {
 
     public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
+        this.ipHost = ipHost;
         totalShips = 17;
         cellsShips = 0;
 
         if (this.mode.equals("server")) {
             System.out.println("modo servidor");
-           // this.serverSocket = new ServerSocket();
-            
-
+            serverThread = new Thread(() -> {
+                runServer();
+            });
+            serverThread.start();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                this.matchView = matchView;
+                this.cellsRight = cellsRight;
+                this.cellsLeft = cellsLeft;
+                addCellsListener();
+            });
         } else if (this.mode.equals("client")) {
-            //this.clientSocket = new Socket();
             System.out.println("modo cliente");
+            clientThread = new Thread(() -> {
+                runServer();
+            });
+            serverThread.start();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                this.matchView = matchView;
+                this.cellsRight = cellsRight;
+                this.cellsLeft = cellsLeft;
+                addCellsListener();
+            });
         }
-
-        totalShips = 17;
-        cellsShips = 0;
-
-        this.matchView = matchView;
-        this.cellsRight = cellsRight;
-        this.cellsLeft = cellsLeft;
-        addCellsListener();
     }
 
+    /* Codigo para servidor */
+    private void runServer() {
+        try {
+            serverSocket = new ServerSocket(port); // Inicializa el ServerSocket en un puerto específico.
+            System.out.println("Servidor iniciado en el puerto: " + port);
+            clientSocket = serverSocket.accept(); // Acepta una conexión del cliente.
+            System.out.println("Cliente conectado: " + clientSocket.getInetAddress().getHostAddress());
+
+            // Leer mensajes del cliente
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    System.out.println("Cliente dice: " + inputLine);
+                    // Aquí puedes añadir lógica para manejar los mensajes entrantes
+                    if ("salir".equalsIgnoreCase(inputLine)) {
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error en el servidor: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
+                if (serverSocket != null) {
+                    serverSocket.close();
+                }
+            } catch (IOException ex) {
+                System.err.println("Error al cerrar el servidor: " + ex.getMessage());
+            }
+        }
+    }
+
+    /* Codigo para cliente */
+    private void runClient() {
+        try {
+            clientSocket = new Socket(ipHost, port); // Conecta al servidor en la dirección y puerto especificados.
+            System.out.println("Conectado al servidor en " + ipHost + ":" + port);
+
+            // Leer y enviar mensajes al servidor
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                Scanner scanner = new Scanner(System.in)) {
+                String userInput;
+                while ((userInput = scanner.nextLine()) != null) {
+                    out.println(userInput); // Envía entrada del usuario al servidor
+                    String response = in.readLine(); // Lee la respuesta del servidor
+                    System.out.println("Servidor dice: " + response);
+                    if ("salir".equalsIgnoreCase(userInput)) {
+                        break;
+                    }
+                }
+            }
+        } catch (UnknownHostException e) {
+            System.err.println("No se puede conectar al host: " + ipHost);
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error de entrada/salida al conectar con el servidor: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
+            } catch (IOException ex) {
+                System.err.println("Error al cerrar el cliente: " + ex.getMessage());
+            }
+        }
+    }
+
+
+    /* Codigo para juego */
     public void addCellsListener() {
         for (int i = 0; i < cellsRight.length; i++) {
             for (int j = 0; j < cellsRight[0].length; j++) {
