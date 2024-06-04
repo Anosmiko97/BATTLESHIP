@@ -293,12 +293,12 @@ public class LanMatchController implements ActionListener {
         if (cellsShips == 17) {
             sendToStart();
             System.out.println("Startplay: " + startPlay);
-            unlockCells();
 
             if (startPlay == 2) {
                 matchView.setMessage("VS");
                 matchView.refreshMessagePanel();
                 matchView.refreshHeaderPanel();
+                unlockCells();
             }
         }
     }
