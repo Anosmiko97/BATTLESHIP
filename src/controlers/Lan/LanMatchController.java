@@ -273,7 +273,7 @@ public class LanMatchController implements ActionListener {
 
     private int len() {
         int num = 0;
-        for (int i = 0; i < 17; i++) {
+        for (int i = 0; i < 18; i++) {
             num = i;    
         }
 
@@ -293,6 +293,7 @@ public class LanMatchController implements ActionListener {
         if (cellsShips == 17) {
             sendToStart();
             System.out.println("Startplay: " + startPlay);
+            unlockCells();
 
             if (startPlay == 2) {
                 matchView.setMessage("VS");
