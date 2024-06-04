@@ -29,15 +29,14 @@ import models.AppProperties;
 import models.Cell;
 import models.User;
 import models.UserDAO;
+import views.MatchView;
 import views.MenuView;
 import views.SettingsView;
 import views.SqlErrorView;
 import views.Lan.CreateMatchView;
 import views.Lan.JoinMatchView;
-import views.Lan.LanMatchView;
 import views.Lan.LanView;
-import views.Local.MatchView;
-import views.Lan.LanMatchView;
+import views.MatchView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -54,7 +53,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
     // Vistas
     private MenuView menuView;
-    private LanMatchView lanMatchView;
+    private MatchView lanMatchView;
     private MatchView matchView;
     private LanView lanView;
     private SettingsView settingsView;
@@ -213,7 +212,7 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        matchView = new MatchView(userModel, cellsRigth, cellsLeft);   
+        matchView = new MatchView(userModel, "Ale", cellsRigth, cellsLeft);   
         matchController = new MatchController(matchView, cellsRigth, cellsLeft);
         this.matchView.addExitButtonListener(this); 
     }
@@ -299,7 +298,7 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        lanMatchView = new LanMatchView(userModel, opponentName, cellsRigth, cellsLeft);   
+        lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
         if (mode.equals("client")) {
             lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, "client");
             

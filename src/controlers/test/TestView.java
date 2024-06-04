@@ -15,7 +15,7 @@ import views.Lan.JoinMatchView;
 import views.Lan.LanView;
 import views.SqlErrorView;
 import models.UserDAO;
-import views.Lan.LanMatchView;
+import views.MatchView;
 import views.MenuView;
 import models.AppProperties;
 import models.Cell;

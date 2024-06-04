@@ -3,7 +3,7 @@ package controlers.Local;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import models.Cell;
-import views.Local.MatchView;
+import views.MatchView;
 
 public class MatchController implements ActionListener {
     private MatchView matchView;

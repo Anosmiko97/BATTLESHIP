@@ -17,11 +17,11 @@ import models.AppProperties;
 /* Clases propias */
 import models.Cell;
 import models.ShipsPos;
-import views.Lan.LanMatchView;
+import views.MatchView;
 
 public class LanMatchController implements ActionListener {
     private AppProperties properties = new  AppProperties();
-    private LanMatchView matchView;
+    private MatchView matchView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
 
@@ -51,7 +51,7 @@ public class LanMatchController implements ActionListener {
     private ShipsPos pos = new ShipsPos();
     private Cor[] fletShips;
 
-    public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
+    public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         this.ipHost = ipHost;
         fletShips = new Cor[17];
@@ -79,7 +79,7 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    private void initView( LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft) {
+    private void initView( MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft) {
         this.matchView = matchView;
         this.cellsRight = cellsRight;
         this.cellsLeft = cellsLeft;

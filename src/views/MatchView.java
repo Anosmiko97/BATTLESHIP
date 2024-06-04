@@ -1,4 +1,4 @@
-package views.Lan;
+package views;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -12,7 +12,7 @@ import models.Cell;
 import models.UserDAO;
 import models.User;
 
-public class LanMatchView extends JPanel {
+public class MatchView extends JPanel {
     AppProperties properties = new AppProperties();
     UserDAO userDAO = new UserDAO();
     User userModel;
@@ -31,7 +31,7 @@ public class LanMatchView extends JPanel {
     private JLabel messagePanel;
     private JPanel headerPanel;
 
-    public LanMatchView(User userModel, String opponentName, Cell[][] cells1, Cell[][] cells2) {
+    public MatchView(User userModel, String opponentName, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
         setBackground(properties.getBackgroundColor());  
 
