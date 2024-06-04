@@ -253,7 +253,16 @@ public class MainWindow extends JFrame implements ActionListener {
                     String serverIP = clientConn.getLocalAddress().getHostAddress();
                     out.println(serverIP + "," + userModel.getName());
                     System.out.println("Dirección IP del servidor enviada al cliente: " + serverIP);
-                    stopServer(false);
+                    
+                    // Leer la respuesta del cliente
+                    BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
+                    String userResponse = in.readLine();
+
+                    // Esperar a recibir nombre
+                    if ("Maria".equalsIgnoreCase(userResponse)) {
+                        stopServer(false);
+                        break;
+                    }
                 } catch (IOException e) {
                     System.err.println("Error al enviar la dirección IP del servidor al cliente: " + e.getMessage());
                 }
@@ -351,7 +360,8 @@ public class MainWindow extends JFrame implements ActionListener {
             clientSocket = new Socket(host, port);
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-    
+            out.println(userModel.getName());
+
             // Recibir y almacenar la dirección IP del servidor
             String response = in.readLine();
             String[] splitResponse = response.split(",");
