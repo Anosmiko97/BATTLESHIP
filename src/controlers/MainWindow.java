@@ -260,6 +260,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
                     // Esperar a recibir nombre
                     if ("Maria".equalsIgnoreCase(userResponse)) {
+                        opponentName = userResponse;
                         stopServer(false);
                         break;
                     }
@@ -296,7 +297,6 @@ public class MainWindow extends JFrame implements ActionListener {
             
         }
         this.lanMatchView.addExitButtonListener(this);
-           
     }
 
     private void isRunningServer(boolean message) {

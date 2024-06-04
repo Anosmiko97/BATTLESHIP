@@ -68,7 +68,10 @@ public class LanMatchController implements ActionListener {
             });
             serverThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
+                System.out.println("Nombre d eoponente: "+ opponentName);
                 this.matchView = matchView;
+                matchView.setOpponentName(opponentName);
+                matchView.refreshHeaderPanel();
                 this.cellsRight = cellsRight;
                 this.cellsLeft = cellsLeft;
                 addCellsListener();

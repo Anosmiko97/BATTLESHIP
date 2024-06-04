@@ -248,6 +248,13 @@ public class LanMatchView extends JPanel {
         this.userModel = user;
     }
 
+    public String getOppnentName() {
+        return this.opponentName;
+    }
+    public void setOpponentName(String name) {
+        this.opponentName = name;
+    }
+
     /* ActionListeners */
     public void addExitButtonListener(ActionListener listener) {
         exitButton.addActionListener(listener);
