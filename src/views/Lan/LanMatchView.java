@@ -19,7 +19,7 @@ public class LanMatchView extends JPanel {
 
     // Texto del panel
     private String userName;
-    private String opponentName = "Ale";
+    private String opponentName;
 
     // Botones
     JButton exitButton;
@@ -31,11 +31,12 @@ public class LanMatchView extends JPanel {
     private JLabel messagePanel;
     private JPanel headerPanel;
 
-    public LanMatchView(User userModel, Cell[][] cells1, Cell[][] cells2) {
+    public LanMatchView(User userModel, String opponentName, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
         setBackground(properties.getBackgroundColor());  
 
         this.message = "COLOQUEN SUS BARCOS";
+        this.opponentName = opponentName;
         this.userModel = userModel;
         this.userName = userModel.getName();
         this.cellsRigth = cells1;
@@ -201,7 +202,7 @@ public class LanMatchView extends JPanel {
         return exitPanel;
     }
 
-    public void refreshPanel() {
+    public void refreshHeaderPanel() {
         remove(headerPanel); 
 
         headerPanel = createHeaderPanel(); 
@@ -238,6 +239,13 @@ public class LanMatchView extends JPanel {
     }
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public User getUser() {
+        return this.userModel;
+    }
+    public void setMessage(User user) {
+        this.userModel = user;
     }
 
     /* ActionListeners */

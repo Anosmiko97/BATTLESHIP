@@ -71,6 +71,9 @@ public class MainWindow extends JFrame implements ActionListener {
     private Thread serverThread;
     private Thread clientThread;
 
+    // Atributos
+    private String opponentName;
+
     public MainWindow() {
         setBounds(500, 100, 900, 675);
         setResizable(true);
@@ -248,7 +251,7 @@ public class MainWindow extends JFrame implements ActionListener {
                 // Enviar la dirección IP del servidor al cliente
                 try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true)) {
                     String serverIP = clientConn.getLocalAddress().getHostAddress();
-                    out.println(serverIP);
+                    out.println(serverIP + "," + userModel.getName());
                     System.out.println("Dirección IP del servidor enviada al cliente: " + serverIP);
                     stopServer(false);
                 } catch (IOException e) {
@@ -275,7 +278,7 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
+        lanMatchView = new LanMatchView(userModel, opponentName, cellsRigth, cellsLeft);   
         if (mode.equals("client")) {
             lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, "client");
             
@@ -350,7 +353,10 @@ public class MainWindow extends JFrame implements ActionListener {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     
             // Recibir y almacenar la dirección IP del servidor
-            ipHost = in.readLine();
+            String response = in.readLine();
+            String[] splitResponse = response.split(",");
+            ipHost = splitResponse[0];
+            opponentName = splitResponse[1];
             System.out.println("Dirección IP del servidor recibida: " + ipHost);
             stopClient();
             
