@@ -10,11 +10,13 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Random;
 import java.util.Scanner;
 import models.AppProperties;
 
 /* Clases propias */
 import models.Cell;
+import models.ShipsPos;
 import views.Lan.LanMatchView;
 
 public class LanMatchController implements ActionListener {
@@ -43,21 +45,15 @@ public class LanMatchController implements ActionListener {
     private Color colorShip = Color.decode("#343434");
     private int totalShips;
     private int cellsShips;
-    private boolean startPlay;
     private String opponentName;
 
     /* Barcos */
-    private int carrier = 5;
-    private int battleship = 4;
-    private int cruiser = 3;
-    private int submarine = 3;
-    private int destroyer = 2;
+    private ShipsPos pos = new ShipsPos();
     private Cor[] fletShips;
 
     public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         this.ipHost = ipHost;
-        startPlay = false;
         fletShips = new Cor[17];
         totalShips = 17;
         cellsShips = 0;
@@ -87,22 +83,39 @@ public class LanMatchController implements ActionListener {
         this.matchView = matchView;
         this.cellsRight = cellsRight;
         this.cellsLeft = cellsLeft;
+        setPosShips();
         addCellsListener();
-        lockCells();
     }
 
-    private void lockCells() {
-        for (int i = 0; i < cellsRight.length; i++) {
-            for (int j = 0; j < cellsRight.length; j++) {
-                cellsRight[i][j].getButton().setEnabled(false);
+    private void setPosShips() {
+        Random random = new Random();
+        int num = random.nextInt(5) + 1;
+
+        if (num == 1) {
+            pos.pos1(cellsLeft);
+        } else if (num == 2) {
+            pos.pos2(cellsLeft);
+        } else if (num == 3) {
+            pos.pos3(cellsLeft);
+        } else if (num == 4) {
+            pos.pos4(cellsLeft);
+        } else if (num == 5) {
+            pos.pos5(cellsLeft);
+        } 
+    }
+
+    private void lockCells(Cell[][] cells) {
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+                cells[i][j].getButton().setEnabled(false);
             }
         }
     }
 
-    private void unlockCells() {
-        for (int i = 0; i < cellsRight.length; i++) {
-            for (int j = 0; j < cellsRight.length; j++) {
-                cellsRight[i][j].getButton().setEnabled(true);
+    private void unlockCells(Cell[][] cells) {
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+                cells[i][j].getButton().setEnabled(true);
             }
         }
     }
@@ -111,7 +124,6 @@ public class LanMatchController implements ActionListener {
         for (int i = 0; i < cellsRight.length; i++) {
             for (int j = 0; j < cellsRight.length; j++) {
                 cellsRight[i][j].getButton().addActionListener(this);
-                cellsLeft[i][j].getButton().addActionListener(this);
             }
         }
     }
@@ -135,10 +147,6 @@ public class LanMatchController implements ActionListener {
                         if ("salir".equalsIgnoreCase(inputLine)) {
                             break;
 
-                        } else if ("jugar".equalsIgnoreCase(inputLine)) {
-                            System.out.println("Palabra clave 'jugar' recibida");
-                            startPlay = true;
-                        
                         } 
                     }
                 }
@@ -157,20 +165,6 @@ public class LanMatchController implements ActionListener {
             } catch (IOException ex) {
                 System.err.println("Error al cerrar el servidor: " + ex.getMessage());
             }
-        }
-    }
-
-    private void sendServerStart() {
-        if (clientConn != null && !clientConn.isClosed()) {
-            try {
-                PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
-                out.println("jugar"); 
-                System.out.println("Mensaje 'jugar' enviado al cliente.");
-            } catch (IOException e) {
-                System.err.println("Error al enviar mensaje al cliente: " + e.getMessage());
-            }
-        } else {
-            System.err.println("Cliente no conectado o socket cerrado.");
         }
     }
 
@@ -195,10 +189,7 @@ public class LanMatchController implements ActionListener {
                         
                         if ("salir".equalsIgnoreCase(userInput)) {
                             break;
-                        } else if ("jugar".equals(response)) {
-                            System.out.println("¡A jugar!");
-                            startPlay  = true;
-                        }
+                        } 
                     }
                 }
             }
@@ -219,20 +210,6 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    private void sendClientStart() {
-        if (clientSocket != null && !clientSocket.isClosed()) {
-            try {
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println("jugar");
-                System.out.println("Mensaje 'jugar' enviado al servidor.");
-            } catch (IOException e) {
-                System.err.println("Error al enviar mensaje al cliente: " + e.getMessage());
-            }
-        } else {
-            System.err.println("Servidor no conectado o socket cerrado.");
-        }   
-    }
-
     /* Codigo para juego */
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -240,87 +217,19 @@ public class LanMatchController implements ActionListener {
             for (int j = 0; j < cellsRight[0].length; j++) {  
                 if (e.getSource() == cellsRight[i][j].getButton()) {
                     // System.out.println("Disparo en: [" + i + ", " + j + "]");
+                    gameActions(i, j);
                     return; 
                 } else if (e.getSource() == cellsLeft[i][j].getButton()) {
-                    // System.out.println("Barco en: [" + i + ", " + j + "]");
-                    posShips(i, j);
-                    gameActions(i, j);
+                    System.out.println("Barco en: [" + i + ", " + j + "]");
+                    
                     return; 
                 } 
             }
         }
     }
 
-    public void posShips(int i, int j) {
-        // Posicion barcos
-        if (!isDiagonal(i, j)) {
-            if (cellsShips <= 16) {
-                //System.out.println("Barco colocado en: [" + i + ", " + j + "]");
-                cellsLeft[i][j].setCellColor(colorShip);
-                Cor posShip = new Cor(i, j);
-                addPos(posShip);
-                cellsShips += 1;
-                System.out.println("Largo de flet: " + len());
-            }            
-        }
-    }
-
-    private int len() {
-        int num = 0;
-        for (int i = 0; i < 18; i++) {
-            num = i;    
-        }
-
-        return num;
-    }
-
-    private void addPos(Cor pos) {
-        for (int i = 0; i < fletShips.length; i++) {
-            if (fletShips[i] == null) {  
-                fletShips[i] = pos;
-                break;
-            }
-        }    
-    }
-
     public void gameActions(int i, int j) {
-        if (cellsShips == 17) {
-            sendToStart();
-
-            if (startPlay) {
-                System.out.println("Startplay: " + startPlay);
-                matchView.setMessage("VS");
-                matchView.refreshMessagePanel();
-                matchView.refreshHeaderPanel();
-                unlockCells();
-            }
-        }
-    }
-
-    public void sendToStart() {
-        if (mode.equals("server")) {
-            sendServerStart();
-        } else if (mode.equals("client")) {
-            sendClientStart();
-        }
-    }
-
-    private boolean isDiagonal(int i, int j) {
-        // Comprobar las diagonales principales
-        if (i > 0 && j > 0 && cellsLeft[i - 1][j - 1].getCellColor().equals(colorShip)) {
-            return true;
-        }
-        if (i < cellsLeft.length - 1 && j < cellsLeft[0].length - 1 && cellsLeft[i + 1][j + 1].getCellColor().equals(colorShip)) {
-            return true;
-        }
-        // Comprobar las diagonales secundarias
-        if (i > 0 && j < cellsLeft[0].length - 1 && cellsLeft[i - 1][j + 1].getCellColor().equals(colorShip)) {
-            return true;
-        }
-        if (i < cellsLeft.length - 1 && j > 0 && cellsLeft[i + 1][j - 1].getCellColor().equals(colorShip)) {
-            return true;
-        }
-        return false;
+        System.out.println("Disparo en: [" + i + ", " + j + "]");
     }
 
     /* Getters y setters */

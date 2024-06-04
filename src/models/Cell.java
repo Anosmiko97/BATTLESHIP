@@ -9,6 +9,7 @@ import java.awt.Font;
 public class Cell {
     AppProperties properties = new AppProperties();
     private Color cellColor;
+    private String ship;
     private int corX; 
     private int corY;
     private JButton button;
@@ -54,5 +55,12 @@ public class Cell {
     }
     public void setButton(JButton button) {
         this.button = button;
+    }
+
+    public String getShip() {
+        return ship;
+    }
+    public void setShip(String ship) {
+        this.ship = ship;
     }
 }

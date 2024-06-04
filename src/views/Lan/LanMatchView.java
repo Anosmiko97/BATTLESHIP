@@ -35,7 +35,7 @@ public class LanMatchView extends JPanel {
         setLayout(new BorderLayout());
         setBackground(properties.getBackgroundColor());  
 
-        this.message = "COLOQUEN SUS BARCOS";
+        this.message = "VS";
         this.opponentName = opponentName;
         this.userModel = userModel;
         this.userName = userModel.getName();

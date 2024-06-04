@@ -19,6 +19,8 @@ import views.MenuView;
 import models.AppProperties;
 import models.Cell;
 import models.User;
+import views.Local.MatchView;
+import controlers.Local.MatchController;
 
 public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
@@ -39,8 +41,8 @@ public class TestView extends JFrame{
         Socket client = new Socket();
         ServerSocket server = new ServerSocket();
         User user = new User("Uriel");
-        LanMatchView v = new LanMatchView(user,cellsRigth, cellsLeft);   
-        LanMatchController c = new LanMatchController(server,client,v, cellsRigth, cellsLeft, "cliente");
+        MatchView v = new MatchView(user,cellsRigth, cellsLeft);   
+        MatchController c = new MatchController(v, cellsRigth, cellsLeft);
 
         add(v);
 
