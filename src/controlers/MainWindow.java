@@ -246,21 +246,25 @@ public class MainWindow extends JFrame implements ActionListener {
             while (runningServer) {
                 Socket clientConn = serverSocket.accept(); // Acepta la conexión entrante
                 System.out.println("Usuario conectado: " + clientConn.getRemoteSocketAddress());
-                runServerLanMatch();
 
                 // Enviar la dirección IP del servidor al cliente
-                try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true)) {
+                try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
+                ) {
+
+                    // Enviar ip y nombre
                     String serverIP = clientConn.getLocalAddress().getHostAddress();
                     out.println(serverIP + "," + userModel.getName());
                     System.out.println("Dirección IP del servidor enviada al cliente: " + serverIP);
                     
                     // Leer la respuesta del cliente
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
                     String userResponse = in.readLine();
+                    System.out.println("Nombre del cliente recibido: " + userResponse);
 
                     // Esperar a recibir nombre
                     if (userResponse.equalsIgnoreCase("Maria")) {
                         opponentName = userResponse;
+                        runServerLanMatch();
                         stopServer(false);
                         break;
                     }
@@ -360,6 +364,8 @@ public class MainWindow extends JFrame implements ActionListener {
             clientSocket = new Socket(host, port);
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            
+            // Enviar nombre al servidor
             out.println(userModel.getName());
             System.out.println("Nombre enviado: " + userModel.getName());
 
