@@ -43,7 +43,7 @@ public class LanMatchController implements ActionListener {
     private Color colorShip = Color.decode("#343434");
     private int totalShips;
     private int cellsShips;
-    private int startPlay = 0;
+    private boolean startPlay;
     private String opponentName;
 
     /* Barcos */
@@ -57,6 +57,7 @@ public class LanMatchController implements ActionListener {
     public LanMatchController(String ipHost, LanMatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         this.ipHost = ipHost;
+        startPlay = false;
         fletShips = new Cor[17];
         totalShips = 17;
         cellsShips = 0;
@@ -122,10 +123,8 @@ public class LanMatchController implements ActionListener {
             serverSocket = new ServerSocket(port); 
             System.out.println("Servidor iniciado en el puerto: " + port);
             clientConn = new Socket();
-            while (serverRunning) {
-        
+            while (serverRunning) {        
                 clientConn = serverSocket.accept(); 
-                System.out.println("Cliente conectado: " + clientConn.getInetAddress().getHostAddress());
 
                 // Leer mensajes del cliente
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()))) {
@@ -138,12 +137,9 @@ public class LanMatchController implements ActionListener {
 
                         } else if ("jugar".equalsIgnoreCase(inputLine)) {
                             System.out.println("Palabra clave 'jugar' recibida");
-                            startPlay += 1;
+                            startPlay = true;
                         
-                        } else if (inputLine.charAt(0) == 'n') {
-                            System.out.println("Nombre recibido: ");
-
-                        }
+                        } 
                     }
                 }
             }
@@ -169,7 +165,6 @@ public class LanMatchController implements ActionListener {
             try {
                 PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
                 out.println("jugar"); 
-                startPlay += 1;
                 System.out.println("Mensaje 'jugar' enviado al cliente.");
             } catch (IOException e) {
                 System.err.println("Error al enviar mensaje al cliente: " + e.getMessage());
@@ -192,17 +187,17 @@ public class LanMatchController implements ActionListener {
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     Scanner scanner = new Scanner(System.in)) {
                     String userInput;
+
                     while ((userInput = scanner.nextLine()) != null) {
-                        out.println(userInput); // Envía entrada del usuario al servidor
-                        String response = in.readLine(); // Lee la respuesta del servidor
+                        out.println(userInput); 
+                        String response = in.readLine(); 
                         System.out.println("Servidor dice: " + response);
+                        
                         if ("salir".equalsIgnoreCase(userInput)) {
                             break;
-                        }
-
-                        if ("jugar".equals(response)) {
+                        } else if ("jugar".equals(response)) {
                             System.out.println("¡A jugar!");
-                            startPlay += 1;
+                            startPlay  = true;
                         }
                     }
                 }
@@ -229,7 +224,6 @@ public class LanMatchController implements ActionListener {
             try {
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 out.println("jugar");
-                startPlay += 1;
                 System.out.println("Mensaje 'jugar' enviado al servidor.");
             } catch (IOException e) {
                 System.err.println("Error al enviar mensaje al cliente: " + e.getMessage());
@@ -292,9 +286,9 @@ public class LanMatchController implements ActionListener {
     public void gameActions(int i, int j) {
         if (cellsShips == 17) {
             sendToStart();
-            System.out.println("Startplay: " + startPlay);
 
-            if (startPlay == 2) {
+            if (startPlay) {
+                System.out.println("Startplay: " + startPlay);
                 matchView.setMessage("VS");
                 matchView.refreshMessagePanel();
                 matchView.refreshHeaderPanel();
