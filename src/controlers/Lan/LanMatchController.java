@@ -177,9 +177,9 @@ public class LanMatchController implements ActionListener {
     /* Codigo para cliente */
     private void runClient() {
         clientRunning = true;
-        System.out.println("Servidor");
+ 
         try {
-            clientSocket = new Socket(ipHost, port); // Conecta al servidor en la dirección y puerto especificados.
+            clientSocket = new Socket(ipHost, port); 
             System.out.println("Conectado al servidor en " + ipHost + ":" + port);
             while (clientRunning) {
                 // Leer y enviar mensajes al servidor
