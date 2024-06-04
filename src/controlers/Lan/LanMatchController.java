@@ -86,6 +86,7 @@ public class LanMatchController implements ActionListener {
 
     /* Codigo para servidor */
     private void runServer() {
+        serverRunning = true;
         try {
             serverSocket = new ServerSocket(port); 
             System.out.println("Servidor iniciado en el puerto: " + port);
@@ -126,6 +127,8 @@ public class LanMatchController implements ActionListener {
 
     /* Codigo para cliente */
     private void runClient() {
+        clientRunning = true;
+        System.out.println("Servidor");
         try {
             clientSocket = new Socket(ipHost, port); // Conecta al servidor en la dirección y puerto especificados.
             System.out.println("Conectado al servidor en " + ipHost + ":" + port);
