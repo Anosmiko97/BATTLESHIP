@@ -233,6 +233,13 @@ public class LanMatchView extends JPanel {
         this.cellsLeft = cells;
     }
 
+    public String getMessage() {
+        return this.message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     /* ActionListeners */
     public void addExitButtonListener(ActionListener listener) {
         exitButton.addActionListener(listener);

@@ -25,14 +25,17 @@ public class LanMatchController implements ActionListener {
 
     /* Atributos para conexion */
     private ServerSocket serverSocket;
-    Socket clientSocket;
-    String mode;
+    private Socket clientConn;
+    private Socket clientSocket;
+    private String mode;
     private int port = properties.getPort();
     private String wifiInter = properties.getWlan();
     private String host = AppProperties.getWifiIp(wifiInter);
     private String ipHost;
     private Thread serverThread;
     private Thread clientThread;
+    private boolean clientRunning;
+    private boolean serverRunning;
 
     /* Atributos de juego */
     private Color colorRed = Color.decode("#FF0000");
@@ -86,17 +89,21 @@ public class LanMatchController implements ActionListener {
         try {
             serverSocket = new ServerSocket(port); 
             System.out.println("Servidor iniciado en el puerto: " + port);
-            clientSocket = serverSocket.accept(); 
-            System.out.println("Cliente conectado: " + clientSocket.getInetAddress().getHostAddress());
+            clientConn = new Socket();
+            while (serverRunning) {
+        
+                clientConn = serverSocket.accept(); 
+                System.out.println("Cliente conectado: " + clientConn.getInetAddress().getHostAddress());
 
-            // Leer mensajes del cliente
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    System.out.println("Cliente dice: " + inputLine);
-                    
-                    if ("salir".equalsIgnoreCase(inputLine)) {
-                        break;
+                // Leer mensajes del cliente
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()))) {
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        System.out.println("Cliente dice: " + inputLine);
+                        
+                        if ("salir".equalsIgnoreCase(inputLine)) {
+                            break;
+                        }
                     }
                 }
             }
@@ -122,22 +129,23 @@ public class LanMatchController implements ActionListener {
         try {
             clientSocket = new Socket(ipHost, port); // Conecta al servidor en la dirección y puerto especificados.
             System.out.println("Conectado al servidor en " + ipHost + ":" + port);
+            while (clientRunning) {
+                // Leer y enviar mensajes al servidor
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    Scanner scanner = new Scanner(System.in)) {
+                    String userInput;
+                    while ((userInput = scanner.nextLine()) != null) {
+                        out.println(userInput); // Envía entrada del usuario al servidor
+                        String response = in.readLine(); // Lee la respuesta del servidor
+                        System.out.println("Servidor dice: " + response);
+                        if ("salir".equalsIgnoreCase(userInput)) {
+                            break;
+                        }
 
-            // Leer y enviar mensajes al servidor
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                Scanner scanner = new Scanner(System.in)) {
-                String userInput;
-                while ((userInput = scanner.nextLine()) != null) {
-                    out.println(userInput); // Envía entrada del usuario al servidor
-                    String response = in.readLine(); // Lee la respuesta del servidor
-                    System.out.println("Servidor dice: " + response);
-                    if ("salir".equalsIgnoreCase(userInput)) {
-                        break;
-                    }
-
-                    if ("jugar".equals(response)) {
-                        System.out.println("¡A jugar!");
+                        if ("jugar".equals(response)) {
+                            System.out.println("¡A jugar!");
+                        }
                     }
                 }
             }
@@ -157,7 +165,6 @@ public class LanMatchController implements ActionListener {
             }
         }
     }
-
 
     /* Codigo para juego */
     public void addCellsListener() {
@@ -200,7 +207,9 @@ public class LanMatchController implements ActionListener {
     public void gameActions(int i, int j) {
         if (cellsShips == 17) {
             System.out.println("A JUGAR");
-           
+            sendBoats();
+            matchView.setMessage("VS");
+            matchView.refreshMessagePanel();
 
         }
     }
@@ -208,9 +217,9 @@ public class LanMatchController implements ActionListener {
     public void sendBoats() {
     if (mode.equals("server")) {
         // Asegúrate de que el cliente está conectado y listo para recibir mensajes
-        if (clientSocket != null && !clientSocket.isClosed()) {
+        if (clientConn != null && !clientConn.isClosed()) {
             try {
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
                 out.println("jugar"); // Envía la palabra clave "jugar" al cliente
                 System.out.println("Mensaje 'jugar' enviado al cliente.");
             } catch (IOException e) {
