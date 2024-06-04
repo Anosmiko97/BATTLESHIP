@@ -93,14 +93,19 @@ public class LanMatchController implements ActionListener {
 
         if (num == 1) {
             pos.pos1(cellsLeft);
+            System.out.println("posicion 1");
         } else if (num == 2) {
             pos.pos2(cellsLeft);
+            System.out.println("posicion 2");
         } else if (num == 3) {
             pos.pos3(cellsLeft);
+            System.out.println("posicion 3");
         } else if (num == 4) {
             pos.pos4(cellsLeft);
+            System.out.println("posicion 4");
         } else if (num == 5) {
             pos.pos5(cellsLeft);
+            System.out.println("posicion 5");
         } 
     }
 

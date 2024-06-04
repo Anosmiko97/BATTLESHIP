@@ -13,6 +13,7 @@ import views.SettingsView;
 import views.Lan.CreateMatchView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanView;
+import views.SqlErrorView;
 import models.UserDAO;
 import views.Lan.LanMatchView;
 import views.MenuView;
@@ -26,7 +27,7 @@ public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
 
     public static void main(String[] args) throws IOException {
-        TestView t = new TestView();
+        SqlErrorView e = new SqlErrorView();
     }
     
     public TestView() throws IOException {

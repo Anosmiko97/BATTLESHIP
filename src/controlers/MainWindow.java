@@ -31,6 +31,7 @@ import models.User;
 import models.UserDAO;
 import views.MenuView;
 import views.SettingsView;
+import views.SqlErrorView;
 import views.Lan.CreateMatchView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanMatchView;
@@ -59,6 +60,7 @@ public class MainWindow extends JFrame implements ActionListener {
     private SettingsView settingsView;
     private CreateMatchView createMatchView;
     private JoinMatchView joinMatchView;
+    private SqlErrorView errorSql;
 
     // Atributos para servidor y cliente
     private String ipHost;
@@ -80,12 +82,27 @@ public class MainWindow extends JFrame implements ActionListener {
         getContentPane().setBackground(properties.getBackgroundColor());
         setTitle("battleship");
 
-        userDAO = new UserDAO();
-        userModel = setNameAndFlag();
-        menuView = new MenuView(userModel);
-        lanView = new LanView(userModel);
+        initViewsAndModels();
+        initListeners();      
 
-        // Listeners 
+        add(menuView);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+        repaint();
+    }
+
+    private void initViewsAndModels() {
+        try {
+            userDAO = new UserDAO(); 
+            userModel = setNameAndFlag();
+            menuView = new MenuView(userModel);
+            lanView = new LanView(userModel);  
+        } catch (Exception e) {
+            errorSql = new SqlErrorView();
+        }
+    }
+
+    private void initListeners() {
         this.menuView.addPvpButtonListener(this);
         this.menuView.addPveButtonListener(this);
         this.menuView.addExitButtonListener(this);
@@ -93,13 +110,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.addMakeReportListener(this);
         this.lanView.addReturnButtonListener(this);
         this.lanView.addJoinMatchButtonListener(this);
-        this.lanView.addMakeMatchButtonListener(this);      
-
-        add(menuView);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-        repaint();
+        this.lanView.addMakeMatchButtonListener(this); 
     }
 
     private User setNameAndFlag() {
@@ -241,11 +252,9 @@ public class MainWindow extends JFrame implements ActionListener {
         runningServer = true;
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Servidor escuchando en el puerto " + port);
     
             while (runningServer) {
                 Socket clientConn = serverSocket.accept(); // Acepta la conexión entrante
-                System.out.println("Usuario conectado: " + clientConn.getRemoteSocketAddress());
 
                 // Enviar la dirección IP del servidor al cliente
                 try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
@@ -255,11 +264,9 @@ public class MainWindow extends JFrame implements ActionListener {
                     // Enviar ip y nombre
                     String serverIP = clientConn.getLocalAddress().getHostAddress();
                     out.println(serverIP + "," + userModel.getName());
-                    System.out.println("Dirección IP del servidor enviada al cliente: " + serverIP);
                     
                     // Leer la respuesta del cliente
                     String userResponse = in.readLine();
-                    System.out.println("Nombre del cliente recibido: " + userResponse);
 
                     // Esperar a recibir nombre
                     if (userResponse.equalsIgnoreCase("Maria")) {

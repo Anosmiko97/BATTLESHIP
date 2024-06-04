@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 public class ConnectionDB {
 
     public static Connection createConnection() {
@@ -18,8 +20,7 @@ public class ConnectionDB {
 		
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-			System.out.println("Se conectó exitosamente a la base de datos.");
-		}catch(SQLException ex) {
+		} catch(SQLException ex) {
 			System.out.println("Error al conectarse a la base de datos: " + ex.getMessage());
 		}
 		
