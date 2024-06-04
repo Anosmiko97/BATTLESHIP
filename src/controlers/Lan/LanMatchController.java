@@ -69,7 +69,7 @@ public class LanMatchController implements ActionListener {
         } else if (this.mode.equals("client")) {
             System.out.println("modo cliente");
             clientThread = new Thread(() -> {
-                runServer();
+                runClient();
             });
             clientThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
@@ -84,9 +84,9 @@ public class LanMatchController implements ActionListener {
     /* Codigo para servidor */
     private void runServer() {
         try {
-            serverSocket = new ServerSocket(port); // Inicializa el ServerSocket en un puerto específico.
+            serverSocket = new ServerSocket(port); 
             System.out.println("Servidor iniciado en el puerto: " + port);
-            clientSocket = serverSocket.accept(); // Acepta una conexión del cliente.
+            clientSocket = serverSocket.accept(); 
             System.out.println("Cliente conectado: " + clientSocket.getInetAddress().getHostAddress());
 
             // Leer mensajes del cliente
@@ -94,7 +94,7 @@ public class LanMatchController implements ActionListener {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     System.out.println("Cliente dice: " + inputLine);
-                    // Aquí puedes añadir lógica para manejar los mensajes entrantes
+                    
                     if ("salir".equalsIgnoreCase(inputLine)) {
                         break;
                     }
