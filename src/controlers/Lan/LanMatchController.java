@@ -71,7 +71,7 @@ public class LanMatchController implements ActionListener {
             clientThread = new Thread(() -> {
                 runServer();
             });
-            serverThread.start();
+            clientThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
                 this.matchView = matchView;
                 this.cellsRight = cellsRight;
