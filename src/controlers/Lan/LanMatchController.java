@@ -16,6 +16,8 @@ import java.util.Random;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
+
 /* Clases propias */
 import models.Cell;
 import models.ShipsPos;
@@ -112,10 +114,10 @@ public class LanMatchController implements ActionListener {
     private void setPosShips(Cell[][] cellsRight, Cell[][] cellsLeft) {
         this.cellsRight = cellsRight;
         this.cellsLeft = cellsLeft;
-    
+        
+        // Seleccionar una de las 5 plantillas de posiciones de barco
         Random random = new Random();
         int num = random.nextInt(5) + 1;
-
         if (num == 1) {
             pos.pos1(this.cellsLeft);
             System.out.println("posicion 1");
@@ -133,7 +135,7 @@ public class LanMatchController implements ActionListener {
             System.out.println("posicion 5");
         } 
 
-        // Guardar posciones de barco 
+        // Guardar pocsiones de barco 
         for (int i = 0; i < this.cellsLeft.length; i++) {
             for (int j = 0; j < this.cellsLeft.length; j++) {
                 if (this.cellsLeft[i][j].getCellColor().equals(colorShip)) {
@@ -144,7 +146,6 @@ public class LanMatchController implements ActionListener {
         }
 
         System.out.println("Cadena de => " + fletShips);
-
         addCellsListener();
     }
 
@@ -201,8 +202,9 @@ public class LanMatchController implements ActionListener {
                     turn = true;
                     refreshMessage("TU TURNO");
                     unlockCells(cellsRight);
-                } else if ("tiro".equalsIgnoreCase(inputLine)) {
+                } else if ('d' == inputLine.charAt(0)) {
                     System.out.println("Nos dieron, fack");
+                    filterRecivedCors(inputLine);
                 } else {
                     System.out.println("Coordenadas recibidas");
                     opponentShips = strToCorArray(inputLine);
@@ -270,8 +272,9 @@ public class LanMatchController implements ActionListener {
                     turn = true;
                     refreshMessage("TU TURNO");
                     unlockCells(cellsRight);
-                } else if ("tiro".equalsIgnoreCase(serverMessage)) {
+                } else if ('d' ==serverMessage.charAt(0)) {
                         System.out.println("Nos dieron, fack");
+                        filterRecivedCors(serverMessage);
                 } else {
                     System.out.println("Coordenadas recibidas");
                     opponentShips = strToCorArray(serverMessage);
@@ -322,42 +325,76 @@ public class LanMatchController implements ActionListener {
         } 
     }
 
+    private void sendShips() {
+        if (mode.equals("server")) {
+            sendServerRequest(fletShips);
+        } else {
+            sendClientRequest(fletShips);
+        }
+    }
+
     private void shoot(int i, int j) {
+        // formato => 12,2
         System.out.println("Disparo en: [" + i + ", " + j + "]");
         Cor posCell = new Cor(i, j);
         System.out.println("Posciones guardadas en:" + posCell.x + posCell.y);
+        checkShoot(posCell);
+
+        // Cambio de turno
         turn = false;
         refreshMessage("TURNO DEL RIVAL");
         lockCells(cellsRight);
 
         if (mode.equals("server")) {
             System.out.println("TURNO DEL CLIENTE");
-            //sendServerRequest(fletShips);
             sendServerRequest("turno");
         } else if (mode.equals("client")) {
             System.out.println("TURNO DEL RIVAL");
-            //sendClientCor(posCell);
             sendClientRequest("turno");
         }
     }
 
     private void checkShoot(Cor posShot) {
-        if (cellsRight[posShot.x][posShot.x].getCellColor().equals(colorShip)) {
-            System.out.println("Nos dieron XDXDXD");
-            cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
-            sendResquestShot();
-        } else {
-            System.out.println("No nos dieron");
-            cellsRight[posShot.x][posShot.y].setCellColor(colorWhite);
-        }         
+        for (int i = 0; i < opponentShips.length; i++) {
+            if (posShot.x == opponentShips[i].x && posShot.y == opponentShips[i].y) {
+                System.out.println("DISPARRO ACERTADO");
+                cellsRight[posShot.x][posShot.y].setCellColor(colorWhite);
+                sendResquestShot(posShot);
+                break;
+            } else {
+                System.out.println("NO DIO EN EL BALNCO");
+                cellsRight[posShot.x][posShot.y].setCellColor(colorWhite);
+            }
+        }          
     }
 
-    private void sendResquestShot() {
+    private void checkCells(int x, int y) {
+        if (cellsLeft[x][y].getCellColor().equals(colorShip)) {
+            System.out.println("nos dieron, cambio a rojo");
+            cellsLeft[x][y].setCellColor(colorRed);
+        } else {
+            System.out.println("NO DIO EN EL BALNCO");
+            cellsLeft[x][y].setCellColor(colorWhite);
+        }  
+    }
+
+    private void sendResquestShot(Cor posShot) {
+        String cor = "d:"+ String.valueOf(posShot.x) + "," + String.valueOf(posShot.y);
+
         if (mode.equals("server")) {
-            sendServerRequest("tiro");
+            sendServerRequest(cor);
         } else if (mode.equals("client")) {
             sendClientRequest("tiro");
         }
+    }
+
+    private void filterRecivedCors(String cors) {
+        String[] filter1 = cors.split(":");
+        String filter2 = String.join("", filter1[1]);
+        String[] filter3 = filter2.split(",");
+        int x = Integer.parseInt(filter3[0]);
+        int y = Integer.parseInt(filter3[1]);
+        checkCells(x, y);
     }
 
     public Cor[] strToCorArray(String str) {
@@ -382,14 +419,6 @@ public class LanMatchController implements ActionListener {
                 Cor cor = new Cor(x, y);
                 cors[i] = cor;
             }
-        }
-    }
-    
-    private void sendShips() {
-        if (mode.equals("server")) {
-            sendServerRequest(fletShips);
-        } else {
-            sendClientRequest(fletShips);
         }
     }
 

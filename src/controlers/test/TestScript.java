@@ -12,11 +12,19 @@ import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 public class TestScript {
     public static void main(String[] args) {
-        String str = "[1|3],[1|3],[1|3],[1|3],";
-        int[][] result = convertStringToIntArray(str);
-        for (int[] arr : result) {
-            System.out.println("[" + arr[0] + ", " + arr[1] + "]");
-        }
+        String str = "d:12,2";
+        filterRecivedCors(str);
+    }
+
+    public static void filterRecivedCors(String cors) {
+        String[] filter1 = cors.split(":");
+        String filter2 = String.join("", filter1[1]);
+        String[] filter3 = filter2.split(",");
+        int x = Integer.parseInt(filter3[0]);
+        int y = Integer.parseInt(filter3[1]);
+
+        System.out.println("Coordenadas: " + x + "," + y);
+        //checkCells();
     }
 
     public static int[][] convertStringToIntArray(String str) {
