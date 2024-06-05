@@ -255,11 +255,7 @@ public class LanMatchController implements ActionListener {
     private void runClient() {
         clientRunning = true;
         try {
-            clientSocket = new Socket(ipHost, port); 
-            if (!shipsSended) {
-                sendShips();
-                shipsSended = true;
-            }  
+            clientSocket = new Socket(ipHost, port);   
             processDataClient();
             
         } catch (IOException e) {
@@ -275,6 +271,11 @@ public class LanMatchController implements ActionListener {
             String serverMessage;
     
             while (clientRunning && (serverMessage = in.readLine()) != null) {
+                if (!shipsSended) {
+                    sendShips();
+                    shipsSended = true;
+                }
+                
                 if ("salir".equalsIgnoreCase(serverMessage)) {
                     clientRunning = false;
                 } else if ("turno".equalsIgnoreCase(serverMessage)) {
