@@ -326,7 +326,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 if (message) {
                     JOptionPane.showMessageDialog(createMatchView, "Servidor detenido", "ERROR", JOptionPane.INFORMATION_MESSAGE);
                 }
-                System.out.println("Servidor detenido");
             } catch (IOException e) {
                 System.out.println("Error al cerrar el servidor: " + e.getMessage());
             }
@@ -402,7 +401,6 @@ public class MainWindow extends JFrame implements ActionListener {
         if (clientSocket != null && !clientSocket.isClosed()) {
             try {
                 clientSocket.close();
-                System.out.println("Cliente detenido");
             } catch (IOException e) {
                 System.out.println("Error al cerrar el servidor: " + e.getMessage());
             }

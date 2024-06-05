@@ -43,6 +43,7 @@ public class LanMatchController implements ActionListener {
     private Thread clientThread;
     private boolean clientRunning;
     private boolean serverRunning;
+    private boolean shipsSended;
 
     /* Atributos de juego */
     private Color colorRed = Color.decode("#FF0000");
@@ -59,10 +60,12 @@ public class LanMatchController implements ActionListener {
 
     public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
+        shipsSended = false;
         this.ipHost = ipHost;
         fletShips = new Cor[17];
         totalShips = 17;
         cellsShips = 0;
+        setPosShips(cellsRight, cellsLeft);
 
         if (this.mode.equals("server")) {
             turn = true;
@@ -98,26 +101,10 @@ public class LanMatchController implements ActionListener {
     }
 
     private void initView( MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft) {
-        this.cellsRight = cellsRight;
-        this.cellsLeft = cellsLeft;
-        if (!turn) {
-            lockCells(cellsRight);
-        }
-
-        // Refrescar vista
         this.matchView = matchView;
         this.matchView.setMessage(message);
         this.matchView.refreshMessagePanel();
         this.matchView.refreshHeaderPanel();
-        
-        // Mandar posciones de barco al rival
-        setPosShips();
-        if (mode.equals("server")) {
-            sendServerPosShips(fletShips);
-        } else {
-            sendClientPosShips(fletShips);
-        }
-        addCellsListener();
     }
 
     private void refreshMessage(String message) {
@@ -126,36 +113,44 @@ public class LanMatchController implements ActionListener {
         this.matchView.refreshHeaderPanel();
     }
 
-    private void setPosShips() {
+    private void setPosShips(Cell[][] cellsRight, Cell[][] cellsLeft) {
+        this.cellsRight = cellsRight;
+        this.cellsLeft = cellsLeft;
+        if (!turn) {
+            lockCells(this.cellsRight);
+        }
+
         Random random = new Random();
         int num = random.nextInt(5) + 1;
 
         if (num == 1) {
-            pos.pos1(cellsLeft);
+            pos.pos1(this.cellsLeft);
             System.out.println("posicion 1");
         } else if (num == 2) {
-            pos.pos2(cellsLeft);
+            pos.pos2(this.cellsLeft);
             System.out.println("posicion 2");
         } else if (num == 3) {
-            pos.pos3(cellsLeft);
+            pos.pos3(this.cellsLeft);
             System.out.println("posicion 3");
         } else if (num == 4) {
-            pos.pos4(cellsLeft);
+            pos.pos4(this.cellsLeft);
             System.out.println("posicion 4");
         } else if (num == 5) {
-            pos.pos5(cellsLeft);
+            pos.pos5(this.cellsLeft);
             System.out.println("posicion 5");
         } 
 
         // Guardar posciones de barco 
-        for (int i = 0; i < cellsRight.length; i++) {
-            for (int j = 0; j < cellsRight.length; j++) {
-                if (cellsRight[i][j].getCellColor().equals(colorShip)) {
+        for (int i = 0; i < this.cellsRight.length; i++) {
+            for (int j = 0; j < this.cellsRight.length; j++) {
+                if (this.cellsRight[i][j].getCellColor().equals(colorShip)) {
                     Cor pos = new Cor(i, j);
                     addIn(fletShips, pos);
                 }
             }
         }
+
+        addCellsListener();
     }
 
     private void addIn(Cor[] fletShips, Cor pos) {
@@ -404,6 +399,10 @@ public class LanMatchController implements ActionListener {
     }
 
     private void gameActions(int i, int j) {
+        if (!shipsSended) {
+            sendShips();
+        }
+        shipsSended = true;
         System.out.println("Disparo en: [" + i + ", " + j + "]");
         Cor posCell = new Cor(i, j);
         System.out.println("Posciones guardadas en:" + posCell.x + posCell.y);
@@ -460,6 +459,13 @@ public class LanMatchController implements ActionListener {
         return corArray;
     }
     
+    private void sendShips() {
+        if (mode.equals("server")) {
+            sendServerPosShips(fletShips);
+        } else {
+            sendClientPosShips(fletShips);
+        }
+    }
 
     /* Getters y setters */
     public void setServerSocket(ServerSocket serverSocket) {
