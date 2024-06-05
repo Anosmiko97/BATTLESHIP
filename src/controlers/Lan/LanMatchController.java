@@ -161,7 +161,9 @@ public class LanMatchController implements ActionListener {
     private void unlockCells(Cell[][] cells) {
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells.length; j++) {
-                cells[i][j].getButton().setEnabled(true);
+                if (i != 0 && j != 0) {
+                    cells[i][j].getButton().setEnabled(true);
+                }
             }
         }
     }
