@@ -304,9 +304,7 @@ public class LanMatchController implements ActionListener {
                     stopClient();
                     
                 } else if ("gane".equalsIgnoreCase(serverMessage)) {
-                    FinishPartyView finish = new FinishPartyView(false);
-                    finish.setVisible(true);
-                    stopClient();
+                    stopGame();
                     
                 } else if ("turno".equalsIgnoreCase(serverMessage)) {
                     turn = true;
@@ -455,14 +453,25 @@ public class LanMatchController implements ActionListener {
 
     private void endGame() {
         if (mode.equals("server")) {
-            FinishPartyView finish = new FinishPartyView(true);
-            sendServerRequest("gane");
-            stopServer(null);
-
+            Thread finishServer = new Thread(() -> {
+                sendServerRequest("gane");
+                stopServer(false);
+            });
+            serverThread.start();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                FinishPartyView finish = new FinishPartyView(true);
+                finish.setVisible(true);
+            });
         } else if (mode.equals("client")) {
-            FinishPartyView finish = new FinishPartyView(false);
-            sendServerRequest("gane");
-            stopClient();
+            Thread finishClient = new Thread(() -> {
+                sendServerRequest("gane");
+                stopClient();
+            });
+            serverThread.start();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                FinishPartyView finish = new FinishPartyView(true);
+                finish.setVisible(true);
+            });
         }
     }
 
