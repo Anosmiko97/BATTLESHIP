@@ -388,7 +388,7 @@ public class LanMatchController implements ActionListener {
         if (mode.equals("server")) {
             sendServerRequest(cor);
         } else if (mode.equals("client")) {
-            sendClientRequest("tiro");
+            sendClientRequest(cor);
         }
     }
 
