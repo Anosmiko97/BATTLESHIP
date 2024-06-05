@@ -362,7 +362,7 @@ public class LanMatchController implements ActionListener {
         for (int i = 0; i < opponentShips.length; i++) {
             if (posShot.x == opponentShips[i].x && posShot.y == opponentShips[i].y) {
                 System.out.println("DISPARRO ACERTADO");
-                cellsRight[posShot.x][posShot.y].setCellColor(colorWhite);
+                cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
                 sendResquestShot(posShot);
                 break;
             } else {
