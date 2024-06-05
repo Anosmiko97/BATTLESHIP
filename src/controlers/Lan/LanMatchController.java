@@ -143,24 +143,19 @@ public class LanMatchController implements ActionListener {
         } 
 
         // Guardar posciones de barco 
-        for (int i = 0; i < this.cellsRight.length; i++) {
-            for (int j = 0; j < this.cellsRight.length; j++) {
-                if (this.cellsRight[i][j].getCellColor().equals(colorShip)) {
+        for (int i = 0; i < this.cellsLeft.length; i++) {
+            for (int j = 0; j < this.cellsLeft.length; j++) {
+                if (this.cellsLeft[i][j].getCellColor().equals(colorShip)) {
                     Cor pos = new Cor(i, j);
-                    fletShips += convertToStr(pos);
+                    fletShips += "[" + String.valueOf(pos.x) + "|" + String.valueOf(pos.y) + "]" + ",";
                 }
             }
         }
 
+        System.out.println("Cadena de => " + fletShips);
+
         addCellsListener();
     }
-
-    private String convertToStr(Cor pos) {
-        String x = String.valueOf(pos.x);
-        String strPos = "[" + String.valueOf(pos.x) + "|" + String.valueOf(pos.x) + "]" + ",";
-
-        return strPos;
-    }  
 
     private void lockCells(Cell[][] cells) {
         for (int i = 0; i < cells.length; i++) {
@@ -227,19 +222,6 @@ public class LanMatchController implements ActionListener {
             System.err.println("Error en el servidor: " + e.getMessage());
             e.printStackTrace();
         } 
-    }
-
-    private void sendServerPosShips(Cor[] posShips) {
-        try (ObjectOutputStream out = new ObjectOutputStream(clientConn.getOutputStream())
-        ) {
-            out.writeObject(posShips);
-        } catch (UnknownHostException e) {
-            System.err.println("No se puede conectar al host: " + ipHost);
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.err.println("Error de entrada/salida al conectar con el servidor: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public void sendServerRequest(String ms) {
