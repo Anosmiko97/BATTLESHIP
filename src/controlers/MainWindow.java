@@ -112,7 +112,6 @@ public class MainWindow extends JFrame implements ActionListener {
         this.lanView.addReturnButtonListener(this);
         this.lanView.addJoinMatchButtonListener(this);
         this.lanView.addMakeMatchButtonListener(this); 
-        this.finishPartyView.addReturnButtonListener(this);
     }
 
     private User setNameAndFlag() {
@@ -307,6 +306,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
         finishPartyView = new FinishPartyView(false);
+        this.finishPartyView.addReturnButtonListener(this);
         if (mode.equals("client")) {
             lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, finishPartyView, "client");
             
