@@ -199,36 +199,27 @@ public class LanMatchController implements ActionListener {
                 clientConn = serverSocket.accept(); 
 
                 // Leer mensajes del cliente
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
-                    ObjectInputStream inObj = new ObjectInputStream(clientConn.getInputStream());
-                ) {
-                    Object receivedObj = inObj.readObject();
-                    String inputLine;
-                    while ((inputLine = in.readLine()) != null) {
-                        System.out.println("Cliente dice: " + inputLine);
-                        
-                        if ("salir".equalsIgnoreCase(inputLine)) {
-                            serverRunning = false;
-                        } else if ("turno".equalsIgnoreCase(inputLine)) {
-                            turn = true;
-                            refreshMessage("TU TURNO");
-                            unlockCells(cellsRight);
-                        
-                        } else if ("turno".equalsIgnoreCase(inputLine)) {
-                            System.out.println("nos dieron, fack");
-
-                        // Recibir coordenadas
-                        } else if (receivedObj instanceof Object[]) {
-                            System.out.println("Recibido arreglo de objetos");
-                            Object[] objArray = (Object[]) receivedObj;
-                            opponentShips = convertToCor(objArray);
-                        } else if (receivedObj instanceof Object) {
-                            System.out.println("Recibido objeto solo");
-                            System.out.println("Recibido objeto solo");
+                try (ObjectInputStream inObj = new ObjectInputStream(clientConn.getInputStream())) {
+                    Object receivedObj;
+                    while ((receivedObj = inObj.readObject()) != null) {
+                        if (receivedObj instanceof String) {
+                            String inputLine = (String) receivedObj;
+                            System.out.println("Cliente dice: " + inputLine);
+                            if ("salir".equalsIgnoreCase(inputLine)) {
+                                serverRunning = false;
+                                break;
+                            }
+                        } else if (receivedObj instanceof Cor) {
                             Cor posShoot = (Cor) receivedObj;
                             checkShoot(posShoot);
+                        } else if (receivedObj instanceof Object[]) {
+                            Object[] objArray = (Object[]) receivedObj;
+                            opponentShips = convertToCor(objArray);
                         }
                     }
+                } catch (IOException e) {
+                    System.err.println("Error al manejar la conexión del cliente: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
@@ -250,7 +241,7 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    public void sendServerRequest(String ms) {
+    public void sendServerRequest(String ms) { //error
         try {
             PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
             out.println(ms);
@@ -263,7 +254,7 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    private void sendServerCor(Cor posShip) {
+    private void sendServerCor(Cor posShip) { // error
         try (ObjectOutputStream out = new ObjectOutputStream(clientConn.getOutputStream())
         ) {
             out.writeObject(posShip);
@@ -299,42 +290,48 @@ public class LanMatchController implements ActionListener {
         try {
             clientSocket = new Socket(ipHost, port); 
             System.out.println("Conectado al servidor en " + ipHost + ":" + port);
-            while (clientRunning) {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    Scanner scanner = new Scanner(System.in);
-                    ObjectInputStream inObj = new ObjectInputStream(clientSocket.getInputStream());
-                    ) {
-                    Object receivedObj = inObj.readObject();
-                    String userInput;
+            try (ObjectInputStream inObj = new ObjectInputStream(clientSocket.getInputStream());
+                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                 Scanner scanner = new Scanner(System.in)) {
+                 
+                 Object receivedObj;
+    
+                 // Leer mensajes del servidor como objetos
+                 while (clientRunning && (receivedObj = inObj.readObject()) != null) {
+                     if (receivedObj instanceof String) {
+                         String serverMessage = (String) receivedObj;
+                         System.out.println("Servidor dice: " + serverMessage);
+                         
+                         if ("salir".equalsIgnoreCase(serverMessage)) {
+                             clientRunning = false;
+                         } else if ("turno".equalsIgnoreCase(serverMessage)) {
+                             turn = true;
+                             refreshMessage("TU TURNO");
+                             unlockCells(cellsRight);
+                         } else if ("tiro".equalsIgnoreCase(serverMessage)) {
+                             System.out.println("Nos dieron, fack");
+                         }
 
-                    // Leer mensages de servidor
-                    while ((userInput = scanner.nextLine()) != null) {
-                        out.println(userInput); 
-                        String response = in.readLine(); 
-                        System.out.println("Servidor dice: " + response);
-                        
-                        if ("salir".equalsIgnoreCase(userInput)) {
-                            clientRunning = false;
-                        } else if ("turno".equalsIgnoreCase(response)) {
-                            turn = true;
-                            refreshMessage("TU TURNO");
-                            unlockCells(cellsRight);
-                        } else if ("tiro".equalsIgnoreCase(response)) {
-                            System.out.println("Nos dieon, fack");
-
-                        // Recibir coordenadas
-                        } else if (receivedObj instanceof Object[]) {
-                            System.out.println("Recibido arreglo de objetos");
-                            Object[] objArray = (Object[]) receivedObj;
-                            opponentShips = convertToCor(objArray);
-                        } else if (receivedObj instanceof Object) {
-                            System.out.println("Recibido objeto solo");
-                            Cor posShoot = (Cor) receivedObj;
-                            checkShoot(posShoot);
-                        }
-                    }
-                }
+                    // Recibir coordenadas
+                     } else if (receivedObj instanceof Object[]) {
+                         System.out.println("Recibido arreglo de objetos");
+                         Object[] objArray = (Object[]) receivedObj;
+                         opponentShips = convertToCor(objArray);
+                     } else if (receivedObj instanceof Cor) {
+                         System.out.println("Recibido objeto solo");
+                         Cor posShoot = (Cor) receivedObj;
+                         checkShoot(posShoot);
+                     }
+    
+                     // Envío de mensajes al servidor
+                     if (scanner.hasNextLine()) {
+                         String userInput = scanner.nextLine();
+                         out.println(userInput);  // Asumiendo que también estamos enviando texto plano aquí, puede necesitar ser objeto también
+                         if ("salir".equalsIgnoreCase(userInput)) {
+                             clientRunning = false;
+                         }
+                     }
+                 }
             }
         } catch (UnknownHostException e) {
             System.err.println("No se puede conectar al host: " + ipHost);
@@ -344,6 +341,7 @@ public class LanMatchController implements ActionListener {
             e.printStackTrace();
         } 
     }
+    
 
     public void sendClientPosShips(Cor[] posShips) {
         try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
