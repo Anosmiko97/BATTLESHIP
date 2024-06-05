@@ -76,10 +76,11 @@ public class FinishPartyView extends JDialog {
     }
 
     private JButton createReturnButton() {
-        JButton button = new JButton("REGRESAR AL MENU");
+        JButton button = new JButton();
         button.setBackground(properties.getButtonColor());
         button.setFont(new Font("ARIAL", Font.PLAIN, 20));
         button.setForeground(Color.WHITE);
+        button.setEnabled(false);
 
         return button;
     }
@@ -94,10 +95,5 @@ public class FinishPartyView extends JDialog {
     }
     public boolean getWin() {
         return this.win;
-    }
-
-    /* ActionListeners */
-    public void addReturnButtonListener(ActionListener listener) {
-        returnMenuButton.addActionListener(listener);
     }
 }

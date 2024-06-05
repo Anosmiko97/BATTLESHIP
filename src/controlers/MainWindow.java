@@ -154,8 +154,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
-            isRunningServer(false);
-            changePanel(menuView);
+            returnMenu();
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
             System.out.println("unirse a partida");
@@ -167,10 +166,7 @@ public class MainWindow extends JFrame implements ActionListener {
             LanServer();
 
         } else if (e.getActionCommand().equals("Crear reporte")) {
-            System.out.println("boton de pdf");
-
-        } else if (e.getActionCommand().equals("REGRESAR EL MENU")) {
-            System.out.println("boton de REGRESAR AL MENU");
+            System.out.println("boton de pdf");   
 
         } else if (e.getActionCommand().equals("CANCELAR")) {
             System.out.println("boton de cancelar [CREAR PARTIDA]");
@@ -187,6 +183,14 @@ public class MainWindow extends JFrame implements ActionListener {
                 e1.printStackTrace();
             }
         }
+    }
+
+    private void returnMenu() {
+        isRunningServer(false);
+        if (finishPartyView.isVisible()) {
+            finishPartyView.dispose();
+        }
+        changePanel(menuView);
     }
 
     private void changePanel(JPanel panel) {
@@ -305,13 +309,11 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
         lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
-        finishPartyView = new FinishPartyView(false);
-        this.finishPartyView.addReturnButtonListener(this);
         if (mode.equals("client")) {
-            lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, finishPartyView, "client");
+            lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, "client");
             
         } else if (mode.equals("server")) {
-            lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, finishPartyView, "server");
+            lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, "server");
             
         }
         this.lanMatchView.addExitButtonListener(this);

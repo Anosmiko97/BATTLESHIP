@@ -26,7 +26,6 @@ public class LanMatchController implements ActionListener {
     private AppProperties properties = new  AppProperties();
     private MatchView matchView;
     private MenuView menuView;
-    private FinishPartyView finishPartyView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
 
@@ -69,9 +68,8 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, FinishPartyView finishPartyView, String mode) {
+    public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
-        this.finishPartyView = finishPartyView;
         shipsSended = false;
         this.ipHost = ipHost;
         setPosShips(cellsRight, cellsLeft);
@@ -427,8 +425,8 @@ public class LanMatchController implements ActionListener {
             if (posShips[i].x == x && posShips[i].y == y) {
                 System.out.println("nos dieron, cambio a rojo");
                 totalShips -= 1;
-                checkTotalShips();
                 cellsLeft[x][y].setCellColor(colorRed);
+                checkTotalShips();
             } else {
                 System.out.println("NO DIO EN EL BALNCO");
                 cellsLeft[x][y].setCellColor(colorRed);
@@ -444,14 +442,12 @@ public class LanMatchController implements ActionListener {
 
     private void endGame() {
         if (mode.equals("server")) {
-            finishPartyView.setWin(true);
-            finishPartyView.setVisible(true);
+            FinishPartyView finish = new FinishPartyView(true);
             sendServerRequest("gane");
             stopServer(null);
 
         } else if (mode.equals("client")) {
-            finishPartyView.setWin(true);
-            finishPartyView.setVisible(true);
+            FinishPartyView finish = new FinishPartyView(false);
             sendServerRequest("gane");
             stopClient();
         }
