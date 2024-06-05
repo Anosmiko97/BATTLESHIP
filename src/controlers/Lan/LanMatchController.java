@@ -357,6 +357,7 @@ public class LanMatchController implements ActionListener {
 
         if (mode.equals("server")) {
             System.out.println("TURNO DEL CLIENTE");
+            updateScores(i, j);
             sendScoreToRival();
             sendServerRequest("turno");
         } else if (mode.equals("client")) {
@@ -371,7 +372,6 @@ public class LanMatchController implements ActionListener {
             if (posShot.x == opponentShips[i].x && posShot.y == opponentShips[i].y) {
                 System.out.println("DISPARRO ACERTADO");
                 cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
-                updateScores(posShot.x, posShot.y);
                 sendResquestShot(posShot);
                 break;
             } else {
