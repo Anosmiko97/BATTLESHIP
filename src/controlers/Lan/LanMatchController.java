@@ -208,9 +208,7 @@ public class LanMatchController implements ActionListener {
                     stopServer(false);
 
                 } else if ("gane".equalsIgnoreCase(inputLine)) {
-                    finishPartyView.setWin(false);
-                    finishPartyView.setVisible(true);
-                    stopServer(false);
+                    stopGame();
                     
                 } else if ("turno".equalsIgnoreCase(inputLine)) {
                     turn = true;
@@ -231,6 +229,21 @@ public class LanMatchController implements ActionListener {
             System.err.println("Error al manejar la conexión del cliente: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void stopGame() {
+        Thread finishServer = new Thread(() -> {
+            if (mode.equals("server")) {
+                stopServer(false);
+            } else {
+                stopClient();
+            }
+        });
+        serverThread.start();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            FinishPartyView finish = new FinishPartyView(false);
+            finish.setVisible(true);
+        });
     }
 
     public void sendServerRequest(String ms) {
@@ -291,8 +304,8 @@ public class LanMatchController implements ActionListener {
                     stopClient();
                     
                 } else if ("gane".equalsIgnoreCase(serverMessage)) {
-                    finishPartyView.setWin(false);
-                    finishPartyView.setVisible(true);
+                    FinishPartyView finish = new FinishPartyView(false);
+                    finish.setVisible(true);
                     stopClient();
                     
                 } else if ("turno".equalsIgnoreCase(serverMessage)) {
