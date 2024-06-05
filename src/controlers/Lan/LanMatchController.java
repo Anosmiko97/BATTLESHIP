@@ -238,12 +238,14 @@ public class LanMatchController implements ActionListener {
             matchView.refreshMessagePanel();
             matchView.refreshHeaderPanel();
             stopServer(false);
+            FinishPartyView finishPartyView = new FinishPartyView(false);
         } else {
             matchView.setMessage("PERDISTE");
             lockCells(cellsRight);
             matchView.refreshMessagePanel();
             matchView.refreshHeaderPanel();
             stopClient();
+            FinishPartyView finishPartyView = new FinishPartyView(false);
         }
     }
 
@@ -257,6 +259,12 @@ public class LanMatchController implements ActionListener {
         } catch (IOException e) {
             System.err.println("Error de entrada/salida al conectar con el cliente: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public void isRunningServer(boolean message) {
+        if (serverRunning == true) {
+            stopServer(message);
         }
     }
 
@@ -344,7 +352,7 @@ public class LanMatchController implements ActionListener {
         }
     } 
     
-    private void stopClient() {
+    public void stopClient() {
         clientRunning = false;
         if (clientSocket != null && !clientSocket.isClosed()) {
             try {
@@ -435,14 +443,11 @@ public class LanMatchController implements ActionListener {
         posShips = strToCorArray(fletShips);
         for (int i = 0; i < posShips.length; i ++) {
             if (posShips[i].x == x && posShips[i].y == y) {
-                System.out.println("nos dieron, cambio a rojo");
                 totalShips -= 1;
+                System.out.println("nos dieron, cambio a rojo: " + totalShips);
                 cellsLeft[x][y].setCellColor(colorRed);
                 checkTotalShips();
-            } else {
-                System.out.println("NO DIO EN EL BALNCO");
-                cellsLeft[x][y].setCellColor(colorRed);
-            }  
+            } 
         }
     }
 
@@ -459,12 +464,14 @@ public class LanMatchController implements ActionListener {
             matchView.refreshMessagePanel();
             matchView.refreshHeaderPanel();
             sendServerRequest("gane");
+            FinishPartyView finishPartyView = new FinishPartyView(true);
         } else if (mode.equals("client")) {
             matchView.setMessage("GANASTE");
             lockCells(cellsRight);
             matchView.refreshMessagePanel();
             matchView.refreshHeaderPanel();
             sendClientRequest("gane");
+            FinishPartyView finishPartyView = new FinishPartyView(true);
         }
     }
 

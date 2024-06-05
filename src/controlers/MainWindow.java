@@ -143,9 +143,9 @@ public class MainWindow extends JFrame implements ActionListener {
             changePanel(lanView);
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
-            System.out.println("Boton de salir [match]");
             lanMatchController.setMenuView(menuView);
             lanMatchController.stopServer(false);
+            lanMatchController.stopClient();
             changePanel(menuView);
 
         } else if (e.getSource() == menuView.getSettingsButton()) {
@@ -154,7 +154,8 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
-            returnMenu();
+            stopServer(false);
+            changePanel(menuView);
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
             System.out.println("unirse a partida");
@@ -171,7 +172,7 @@ public class MainWindow extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("CANCELAR")) {
             System.out.println("boton de cancelar [CREAR PARTIDA]");
             createMatchView.dispose();
-            isRunningServer(false);
+            stopServer(false);
             serverThread.interrupt();
 
         } else if (e.getActionCommand().equals("UNIRSE")) {
@@ -183,14 +184,6 @@ public class MainWindow extends JFrame implements ActionListener {
                 e1.printStackTrace();
             }
         }
-    }
-
-    private void returnMenu() {
-        isRunningServer(false);
-        if (finishPartyView.isVisible()) {
-            finishPartyView.dispose();
-        }
-        changePanel(menuView);
     }
 
     private void changePanel(JPanel panel) {
@@ -261,15 +254,11 @@ public class MainWindow extends JFrame implements ActionListener {
         runningServer = true;
         try {
             serverSocket = new ServerSocket(port);
-    
             while (runningServer) {
-                Socket clientConn = serverSocket.accept(); // Acepta la conexión entrante
-
-                // Enviar la dirección IP del servidor al cliente
+                Socket clientConn = serverSocket.accept();
                 try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
                 ) {
-
                     // Enviar ip y nombre
                     String serverIP = clientConn.getLocalAddress().getHostAddress();
                     out.println(serverIP + "," + userModel.getName());
@@ -285,7 +274,7 @@ public class MainWindow extends JFrame implements ActionListener {
                         break;
                     }
                 } catch (IOException e) {
-                    System.err.println("Error al enviar la dirección IP del servidor al cliente: " + e.getMessage());
+                    JOptionPane.showMessageDialog(createMatchView, "Error de conexion", "ERROR", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         } catch (IOException e) {
@@ -317,12 +306,6 @@ public class MainWindow extends JFrame implements ActionListener {
             
         }
         this.lanMatchView.addExitButtonListener(this);
-    }
-
-    private void isRunningServer(boolean message) {
-        if (runningServer == true) {
-            stopServer(message);
-        }
     }
 
     private void stopServer(Boolean message) {
@@ -389,26 +372,11 @@ public class MainWindow extends JFrame implements ActionListener {
             String[] splitResponse = response.split(",");
             ipHost = splitResponse[0];
             opponentName = splitResponse[1];
-            System.out.println("Dirección IP del servidor recibida: " + ipHost);
-            stopClient();
-            
         } catch (UnknownHostException e) {
-            System.err.println("No se puede encontrar el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
-            System.err.println("Error al comunicar con el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
         } 
-    }
-
-    private void stopClient() {
-        if (clientSocket != null && !clientSocket.isClosed()) {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                System.out.println("Error al cerrar el cliente: " + e.getMessage());
-            }
-        }
     }
 
     public void runLanMatchClient() {
