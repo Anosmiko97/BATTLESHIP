@@ -5,22 +5,45 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Enumeration;
+
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 public class TestScript {
     public static void main(String[] args) {
-        Object[] objArray = new Object[] {new Cor(1, 2), new Cor(3, 4), "No soy un objeto Cor", new Cor(5, 6)};
-        Cor[] corArray = convertToCor1(objArray);
-        
-        // Imprime el arreglo de objetos Cor resultante
-        System.out.println("Arreglo de objetos Cor resultante:");
-        for (Cor cor : corArray) {
+        String str = "[1|3],[1|3],[1|3],[1|3],";
+        int[][] result = convertStringToIntArray(str);
+        for (int[] arr : result) {
+            System.out.println("[" + arr[0] + ", " + arr[1] + "]");
+        }
+    }
+
+    public static int[][] convertStringToIntArray(String str) {
+        str = str.substring(0, str.length() - 1);
+        str = str.replace("[", "").replace("]", "");
+        String[] pairs = str.split(",");
+        printArray(pairs);
+        int[][] result = new int[pairs.length][2];
+
+        for (int i = 0; i < pairs.length; i++) {
+            String[] nums = pairs[i].split("\\|");
+            result[i][0] = Integer.parseInt(nums[0]);
+            result[i][1] = Integer.parseInt(nums[1]);
+        }
+
+        return result;
+    }
+
+    private static void printArray(String[] corArray) {
+        for (String cor : corArray) {
             if (cor != null) {
-                System.out.println("Cor[x=" + cor.x + ", y=" + cor.y + "]");
+                System.out.print(cor + ",");
             } else {
-                System.out.println("Elemento nulo en el arreglo de objetos Cor.");
+                System.out.print("Coordenada: null");
             }
         }
+        System.out.println();
     }
 
     public static Cor[] convertToCor(Object[] objArray) {
@@ -44,21 +67,7 @@ public class TestScript {
     }
 
 
-    public static Cor[] convertToCor1(Object[] objArray) {
-        Cor[] corArray = new Cor[objArray.length];
-        
-        for (int i = 0; i < objArray.length; i++) {
-            // Comprueba si el elemento del arreglo es una instancia de la clase Cor
-            if (objArray[i] instanceof Cor) {
-                corArray[i] = (Cor) objArray[i]; // Realiza un casting al tipo Cor
-            } else {
-                // Si el elemento no es una instancia de la clase Cor, imprime un mensaje de advertencia
-                System.err.println("Elemento en la posición " + i + " no es una instancia de la clase Cor.");
-            }
-        }
-        
-        return corArray;
-    }
+    
 }
 
 class Cor {

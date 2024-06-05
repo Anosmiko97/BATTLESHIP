@@ -53,7 +53,7 @@ public class LanMatchController implements ActionListener {
     private int cellsShips;
     private String opponentName;
     private ShipsPos pos = new ShipsPos();
-    private Cor[] fletShips;
+    private String fletShips;
     private boolean turn;
     private String message;
     private Cor[] opponentShips;
@@ -62,7 +62,7 @@ public class LanMatchController implements ActionListener {
         this.mode = mode;
         shipsSended = false;
         this.ipHost = ipHost;
-        fletShips = new Cor[17];
+        fletShips = "";
         totalShips = 17;
         cellsShips = 0;
         setPosShips(cellsRight, cellsLeft);
@@ -147,7 +147,7 @@ public class LanMatchController implements ActionListener {
             for (int j = 0; j < this.cellsRight.length; j++) {
                 if (this.cellsRight[i][j].getCellColor().equals(colorShip)) {
                     Cor pos = new Cor(i, j);
-                    addIn(fletShips, pos);
+                    fletShips += convertToStr(pos);
                 }
             }
         }
@@ -155,14 +155,12 @@ public class LanMatchController implements ActionListener {
         addCellsListener();
     }
 
-    private void addIn(Cor[] fletShips, Cor pos) {
-        for (int i = 0; i < cellsRight.length; i++) {
-            if (fletShips[i] != null) {
-                fletShips[i] = pos;
-                break;
-            }
-        }
-    }
+    private String convertToStr(Cor pos) {
+        String x = String.valueOf(pos.x);
+        String strPos = "[" + String.valueOf(pos.x) + "|" + String.valueOf(pos.x) + "]" + ",";
+
+        return strPos;
+    }  
 
     private void lockCells(Cell[][] cells) {
         for (int i = 0; i < cells.length; i++) {
@@ -209,14 +207,16 @@ public class LanMatchController implements ActionListener {
                             if ("salir".equalsIgnoreCase(inputLine)) {
                                 serverRunning = false;
                                 break;
+                            } else {
+                                System.out.println("coordenadas recibidas");
+                                String receivedCor = (String) receivedObj;
+                                opponentShips = strToCorArray(receivedCor);
                             }
+
                         } else if (receivedObj instanceof Cor) {
                             Cor posShoot = (Cor) receivedObj;
                             checkShoot(posShoot);
-                        } else if (receivedObj instanceof Object[]) {
-                            Object[] objArray = (Object[]) receivedObj;
-                            opponentShips = convertToCor(objArray);
-                        }
+                        } 
                     }
                 } catch (IOException e) {
                     System.err.println("Error al manejar la conexión del cliente: " + e.getMessage());
@@ -314,26 +314,17 @@ public class LanMatchController implements ActionListener {
                              unlockCells(cellsRight);
                          } else if ("tiro".equalsIgnoreCase(serverMessage)) {
                              System.out.println("Nos dieron, fack");
+                         } else {
+                            System.out.println("Copordendad recibidas");
+                            String receivedCor = (String) receivedObj;
+                            opponentShips = strToCorArray(receivedCor);
                          }
 
                     // Recibir coordenadas
-                     } else if (receivedObj instanceof Object[]) {
-                         System.out.println("Recibido arreglo de objetos");
-                         Object[] objArray = (Object[]) receivedObj;
-                         opponentShips = convertToCor(objArray);
                      } else if (receivedObj instanceof Cor) {
                          System.out.println("Recibido objeto solo");
                          Cor posShoot = (Cor) receivedObj;
                          checkShoot(posShoot);
-                     }
-    
-                     // Envío de mensajes al servidor
-                     if (scanner.hasNextLine()) {
-                         String userInput = scanner.nextLine();
-                         out.println(userInput);  // Asumiendo que también estamos enviando texto plano aquí, puede necesitar ser objeto también
-                         if ("salir".equalsIgnoreCase(userInput)) {
-                             clientRunning = false;
-                         }
                      }
                  }
             }
@@ -346,7 +337,6 @@ public class LanMatchController implements ActionListener {
         } 
     }
     
-
     public void sendClientPosShips(Cor[] posShips) {
         try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
         ) {
@@ -454,27 +444,36 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    public static Cor[] convertToCor(Object[] objArray) {
-        Cor[] corArray = new Cor[objArray.length];
-        
-        for (int i = 0; i < objArray.length; i++) {
-            // Comprueba si el elemento del arreglo es una instancia de la clase Cor
-            if (objArray[i] instanceof Cor) {
-                corArray[i] = (Cor) objArray[i]; // Realiza un casting al tipo Cor
-            } else {
-                // Si el elemento no es una instancia de la clase Cor, imprime un mensaje de advertencia
-                System.err.println("Elemento en la posición " + i + " no es una instancia de la clase Cor.");
+    public Cor[] strToCorArray(String str) {
+        Cor[] corArray = new Cor[17];
+        str = str.substring(0, str.length() - 1);
+        str = str.replace("[", "").replace("]", "");
+        String[] pairs = str.split(",");
+
+        for (int i = 0; i < pairs.length; i++) {
+            String[] nums = pairs[i].split("\\|");
+            int x = Integer.parseInt(nums[0]);
+            int y = Integer.parseInt(nums[1]);
+            addTo(corArray, x, y);
+        }
+
+        return corArray;
+    }
+
+    private void addTo(Cor[] cors, int x, int y) {
+        for (int i = 0; i < cors.length; i++) {
+            if (cors[i] != null) {
+                Cor cor = new Cor(x, y);
+                cors[i] = cor;
             }
         }
-        
-        return corArray;
     }
     
     private void sendShips() {
         if (mode.equals("server")) {
-            sendServerPosShips(fletShips);
+            sendServerRequest(fletShips);
         } else {
-            sendClientPosShips(fletShips);
+            sendClientRequest(fletShips);
         }
     }
 
