@@ -1,7 +1,6 @@
 package controlers.Lan;
 
 import java.awt.Color;
-import java.awt.Menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -15,15 +14,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.Scanner;
-
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import models.AppProperties;
 
 /* Clases propias */
 import models.Cell;
 import models.ShipsPos;
+import models.AppProperties;
 import views.MatchView;
 import views.MenuView;
 
@@ -108,11 +104,19 @@ public class LanMatchController implements ActionListener {
             lockCells(cellsRight);
         }
 
+        // Refrescar vista
         this.matchView = matchView;
         this.matchView.setMessage(message);
         this.matchView.refreshMessagePanel();
         this.matchView.refreshHeaderPanel();
+        
+        // Mandar posciones de barco al rival
         setPosShips();
+        if (mode.equals("server")) {
+            sendServerPosShips(fletShips);
+        } else {
+            sendClientPosShips(fletShips);
+        }
         addCellsListener();
     }
 
@@ -142,6 +146,25 @@ public class LanMatchController implements ActionListener {
             pos.pos5(cellsLeft);
             System.out.println("posicion 5");
         } 
+
+        // Guardar posciones de barco 
+        for (int i = 0; i < cellsRight.length; i++) {
+            for (int j = 0; j < cellsRight.length; j++) {
+                if (cellsRight[i][j].getCellColor().equals(colorShip)) {
+                    Cor pos = new Cor(i, j);
+                    addIn(fletShips, pos);
+                }
+            }
+        }
+    }
+
+    private void addIn(Cor[] fletShips, Cor pos) {
+        for (int i = 0; i < cellsRight.length; i++) {
+            if (fletShips[i] != null) {
+                fletShips[i] = pos;
+                break;
+            }
+        }
     }
 
     private void lockCells(Cell[][] cells) {
@@ -188,16 +211,25 @@ public class LanMatchController implements ActionListener {
                         System.out.println("Cliente dice: " + inputLine);
                         
                         if ("salir".equalsIgnoreCase(inputLine)) {
-                            break;
-                        } else if ("turno".equalsIgnoreCase(inputLine)){
+                            serverRunning = false;
+                        } else if ("turno".equalsIgnoreCase(inputLine)) {
                             turn = true;
                             refreshMessage("TU TURNO");
                             unlockCells(cellsRight);
+                        
+                        } else if ("turno".equalsIgnoreCase(inputLine)) {
+                            System.out.println("nos dieron, fack");
+
+                        // Recibir coordenadas
                         } else if (receivedObj instanceof Object[]) {
                             System.out.println("Recibido arreglo de objetos");
-
+                            Object[] objArray = (Object[]) receivedObj;
+                            opponentShips = convertToCor(objArray);
                         } else if (receivedObj instanceof Object) {
                             System.out.println("Recibido objeto solo");
+                            System.out.println("Recibido objeto solo");
+                            Cor posShoot = (Cor) receivedObj;
+                            checkShoot(posShoot);
                         }
                     }
                 }
@@ -286,11 +318,15 @@ public class LanMatchController implements ActionListener {
                         System.out.println("Servidor dice: " + response);
                         
                         if ("salir".equalsIgnoreCase(userInput)) {
-                            break;
+                            clientRunning = false;
                         } else if ("turno".equalsIgnoreCase(response)) {
                             turn = true;
                             refreshMessage("TU TURNO");
                             unlockCells(cellsRight);
+                        } else if ("tiro".equalsIgnoreCase(response)) {
+                            System.out.println("Nos dieon, fack");
+
+                        // Recibir coordenadas
                         } else if (receivedObj instanceof Object[]) {
                             System.out.println("Recibido arreglo de objetos");
                             Object[] objArray = (Object[]) receivedObj;
@@ -325,7 +361,7 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    public void sendClientResquest(String ms) {
+    public void sendClientRequest(String ms) {
         try { 
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             out.println(ms);
@@ -350,7 +386,6 @@ public class LanMatchController implements ActionListener {
             e.printStackTrace();
         }
     }
- 
 
     /* Codigo para acciones de juego */
     @Override
@@ -382,18 +417,27 @@ public class LanMatchController implements ActionListener {
         } else if (mode.equals("client")) {
             System.out.println("TURNO DEL RIVAL");
             sendClientCor(posCell);
-            sendClientResquest("turno");
+            sendClientRequest("turno");
         }
     }
 
     private void checkShoot(Cor posShot) {
         if (cellsRight[posShot.x][posShot.x].getCellColor().equals(colorShip)) {
             System.out.println("Nos dieron XDXDXD");
-                cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
+            cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
+            sendResquestShot();
         } else {
             System.out.println("No nos dieron");
             cellsRight[posShot.x][posShot.y].setCellColor(colorWhite);
         }         
+    }
+
+    private void sendResquestShot() {
+        if (mode.equals("server")) {
+            sendServerRequest("tiro");
+        } else if (mode.equals("client")) {
+            sendClientRequest("tiro");
+        }
     }
 
     private Cor[] convertToCor(Object[] objArray) {
