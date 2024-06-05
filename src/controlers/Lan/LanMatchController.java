@@ -363,11 +363,13 @@ public class LanMatchController implements ActionListener {
             if (posShot.x == opponentShips[i].x && posShot.y == opponentShips[i].y) {
                 System.out.println("DISPARRO ACERTADO");
                 cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
+                cellsLeft[posShot.x][posShot.y].setCellColor(colorRed);
                 sendResquestShot(posShot);
                 break;
             } else {
                 System.out.println("NO DIO EN EL BALNCO");
                 cellsRight[posShot.x][posShot.y].setCellColor(colorWhite);
+                cellsLeft[posShot.x][posShot.y].setCellColor(colorWhite);
             }
         }          
     }
