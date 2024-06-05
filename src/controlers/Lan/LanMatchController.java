@@ -103,6 +103,8 @@ public class LanMatchController implements ActionListener {
         this.matchView.setMessage(message);
         this.matchView.refreshMessagePanel();
         this.matchView.refreshHeaderPanel();
+
+        sendShips();
     }
 
     private void refreshMessage(String message) {
@@ -206,8 +208,9 @@ public class LanMatchController implements ActionListener {
                     System.out.println("Nos dieron, fack");
                     filterRecivedCors(inputLine);
                 } else {
-                    System.out.println("Coordenadas recibidas");
                     opponentShips = strToCorArray(inputLine);
+                    System.out.println("Coordenadas recibidas");
+                    printCorArray(opponentShips);
                 }
             }
         } catch (IOException e) {
@@ -276,8 +279,9 @@ public class LanMatchController implements ActionListener {
                         System.out.println("Nos dieron, fack");
                         filterRecivedCors(serverMessage);
                 } else {
-                    System.out.println("Coordenadas recibidas");
                     opponentShips = strToCorArray(serverMessage);
+                    System.out.println("Coordenadas recibidas");
+                    printCorArray(opponentShips);
                 }
             }
         } catch (IOException e) {
@@ -315,11 +319,6 @@ public class LanMatchController implements ActionListener {
     }
 
     private void gameActions(int i, int j) {
-        if (!shipsSended) {
-            sendShips();
-        }
-        shipsSended = true;
-
         if (turn) {
             shoot(i, j);
         } 
@@ -422,6 +421,12 @@ public class LanMatchController implements ActionListener {
         }
     }
 
+    public void printCorArray(Cor[] array) {
+        for (Cor cor : array) {
+            System.out.println(cor);
+        }
+    }
+
     /* Getters y setters */
     public void setServerSocket(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -452,5 +457,12 @@ class Cor {
     public Cor(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public String toString() {
+        return "Cor{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
