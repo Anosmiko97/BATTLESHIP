@@ -378,7 +378,7 @@ public class LanMatchController implements ActionListener {
         totalShots += 1;
         checkShips(x, y);
         matchView.setShots(successfulShots);
-        matchView.setShots(totalShots);
+        matchView.setTotalShots(totalShots);
         matchView.refreshHeaderPanel();
     }
 
@@ -390,7 +390,7 @@ public class LanMatchController implements ActionListener {
                 cellsLeft[x][y].setCellColor(colorRed);
             } else {
                 System.out.println("NO DIO EN EL BALNCO");
-                cellsLeft[x][y].setCellColor(colorWhite);
+                cellsLeft[x][y].setCellColor(colorRed);
             }  
         }
     }
