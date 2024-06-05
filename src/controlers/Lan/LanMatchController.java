@@ -241,15 +241,18 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    public void sendServerRequest(String ms) { //error
+    public void sendServerRequest(String ms) {
         try {
-            PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
-            out.println(ms);
+            ObjectOutputStream out = new ObjectOutputStream(clientConn.getOutputStream());
+            
+            // Envía el objeto (en este caso, una cadena)
+            out.writeObject(ms);
+            out.flush(); // Asegura que el mensaje se envía inmediatamente
         } catch (UnknownHostException e) {
-            System.err.println("No se puede conectar al host: " + ipHost);
+            System.err.println("No se puede conectar al cliente en localhost");
             e.printStackTrace();
         } catch (IOException e) {
-            System.err.println("Error de entrada/salida al conectar con el servidor: " + e.getMessage());
+            System.err.println("Error de entrada/salida al conectar con el cliente: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -357,9 +360,12 @@ public class LanMatchController implements ActionListener {
     }
 
     public void sendClientRequest(String ms) {
-        try { 
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            out.println(ms);
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+            
+            // Envía el objeto (en este caso, una cadena)
+            out.writeObject(ms);
+            out.flush(); // Asegura que el mensaje se envía inmediatamente
         } catch (UnknownHostException e) {
             System.err.println("No se puede conectar al cliente en localhost");
             e.printStackTrace();
