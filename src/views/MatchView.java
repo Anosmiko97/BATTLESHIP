@@ -82,11 +82,11 @@ public class MatchView extends JPanel {
         scorePanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
 
         // Labels para informacion de partida
-        JLabel scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunked);
+        JLabel scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunkedOppponent);
         scoreLabel1.setForeground(Color.WHITE);
-        JLabel scoreLabel2 = new JLabel("Disparos acertados: " + shots);
+        JLabel scoreLabel2 = new JLabel("Disparos acertados: " + shotsOpponent);
         scoreLabel2.setForeground(Color.WHITE);
-        JLabel scoreLabel3 = new JLabel("Total de disparos: " + totalShots);
+        JLabel scoreLabel3 = new JLabel("Total de disparos: " + totalShotsOppponent);
         scoreLabel2.setForeground(Color.WHITE);
         
         scorePanel.add(scoreLabel1);
