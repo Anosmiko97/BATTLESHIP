@@ -125,19 +125,14 @@ public class LanMatchController implements ActionListener {
         int num = random.nextInt(5) + 1;
         if (num == 1) {
             pos.pos1(this.cellsLeft);
-            System.out.println("posicion 1");
         } else if (num == 2) {
             pos.pos2(this.cellsLeft);
-            System.out.println("posicion 2");
         } else if (num == 3) {
             pos.pos3(this.cellsLeft);
-            System.out.println("posicion 3");
         } else if (num == 4) {
             pos.pos4(this.cellsLeft);
-            System.out.println("posicion 4");
         } else if (num == 5) {
             pos.pos5(this.cellsLeft);
-            System.out.println("posicion 5");
         } 
 
         // Guardar pocsiones de barco 
@@ -183,7 +178,6 @@ public class LanMatchController implements ActionListener {
         serverRunning = true;
         try {
             serverSocket = new ServerSocket(port); 
-            System.out.println("Servidor iniciado en el puerto: " + port);
             clientConn = new Socket();
             while (serverRunning) {        
                 clientConn = serverSocket.accept();
@@ -194,8 +188,7 @@ public class LanMatchController implements ActionListener {
                 processDataServer();
             }
         } catch (IOException e) {
-            System.err.println("Error en el servidor: " + e.getMessage());
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(menuView, "Error la iniciar servidor", "ERROR", JOptionPane.ERROR_MESSAGE);
         } 
     }
 
@@ -206,10 +199,8 @@ public class LanMatchController implements ActionListener {
             while ((inputLine = in.readLine()) != null) {
                 if ("salir".equalsIgnoreCase(inputLine)) {
                     stopServer(false);
-
                 } else if ("gane".equalsIgnoreCase(inputLine)) {
                     stopGame();
-                    
                 } else if ("turno".equalsIgnoreCase(inputLine)) {
                     turn = true;
                     refreshMessage("TU TURNO");
@@ -217,16 +208,13 @@ public class LanMatchController implements ActionListener {
                 } else if ('s' == inputLine.charAt(0)) {
                     System.out.println("Score revido");
                     filterScore(inputLine);
-
                 } else if ('d' == inputLine.charAt(0)) {
-                    System.out.println("Coordenadas recibidas");
                     filterRecivedCors(inputLine);
                 } else {
                     opponentShips = strToCorArray(inputLine);
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error al manejar la conexión del cliente: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -278,7 +266,6 @@ public class LanMatchController implements ActionListener {
                 if (message) {
                     JOptionPane.showMessageDialog(menuView, "Servidor detenido", "ERROR", JOptionPane.INFORMATION_MESSAGE);
                 }
-                System.out.println("Servidor detenido");
             } catch (IOException e) {
                 System.out.println("Error al cerrar el servidor: " + e.getMessage());
             }
