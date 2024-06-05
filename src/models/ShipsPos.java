@@ -117,7 +117,7 @@ public class ShipsPos {
         }
     
         // Establecer cruiser
-        for (int i = 0; i < 0+3; i++) {
+        for (int i = 1; i < 1+3; i++) {
             cells[i][8].setCellColor(colorShip);
             cells[i][8].setShip("cruiser"); 
         }

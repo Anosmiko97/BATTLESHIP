@@ -1,6 +1,7 @@
 package controlers.Lan;
 
 import java.awt.Color;
+import java.awt.Menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -12,16 +13,22 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import models.AppProperties;
 
 /* Clases propias */
 import models.Cell;
 import models.ShipsPos;
 import views.MatchView;
+import views.MenuView;
 
 public class LanMatchController implements ActionListener {
     private AppProperties properties = new  AppProperties();
     private MatchView matchView;
+    private MenuView menuView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
 
@@ -83,7 +90,8 @@ public class LanMatchController implements ActionListener {
         this.matchView = matchView;
         this.cellsRight = cellsRight;
         this.cellsLeft = cellsLeft;
-        setPosShips();
+        pos.pos4(cellsLeft);
+        //setPosShips();
         addCellsListener();
     }
 
@@ -233,6 +241,23 @@ public class LanMatchController implements ActionListener {
         }
     }
 
+    public void stopServer(Boolean message) {
+        serverRunning = false;
+
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+
+                if (message) {
+                    JOptionPane.showMessageDialog(menuView, "Servidor detenido", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                }
+                System.out.println("Servidor detenido");
+            } catch (IOException e) {
+                System.out.println("Error al cerrar el servidor: " + e.getMessage());
+            }
+        }
+    }
+
     public void gameActions(int i, int j) {
         System.out.println("Disparo en: [" + i + ", " + j + "]");
     }
@@ -250,6 +275,13 @@ public class LanMatchController implements ActionListener {
     }
     public Socket getClientSocket() {
         return this.clientSocket;
+    }
+
+    public void setMenuView(MenuView menuView) {
+        this.menuView = menuView;
+    }
+    public MenuView getMenuView() {
+        return this.menuView;
     }
 }
 

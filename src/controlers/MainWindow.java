@@ -142,7 +142,8 @@ public class MainWindow extends JFrame implements ActionListener {
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
             System.out.println("Boton de salir [match]");
-            isRunningServer(false);
+            lanMatchController.setMenuView(menuView);
+            lanMatchController.stopServer(false);
             changePanel(menuView);
 
         } else if (e.getSource() == menuView.getSettingsButton()) {

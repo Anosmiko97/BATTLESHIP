@@ -20,14 +20,14 @@ import views.MenuView;
 import models.AppProperties;
 import models.Cell;
 import models.User;
-import views.Local.MatchView;
+import views.MatchView;
 import controlers.Local.MatchController;
 
 public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
 
     public static void main(String[] args) throws IOException {
-        SqlErrorView e = new SqlErrorView();
+        TestView e = new TestView();
     }
     
     public TestView() throws IOException {
@@ -42,7 +42,7 @@ public class TestView extends JFrame{
         Socket client = new Socket();
         ServerSocket server = new ServerSocket();
         User user = new User("Uriel");
-        MatchView v = new MatchView(user,cellsRigth, cellsLeft);   
+        MatchView v = new MatchView(user, "Ale", cellsRigth, cellsLeft);   
         MatchController c = new MatchController(v, cellsRigth, cellsLeft);
 
         add(v);
