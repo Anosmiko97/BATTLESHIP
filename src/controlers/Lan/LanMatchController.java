@@ -6,17 +6,12 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
-
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 /* Clases propias */
 import models.Cell;
@@ -51,22 +46,30 @@ public class LanMatchController implements ActionListener {
     private Color colorRed = Color.decode("#FF0000");
     private Color colorWhite = Color.decode("#FFFFFF");
     private Color colorShip = Color.decode("#343434");
-    private int totalShips;
-    private int cellsShips;
+    private int totalShips = 17;
+    private int cellsShips = 0;
     private String opponentName;
     private ShipsPos pos = new ShipsPos();
-    private String fletShips;
+    private String fletShips = "";
+    private Cor[] posShips;
     private boolean turn;
     private String message;
     private Cor[] opponentShips;
+    private int shipsSunked = 0;
+    private int totalShots = 0;
+    private int successfulShots = 0;
+
+    /* Barcos */
+    private int carrier = 5;
+    private int battleship = 4;
+    private int cruiser = 3;
+    private int submarine = 3;
+    private int destroyer = 2;
 
     public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
         shipsSended = false;
         this.ipHost = ipHost;
-        fletShips = "";
-        totalShips = 17;
-        cellsShips = 0;
         setPosShips(cellsRight, cellsLeft);
 
         // Dependiendo del modo estblecido, correr hilos
@@ -209,8 +212,6 @@ public class LanMatchController implements ActionListener {
                     filterRecivedCors(inputLine);
                 } else {
                     opponentShips = strToCorArray(inputLine);
-                    System.out.println("Coordenadas recibidas");
-                    printCorArray(opponentShips);
                 }
             }
         } catch (IOException e) {
@@ -338,7 +339,6 @@ public class LanMatchController implements ActionListener {
     }
 
     private void shoot(int i, int j) {
-        // formato => 12,2
         System.out.println("Disparo en: [" + i + ", " + j + "]");
         Cor posCell = new Cor(i, j);
         System.out.println("Posciones guardadas en:" + posCell.x + posCell.y);
@@ -363,6 +363,7 @@ public class LanMatchController implements ActionListener {
             if (posShot.x == opponentShips[i].x && posShot.y == opponentShips[i].y) {
                 System.out.println("DISPARRO ACERTADO");
                 cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
+                updateScores(posShot.x, posShot.y);
                 sendResquestShot(posShot);
                 break;
             } else {
@@ -372,14 +373,49 @@ public class LanMatchController implements ActionListener {
         }          
     }
 
+    private void updateScores(int x, int y) {
+        successfulShots += 1;
+        totalShots += 1;
+        checkShips(x, y);
+        matchView.setShots(successfulShots);
+        matchView.setShots(totalShots);
+        matchView.refreshHeaderPanel();
+    }
+
     private void checkCells(int x, int y) {
-        if (cellsLeft[x][y].getCellColor().equals(colorShip)) {
-            System.out.println("nos dieron, cambio a rojo");
-            cellsLeft[x][y].setCellColor(colorRed);
+        posShips = strToCorArray(fletShips);
+        for (int i = 0; i < posShips.length; i ++) {
+            if (posShips[i].x == x && posShips[i].y == y) {
+                System.out.println("nos dieron, cambio a rojo");
+                cellsLeft[x][y].setCellColor(colorRed);
+            } else {
+                System.out.println("NO DIO EN EL BALNCO");
+                cellsLeft[x][y].setCellColor(colorWhite);
+            }  
+        }
+    }
+
+    private void checkShips(int x, int y) {
+        if (cellsLeft[x][y].getShip() == "carrier") {
+            updateSunkedShips(carrier, 5);
+        } else if (cellsLeft[x][y].getShip() == "battleship") {
+            updateSunkedShips(battleship, 4);
+        } else if (cellsLeft[x][y].getShip() == "cruiser") {
+            updateSunkedShips(cruiser, 3);
+        } else if (cellsLeft[x][y].getShip() == "submarine") {
+            updateSunkedShips(submarine, 3);
+        } else if (cellsLeft[x][y].getShip() == "destroyer") {
+            updateSunkedShips(destroyer, 2);
+        }
+    }
+
+    private void updateSunkedShips(int ship, int num) {
+        if (ship <= num) {
+            ship += 1;
         } else {
-            System.out.println("NO DIO EN EL BALNCO");
-            cellsLeft[x][y].setCellColor(colorWhite);
-        }  
+            shipsSunked += 1;
+            matchView.setShipsSunked(shipsSunked);
+        }
     }
 
     private void sendResquestShot(Cor posShot) {
@@ -421,9 +457,24 @@ public class LanMatchController implements ActionListener {
         for (int i = 0; i < cors.length; i++) {
             if (cors[i] == null) {
                 Cor cor = new Cor(x, y);
+                setShipIn(cor, i);
                 cors[i] = cor;
                 break;
             }
+        }
+    }
+
+    private void setShipIn(Cor cor, int i) {
+        if (i <= 5) {
+            cor.ship = "carrier";
+        } else if (i > 5 && i <= 9) {
+            cor.ship = "battleship";
+        } else if (i > 9 && i <= 12) {
+            cor.ship = "cruiser";
+        } else if (i > 12 && i <= 15) {
+            cor.ship = "submarine";
+        } else if (i > 15 && i <= 17) {
+            cor.ship = "destroyer";
         }
     }
 
@@ -459,6 +510,7 @@ public class LanMatchController implements ActionListener {
 class Cor {
     public int x;
     public int y;
+    public String ship;
 
     public Cor(int x, int y) {
         this.x = x;

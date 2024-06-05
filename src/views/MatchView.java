@@ -21,15 +21,16 @@ public class MatchView extends JPanel {
     private String userName;
     private String opponentName;
 
-    // Botones
-    JButton exitButton;
-
     // Atributos
+    JButton exitButton;
     private Cell[][] cellsRigth;
     private Cell[][] cellsLeft;
     private String message;
     private JLabel messagePanel;
     private JPanel headerPanel;
+    private int shipsSunked = 0;
+    private int totalShots = 0;
+    private int shots = 0;
 
     public MatchView(User userModel, String opponentName, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
@@ -56,11 +57,11 @@ public class MatchView extends JPanel {
         scorePanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
 
         // Labels para informacion de partida
-        JLabel scoreLabel1 = new JLabel("Barcos hundidos: 2");
+        JLabel scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunked);
         scoreLabel1.setForeground(Color.WHITE);
-        JLabel scoreLabel2 = new JLabel("Disparos acertados: 2");
+        JLabel scoreLabel2 = new JLabel("Disparos acertados: " + shots);
         scoreLabel2.setForeground(Color.WHITE);
-        JLabel scoreLabel3 = new JLabel("Total de disparos: 5");
+        JLabel scoreLabel3 = new JLabel("Total de disparos: " + totalShots);
         scoreLabel2.setForeground(Color.WHITE);
         
         scorePanel.add(scoreLabel1);
@@ -248,11 +249,35 @@ public class MatchView extends JPanel {
         this.userModel = user;
     }
 
-    public String getOppnentName() {
+    public String getOpponentName() {
         return this.opponentName;
     }
     public void setOpponentName(String name) {
         this.opponentName = name;
+    }
+
+    public int getShipsSunked() {
+        return this.shipsSunked;
+    }
+
+    public void setShipsSunked(int num) {
+        this.shipsSunked = num;
+    }
+
+    public int getTotalShots() {
+        return this.totalShots;
+    }
+
+    public void setTotalShots(int num) {
+        this.totalShots = num;
+    }
+
+    public int getShots() {
+        return this.shots;
+    }
+
+    public void setShots(int num) {
+        this.shots = num;
     }
 
     /* ActionListeners */
