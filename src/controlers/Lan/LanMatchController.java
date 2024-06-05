@@ -269,13 +269,12 @@ public class LanMatchController implements ActionListener {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             ) {  
             String serverMessage;
+            if (!shipsSended) {
+                sendShips();
+                shipsSended = true;
+            }
     
             while (clientRunning && (serverMessage = in.readLine()) != null) {
-                if (!shipsSended) {
-                    sendShips();
-                    shipsSended = true;
-                }
-                
                 if ("salir".equalsIgnoreCase(serverMessage)) {
                     clientRunning = false;
                 } else if ("turno".equalsIgnoreCase(serverMessage)) {
