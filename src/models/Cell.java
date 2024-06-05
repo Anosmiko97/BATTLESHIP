@@ -10,8 +10,6 @@ public class Cell {
     AppProperties properties = new AppProperties();
     private Color cellColor;
     private String ship;
-    private int corX; 
-    private int corY;
     private JButton button;
 
     public Cell(Color cellColor) {
@@ -26,20 +24,6 @@ public class Cell {
     }
 
     /* Getters y setters */
-    public int getCorX() {
-        return corX;
-    }
-    public void setCorX(int corX) {
-        this.corX = corX;
-    }
-
-    public int getCorY() {
-        return corY;
-    }
-    public void setCorY(int corY) {
-        this.corY = corY;
-    }
-
     public Color getCellColor() {
         return cellColor;
     }
