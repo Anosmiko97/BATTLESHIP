@@ -224,7 +224,7 @@ public class LanMatchController implements ActionListener {
 
     public void sendServerRequest(String ms) {
         try {
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
             out.println(ms); 
         } catch (UnknownHostException e) {
             System.err.println("No se puede conectar al cliente en localhost");
