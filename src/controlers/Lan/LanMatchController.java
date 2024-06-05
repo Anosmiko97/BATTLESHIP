@@ -101,6 +101,11 @@ public class LanMatchController implements ActionListener {
     }
 
     private void initView( MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft) {
+        lockCells(this.cellsLeft);
+        if (!turn) {
+            lockCells(this.cellsRight);
+        }
+
         this.matchView = matchView;
         this.matchView.setMessage(message);
         this.matchView.refreshMessagePanel();
@@ -116,10 +121,7 @@ public class LanMatchController implements ActionListener {
     private void setPosShips(Cell[][] cellsRight, Cell[][] cellsLeft) {
         this.cellsRight = cellsRight;
         this.cellsLeft = cellsLeft;
-        if (!turn) {
-            lockCells(this.cellsRight);
-        }
-
+    
         Random random = new Random();
         int num = random.nextInt(5) + 1;
 
@@ -403,6 +405,14 @@ public class LanMatchController implements ActionListener {
             sendShips();
         }
         shipsSended = true;
+
+        if (turn) {
+            shoot(i, j);
+        }
+        
+    }
+
+    private void shoot(int i, int j) {
         System.out.println("Disparo en: [" + i + ", " + j + "]");
         Cor posCell = new Cor(i, j);
         System.out.println("Posciones guardadas en:" + posCell.x + posCell.y);
