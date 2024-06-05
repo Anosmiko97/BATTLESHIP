@@ -103,8 +103,6 @@ public class LanMatchController implements ActionListener {
         this.matchView.setMessage(message);
         this.matchView.refreshMessagePanel();
         this.matchView.refreshHeaderPanel();
-
-        sendShips();
     }
 
     private void refreshMessage(String message) {
@@ -182,7 +180,11 @@ public class LanMatchController implements ActionListener {
             serverSocket = new ServerSocket(port); 
             System.out.println("Servidor iniciado en el puerto: " + port);
             clientConn = new Socket();
-            while (serverRunning) {        
+            while (serverRunning) {   
+                if (!shipsSended) {
+                    sendShips();
+                    shipsSended = true;
+                }     
                 clientConn = serverSocket.accept(); 
                 processDataServer();
             }
@@ -254,6 +256,10 @@ public class LanMatchController implements ActionListener {
         clientRunning = true;
         try {
             clientSocket = new Socket(ipHost, port); 
+            if (!shipsSended) {
+                sendShips();
+                shipsSended = true;
+            }  
             processDataClient();
             
         } catch (IOException e) {
