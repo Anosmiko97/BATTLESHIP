@@ -311,27 +311,27 @@ public class MatchView extends JPanel {
     }
 
     public int getOpponentShipsSunked() {
-        return this.shipsSunked;
+        return this.shipsSunkedOppponent;
     }
 
     public void setOppponentShipsSunked(int num) {
-        this.shipsSunked = num;
+        this.shipsSunkedOppponent = num;
     }
 
     public int getOpponentTotalShots() {
-        return this.totalShots;
+        return this.totalShotsOppponent;
     }
 
     public void setOpponentTotalShots(int num) {
-        this.totalShots = num;
+        this.totalShotsOppponent = num;
     }
 
     public int getOpponentShots() {
-        return this.shots;
+        return this.shotsOpponent;
     }
 
     public void setOpponentShots(int num) {
-        this.shots = num;
+        this.shotsOpponent = num;
     }
 
     /* ActionListeners */

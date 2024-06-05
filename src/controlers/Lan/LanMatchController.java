@@ -336,7 +336,6 @@ public class LanMatchController implements ActionListener {
     }
 
     private void sendShips() {
-        System.out.println("Cadena de => " + fletShips);
         if (mode.equals("server")) {
             sendServerRequest(fletShips);
         } else {
@@ -446,8 +445,8 @@ public class LanMatchController implements ActionListener {
         }
     }
     
-    private String prepareScore() {
-        String myScore = "s:" + String.valueOf(shipsSunked) + "|" 
+    private String prepareScore() { 
+        String myScore = "s:" + String.valueOf(shipsSunked)  
             + "|" + String.valueOf(successfulShots) 
             + "|" + String.valueOf(totalShots);
 
