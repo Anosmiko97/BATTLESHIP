@@ -180,12 +180,12 @@ public class LanMatchController implements ActionListener {
             serverSocket = new ServerSocket(port); 
             System.out.println("Servidor iniciado en el puerto: " + port);
             clientConn = new Socket();
-            while (serverRunning) {   
+            while (serverRunning) {        
+                clientConn = serverSocket.accept();
                 if (!shipsSended) {
                     sendShips();
                     shipsSended = true;
-                }     
-                clientConn = serverSocket.accept(); 
+                } 
                 processDataServer();
             }
         } catch (IOException e) {
