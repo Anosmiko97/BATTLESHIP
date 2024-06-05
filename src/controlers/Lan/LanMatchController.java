@@ -207,11 +207,11 @@ public class LanMatchController implements ActionListener {
                     turn = true;
                     refreshMessage("TU TURNO");
                     unlockCells(cellsRight);
-                } else if ('d' == inputLine.charAt(0)) {
+                } else if ('s' == inputLine.charAt(0)) {
                     System.out.println("Score revido");
                     filterScore(inputLine);
 
-                } else if ('s' == inputLine.charAt(0)) {
+                } else if ('d' == inputLine.charAt(0)) {
                     System.out.println("Coordenadas recibidas");
                     filterRecivedCors(inputLine);
                 } else {
