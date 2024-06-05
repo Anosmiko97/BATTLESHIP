@@ -11,6 +11,7 @@ import controlers.Lan.LanMatchController;
 /* Clases propias */
 import views.SettingsView;
 import views.Lan.CreateMatchView;
+import views.Lan.FinishPartyView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanView;
 import views.SqlErrorView;
@@ -27,7 +28,7 @@ public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
 
     public static void main(String[] args) throws IOException {
-        TestView e = new TestView();
+        FinishPartyView s = new FinishPartyView(false);
     }
     
     public TestView() throws IOException {

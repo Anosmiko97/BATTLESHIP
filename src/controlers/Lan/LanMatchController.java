@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /* Clases propias */
 import models.Cell;
@@ -19,11 +20,13 @@ import models.ShipsPos;
 import models.AppProperties;
 import views.MatchView;
 import views.MenuView;
+import views.Lan.FinishPartyView;
 
 public class LanMatchController implements ActionListener {
     private AppProperties properties = new  AppProperties();
     private MatchView matchView;
     private MenuView menuView;
+    private FinishPartyView finishPartyView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
 
@@ -66,8 +69,9 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
+    public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, FinishPartyView finishPartyView, String mode) {
         this.mode = mode;
+        this.finishPartyView = finishPartyView;
         shipsSended = false;
         this.ipHost = ipHost;
         setPosShips(cellsRight, cellsLeft);
@@ -203,8 +207,13 @@ public class LanMatchController implements ActionListener {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 if ("salir".equalsIgnoreCase(inputLine)) {
-                    serverRunning = false;
-                    break;
+                    stopServer(false);
+
+                } else if ("gane".equalsIgnoreCase(inputLine)) {
+                    finishPartyView.setWin(false);
+                    finishPartyView.setVisible(true);
+                    stopServer(false);
+                    
                 } else if ("turno".equalsIgnoreCase(inputLine)) {
                     turn = true;
                     refreshMessage("TU TURNO");
@@ -281,17 +290,26 @@ public class LanMatchController implements ActionListener {
     
             while (clientRunning && (serverMessage = in.readLine()) != null) {
                 if ("salir".equalsIgnoreCase(serverMessage)) {
-                    clientRunning = false;
+                    stopClient();
+                    
+                } else if ("gane".equalsIgnoreCase(serverMessage)) {
+                    finishPartyView.setWin(false);
+                    finishPartyView.setVisible(true);
+                    stopClient();
+                    
                 } else if ("turno".equalsIgnoreCase(serverMessage)) {
                     turn = true;
                     refreshMessage("TU TURNO");
                     unlockCells(cellsRight);
+
                 } else if ('d' == serverMessage.charAt(0)) {
                     System.out.println("Nos dieron, fack");
                     filterRecivedCors(serverMessage);
+
                 } else if ('s' == serverMessage.charAt(0)) {
                     System.out.println("Score recibido");
                     filterScore(serverMessage);
+
                 } else {
                     opponentShips = strToCorArray(serverMessage);
                     System.out.println("Coordenadas recibidas");
@@ -314,7 +332,18 @@ public class LanMatchController implements ActionListener {
             System.err.println("Error de entrada/salida al conectar con el cliente: " + e.getMessage());
             e.printStackTrace();
         }
-    }  
+    } 
+    
+    private void stopClient() {
+        clientRunning = false;
+        if (clientSocket != null && !clientSocket.isClosed()) {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println("Error al cerrar el cliente: " + e.getMessage());
+            }
+        }
+    }
 
     /* Codigo para acciones de juego */
     @Override
@@ -364,6 +393,7 @@ public class LanMatchController implements ActionListener {
             sendServerRequest("turno");
         } else if (mode.equals("client")) {
             System.out.println("TURNO DEL RIVAL");
+            updateScores(i, j);
             sendScoreToRival();
             sendClientRequest("turno");
         }
@@ -396,11 +426,34 @@ public class LanMatchController implements ActionListener {
         for (int i = 0; i < posShips.length; i ++) {
             if (posShips[i].x == x && posShips[i].y == y) {
                 System.out.println("nos dieron, cambio a rojo");
+                totalShips -= 1;
+                checkTotalShips();
                 cellsLeft[x][y].setCellColor(colorRed);
             } else {
                 System.out.println("NO DIO EN EL BALNCO");
                 cellsLeft[x][y].setCellColor(colorRed);
             }  
+        }
+    }
+
+    private void checkTotalShips() {
+        if (totalShips == 0) {
+            endGame();
+        }
+    }
+
+    private void endGame() {
+        if (mode.equals("server")) {
+            finishPartyView.setWin(true);
+            finishPartyView.setVisible(true);
+            sendServerRequest("gane");
+            stopServer(null);
+
+        } else if (mode.equals("client")) {
+            finishPartyView.setWin(true);
+            finishPartyView.setVisible(true);
+            sendServerRequest("gane");
+            stopClient();
         }
     }
 

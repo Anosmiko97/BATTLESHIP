@@ -34,6 +34,7 @@ import views.MenuView;
 import views.SettingsView;
 import views.SqlErrorView;
 import views.Lan.CreateMatchView;
+import views.Lan.FinishPartyView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanView;
 import views.MatchView;
@@ -60,6 +61,7 @@ public class MainWindow extends JFrame implements ActionListener {
     private CreateMatchView createMatchView;
     private JoinMatchView joinMatchView;
     private SqlErrorView errorSql;
+    private FinishPartyView finishPartyView;
 
     // Atributos para servidor y cliente
     private String ipHost;
@@ -110,6 +112,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.lanView.addReturnButtonListener(this);
         this.lanView.addJoinMatchButtonListener(this);
         this.lanView.addMakeMatchButtonListener(this); 
+        this.finishPartyView.addReturnButtonListener(this);
     }
 
     private User setNameAndFlag() {
@@ -166,6 +169,9 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getActionCommand().equals("Crear reporte")) {
             System.out.println("boton de pdf");
+
+        } else if (e.getActionCommand().equals("REGRESAR EL MENU")) {
+            System.out.println("boton de REGRESAR AL MENU");
 
         } else if (e.getActionCommand().equals("CANCELAR")) {
             System.out.println("boton de cancelar [CREAR PARTIDA]");
@@ -300,11 +306,12 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
         lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
+        finishPartyView = new FinishPartyView(false);
         if (mode.equals("client")) {
-            lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, "client");
+            lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, finishPartyView, "client");
             
         } else if (mode.equals("server")) {
-            lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, "server");
+            lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, finishPartyView, "server");
             
         }
         this.lanMatchView.addExitButtonListener(this);
@@ -392,19 +399,19 @@ public class MainWindow extends JFrame implements ActionListener {
         } 
     }
 
-    public void runLanMatchClient() {
-        initLanMatch("client");
-        changePanel(lanMatchView);
-    }
-
     private void stopClient() {
         if (clientSocket != null && !clientSocket.isClosed()) {
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                System.out.println("Error al cerrar el servidor: " + e.getMessage());
+                System.out.println("Error al cerrar el cliente: " + e.getMessage());
             }
         }
+    }
+
+    public void runLanMatchClient() {
+        initLanMatch("client");
+        changePanel(lanMatchView);
     }
 
     public static void main(String[] args) {
