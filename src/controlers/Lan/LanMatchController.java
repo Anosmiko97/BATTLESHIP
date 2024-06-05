@@ -67,16 +67,12 @@ public class LanMatchController implements ActionListener {
         cellsShips = 0;
         setPosShips(cellsRight, cellsLeft);
 
+        // Dependiendo del modo estblecido, correr hilos
         if (this.mode.equals("server")) {
             turn = true;
             message = "TU TURNO";
             serverThread = new Thread(() -> {
-                try {
-                    runServer();
-                } catch (ClassNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                runServer();
             });
             serverThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
@@ -86,12 +82,7 @@ public class LanMatchController implements ActionListener {
             turn = false;
             message = "TURNO DE RIVAL";
             clientThread = new Thread(() -> {
-                try {
-                    runClient();
-                } catch (ClassNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                runClient();
             });
             clientThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
@@ -182,7 +173,7 @@ public class LanMatchController implements ActionListener {
     }
 
     /* Codigo para servidor */
-    private void runServer() throws ClassNotFoundException {
+    private void runServer() {
         serverRunning = true;
         try {
             serverSocket = new ServerSocket(port); 
@@ -203,7 +194,6 @@ public class LanMatchController implements ActionListener {
         ) {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-            System.out.println("Cliente dice: " + inputLine);
                 if ("salir".equalsIgnoreCase(inputLine)) {
                     serverRunning = false;
                     break;
@@ -255,11 +245,10 @@ public class LanMatchController implements ActionListener {
     }
 
     /* Codigo para cliente */
-    private void runClient() throws ClassNotFoundException {
+    private void runClient() {
         clientRunning = true;
         try {
             clientSocket = new Socket(ipHost, port); 
-            System.out.println("Conectado al servidor en " + ipHost + ":" + port);
             processDataClient();
             
         } catch (IOException e) {
@@ -271,7 +260,6 @@ public class LanMatchController implements ActionListener {
     private void processDataClient()  {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            Scanner scanner = new Scanner(System.in)
             ) {  
             String serverMessage;
     
@@ -308,19 +296,6 @@ public class LanMatchController implements ActionListener {
         }
     }  
 
-    private void sendClientCor(Cor posCell) {
-        try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
-        ) {
-            out.writeObject(posCell);
-        } catch (UnknownHostException e) {
-            System.err.println("No se puede conectar al cliente en localhost");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.err.println("Error de entrada/salida al conectar con el cliente: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     /* Codigo para acciones de juego */
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -330,7 +305,6 @@ public class LanMatchController implements ActionListener {
                     gameActions(i, j);
                     return; 
                 } else if (e.getSource() == cellsLeft[i][j].getButton()) {
-                    //System.out.println("Barco en: [" + i + ", " + j + "]");
                     return; 
                 } 
             }
@@ -345,8 +319,7 @@ public class LanMatchController implements ActionListener {
 
         if (turn) {
             shoot(i, j);
-        }
-        
+        } 
     }
 
     private void shoot(int i, int j) {
@@ -354,6 +327,7 @@ public class LanMatchController implements ActionListener {
         Cor posCell = new Cor(i, j);
         System.out.println("Posciones guardadas en:" + posCell.x + posCell.y);
         turn = false;
+        refreshMessage("TURNO DEL RIVAL");
         lockCells(cellsRight);
 
         if (mode.equals("server")) {
