@@ -231,19 +231,20 @@ public class LanMatchController implements ActionListener {
         }
     }
 
-    private void stopGame() {
-        Thread finishServer = new Thread(() -> {
-            if (mode.equals("server")) {
-                stopServer(false);
-            } else {
-                stopClient();
-            }
-        });
-        serverThread.start();
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            FinishPartyView finish = new FinishPartyView(false);
-            finish.setVisible(true);
-        });
+    private void stopGame() {  
+        if (mode.equals("server")) {
+            matchView.setMessage("PERDISTE");
+            lockCells(cellsRight);
+            matchView.refreshMessagePanel();
+            matchView.refreshHeaderPanel();
+            stopServer(false);
+        } else {
+            matchView.setMessage("PERDISTE");
+            lockCells(cellsRight);
+            matchView.refreshMessagePanel();
+            matchView.refreshHeaderPanel();
+            stopClient();
+        }
     }
 
     public void sendServerRequest(String ms) {
@@ -412,6 +413,7 @@ public class LanMatchController implements ActionListener {
         for (int i = 0; i < opponentShips.length; i++) {
             if (posShot.x == opponentShips[i].x && posShot.y == opponentShips[i].y) {
                 System.out.println("DISPARRO ACERTADO");
+                successfulShots += 1;
                 cellsRight[posShot.x][posShot.y].setCellColor(colorRed);
                 sendResquestShot(posShot);
                 break;
@@ -423,7 +425,6 @@ public class LanMatchController implements ActionListener {
     }
 
     private void updateScores(int x, int y) {
-        successfulShots += 1;
         checkShips(x, y);
         matchView.setShots(successfulShots);
         matchView.setTotalShots(totalShots);
@@ -453,25 +454,17 @@ public class LanMatchController implements ActionListener {
 
     private void endGame() {
         if (mode.equals("server")) {
-            Thread finishServer = new Thread(() -> {
-                sendServerRequest("gane");
-                stopServer(false);
-            });
-            serverThread.start();
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                FinishPartyView finish = new FinishPartyView(true);
-                finish.setVisible(true);
-            });
+            matchView.setMessage("GANASTE");
+            lockCells(cellsRight);
+            matchView.refreshMessagePanel();
+            matchView.refreshHeaderPanel();
+            sendServerRequest("gane");
         } else if (mode.equals("client")) {
-            Thread finishClient = new Thread(() -> {
-                sendServerRequest("gane");
-                stopClient();
-            });
-            serverThread.start();
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                FinishPartyView finish = new FinishPartyView(true);
-                finish.setVisible(true);
-            });
+            matchView.setMessage("GANASTE");
+            lockCells(cellsRight);
+            matchView.refreshMessagePanel();
+            matchView.refreshHeaderPanel();
+            sendClientRequest("gane");
         }
     }
 
