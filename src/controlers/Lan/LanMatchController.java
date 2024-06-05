@@ -208,7 +208,11 @@ public class LanMatchController implements ActionListener {
                     refreshMessage("TU TURNO");
                     unlockCells(cellsRight);
                 } else if ('d' == inputLine.charAt(0)) {
-                    System.out.println("Nos dieron, fack");
+                    System.out.println("Score revido");
+                    filterScore(inputLine);
+
+                } else if ('s' == inputLine.charAt(0)) {
+                    System.out.println("Coordenadas recibidas");
                     filterRecivedCors(inputLine);
                 } else {
                     opponentShips = strToCorArray(inputLine);
@@ -280,13 +284,15 @@ public class LanMatchController implements ActionListener {
                     turn = true;
                     refreshMessage("TU TURNO");
                     unlockCells(cellsRight);
-                } else if ('d' ==serverMessage.charAt(0)) {
-                        System.out.println("Nos dieron, fack");
-                        filterRecivedCors(serverMessage);
+                } else if ('d' == serverMessage.charAt(0)) {
+                    System.out.println("Nos dieron, fack");
+                    filterRecivedCors(serverMessage);
+                } else if ('s' == serverMessage.charAt(0)) {
+                    System.out.println("Score recibido");
+                    filterScore(serverMessage);
                 } else {
                     opponentShips = strToCorArray(serverMessage);
                     System.out.println("Coordenadas recibidas");
-                    printCorArray(opponentShips);
                 }
             }
         } catch (IOException e) {
@@ -340,6 +346,7 @@ public class LanMatchController implements ActionListener {
 
     private void shoot(int i, int j) {
         System.out.println("Disparo en: [" + i + ", " + j + "]");
+        totalShots += 1;
         Cor posCell = new Cor(i, j);
         System.out.println("Posciones guardadas en:" + posCell.x + posCell.y);
         checkShoot(posCell);
@@ -351,9 +358,11 @@ public class LanMatchController implements ActionListener {
 
         if (mode.equals("server")) {
             System.out.println("TURNO DEL CLIENTE");
+            sendScoreToRival();
             sendServerRequest("turno");
         } else if (mode.equals("client")) {
             System.out.println("TURNO DEL RIVAL");
+            sendScoreToRival();
             sendClientRequest("turno");
         }
     }
@@ -375,7 +384,6 @@ public class LanMatchController implements ActionListener {
 
     private void updateScores(int x, int y) {
         successfulShots += 1;
-        totalShots += 1;
         checkShips(x, y);
         matchView.setShots(successfulShots);
         matchView.setTotalShots(totalShots);
@@ -426,6 +434,37 @@ public class LanMatchController implements ActionListener {
         } else if (mode.equals("client")) {
             sendClientRequest(cor);
         }
+    }
+
+    private void sendScoreToRival() {
+        if (mode == "server") {
+            String myScore = prepareScore();
+            sendServerRequest(myScore);
+        } else {
+            String myScore = prepareScore();
+            sendClientRequest(myScore);
+        }
+    }
+    
+    private String prepareScore() {
+        String myScore = "s:" + String.valueOf(shipsSunked) + "|" 
+            + "|" + String.valueOf(successfulShots) 
+            + "|" + String.valueOf(totalShots);
+
+        return myScore;
+    }
+
+    public void filterScore(String score) {
+        String[] filter1 = score.split(":");
+        String[] filter2 = filter1[1].split("\\|"); 
+        // barco, acertados, total
+        int ships = Integer.parseInt(filter2[0]);
+        int shots = Integer.parseInt(filter2[1]);
+        int total = Integer.parseInt(filter2[2]);
+        matchView.setOppponentShipsSunked(ships);
+        matchView.setOpponentShots(shots);
+        matchView.setOpponentTotalShots(total);
+        matchView.refreshHeaderPanel();
     }
 
     private void filterRecivedCors(String cors) {

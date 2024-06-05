@@ -31,6 +31,9 @@ public class MatchView extends JPanel {
     private int shipsSunked = 0;
     private int totalShots = 0;
     private int shots = 0;
+    private int shipsSunkedOppponent = 0;
+    private int totalShotsOppponent = 0;
+    private int shotsOpponent = 0;
 
     public MatchView(User userModel, String opponentName, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
@@ -71,23 +74,50 @@ public class MatchView extends JPanel {
         return scorePanel;
     }
 
-    /* Metodos para header */
+    private JPanel createOpponentScorePanel() {
+        JPanel scorePanel = new JPanel(new GridLayout(3, 1));
+        scorePanel.setBackground(properties.getNamesPanelColor());
+        
+        int padding = 10;
+        scorePanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
+
+        // Labels para informacion de partida
+        JLabel scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunked);
+        scoreLabel1.setForeground(Color.WHITE);
+        JLabel scoreLabel2 = new JLabel("Disparos acertados: " + shots);
+        scoreLabel2.setForeground(Color.WHITE);
+        JLabel scoreLabel3 = new JLabel("Total de disparos: " + totalShots);
+        scoreLabel2.setForeground(Color.WHITE);
+        
+        scorePanel.add(scoreLabel1);
+        scorePanel.add(scoreLabel2);
+        scorePanel.add(scoreLabel3);
+
+        return scorePanel;
+    }
+
     private JPanel createInfoPanel(String name, String position) {
         JPanel infoPanel = new JPanel(new FlowLayout());
         infoPanel.setBackground(properties.getHeaderColor());
 
-        // Panel de bandera y nombre
+        // Panel de nombre
         JPanel userPanel = new JPanel(new FlowLayout());
         JLabel namelabel = new JLabel(name);
+        JLabel opponentLabel = new JLabel(opponentName);
         namelabel.setFont(new Font("ARIAL", Font.PLAIN, 30));
         namelabel.setForeground(Color.WHITE);
         int padding = 30;
         namelabel.setBorder(new EmptyBorder(0, padding, 0, padding));
         userPanel.add(namelabel);
+        opponentLabel.setFont(new Font("ARIAL", Font.PLAIN, 30));
+        opponentLabel.setForeground(Color.WHITE);
+        opponentLabel.setBorder(new EmptyBorder(0, padding, 0, padding));
+        userPanel.add(opponentLabel);
+
 
         if (position.equals("left")) {
-            infoPanel.add(createScorePanel());
-            infoPanel.add(namelabel);
+            infoPanel.add(createOpponentScorePanel());
+            infoPanel.add(opponentLabel);
         } else {
             infoPanel.add(namelabel);
             infoPanel.add(createScorePanel());
@@ -277,6 +307,30 @@ public class MatchView extends JPanel {
     }
 
     public void setShots(int num) {
+        this.shots = num;
+    }
+
+    public int getOpponentShipsSunked() {
+        return this.shipsSunked;
+    }
+
+    public void setOppponentShipsSunked(int num) {
+        this.shipsSunked = num;
+    }
+
+    public int getOpponentTotalShots() {
+        return this.totalShots;
+    }
+
+    public void setOpponentTotalShots(int num) {
+        this.totalShots = num;
+    }
+
+    public int getOpponentShots() {
+        return this.shots;
+    }
+
+    public void setOpponentShots(int num) {
         this.shots = num;
     }
 

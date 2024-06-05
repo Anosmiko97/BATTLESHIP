@@ -12,10 +12,14 @@ import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 public class TestScript {
     public static void main(String[] args) {
-        String str = "[1|1],[2|1],[3|1],[3|4],[4|1],[4|4],[5|1],[5|4],[5|6],[6|4],[6|6],[6|8],[7|3],[7|8],[8|3],[8|8],[9|3],";
-        Cor[] cor = strToCorArray(str);
-        System.out.println(cor[0].x + "," + cor[0].y);
-        printCorArray(cor);
+        String str = "s:1|3|4";
+
+        filterScore(str);
+    }
+
+    public static void filterScore(String score) {
+        String[] filter1 = score.split(":");
+        String[] filter2 = filter1[1].split("\\|"); 
     }
 
     public static void printCorArray(Cor[] array) {
