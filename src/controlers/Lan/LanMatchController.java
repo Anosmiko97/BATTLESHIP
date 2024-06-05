@@ -285,8 +285,7 @@ public class LanMatchController implements ActionListener {
                 } else {
                     opponentShips = strToCorArray(serverMessage);
                     System.out.println("Coordenadas recibidas");
-                    System.out.println(serverMessage);
-                    //printCorArray(opponentShips);
+                    printCorArray(opponentShips);
                 }
             }
         } catch (IOException e) {
