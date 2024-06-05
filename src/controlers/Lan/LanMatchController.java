@@ -144,8 +144,6 @@ public class LanMatchController implements ActionListener {
                 }
             }
         }
-
-        System.out.println("Cadena de => " + fletShips);
         addCellsListener();
     }
 
@@ -331,6 +329,7 @@ public class LanMatchController implements ActionListener {
     }
 
     private void sendShips() {
+        System.out.println("Cadena de => " + fletShips);
         if (mode.equals("server")) {
             sendServerRequest(fletShips);
         } else {
