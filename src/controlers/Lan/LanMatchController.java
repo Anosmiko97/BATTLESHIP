@@ -190,36 +190,38 @@ public class LanMatchController implements ActionListener {
             clientConn = new Socket();
             while (serverRunning) {        
                 clientConn = serverSocket.accept(); 
-
-                // Leer mensajes del cliente
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
-                ) {
-                    String inputLine;
-                    while ((inputLine = in.readLine()) != null) {
-                        System.out.println("Cliente dice: " + inputLine);
-                        if ("salir".equalsIgnoreCase(inputLine)) {
-                            serverRunning = false;
-                            break;
-                        } else if ("turno".equalsIgnoreCase(inputLine)) {
-                            turn = true;
-                            refreshMessage("TU TURNO");
-                            unlockCells(cellsRight);
-                        } else if ("tiro".equalsIgnoreCase(inputLine)) {
-                            System.out.println("Nos dieron, fack");
-                        } else {
-                            System.out.println("Coordenadas recibidas");
-                            opponentShips = strToCorArray(inputLine);
-                        }
-                    }
-                } catch (IOException e) {
-                    System.err.println("Error al manejar la conexión del cliente: " + e.getMessage());
-                    e.printStackTrace();
-                }
+                processDataServer();
             }
         } catch (IOException e) {
             System.err.println("Error en el servidor: " + e.getMessage());
             e.printStackTrace();
         } 
+    }
+
+    private void processDataServer() {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
+        ) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+            System.out.println("Cliente dice: " + inputLine);
+                if ("salir".equalsIgnoreCase(inputLine)) {
+                    serverRunning = false;
+                    break;
+                } else if ("turno".equalsIgnoreCase(inputLine)) {
+                    turn = true;
+                    refreshMessage("TU TURNO");
+                    unlockCells(cellsRight);
+                } else if ("tiro".equalsIgnoreCase(inputLine)) {
+                    System.out.println("Nos dieron, fack");
+                } else {
+                    System.out.println("Coordenadas recibidas");
+                    opponentShips = strToCorArray(inputLine);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al manejar la conexión del cliente: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void sendServerRequest(String ms) {
@@ -258,36 +260,39 @@ public class LanMatchController implements ActionListener {
         try {
             clientSocket = new Socket(ipHost, port); 
             System.out.println("Conectado al servidor en " + ipHost + ":" + port);
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                 Scanner scanner = new Scanner(System.in)
-                ) {
-                 
-                String serverMessage;
-    
-                 // Leer mensajes del servidor como objetos
-                while (clientRunning && (serverMessage = in.readLine()) != null) {
-                    if ("salir".equalsIgnoreCase(serverMessage)) {
-                        clientRunning = false;
-                    } else if ("turno".equalsIgnoreCase(serverMessage)) {
-                        turn = true;
-                        refreshMessage("TU TURNO");
-                        unlockCells(cellsRight);
-                    } else if ("tiro".equalsIgnoreCase(serverMessage)) {
-                        System.out.println("Nos dieron, fack");
-                    } else {
-                        System.out.println("Coordenadas recibidas");
-                        opponentShips = strToCorArray(serverMessage);
-                    }
-                }
-            }
-        } catch (UnknownHostException e) {
-            System.err.println("No se puede conectar al host: " + ipHost);
-            e.printStackTrace();
+            processDataClient();
+            
         } catch (IOException e) {
             System.err.println("Error de entrada/salida al conectar con el servidor: " + e.getMessage());
             e.printStackTrace();
         } 
+    }
+
+    private void processDataClient()  {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            Scanner scanner = new Scanner(System.in)
+            ) {  
+            String serverMessage;
+    
+            while (clientRunning && (serverMessage = in.readLine()) != null) {
+                if ("salir".equalsIgnoreCase(serverMessage)) {
+                    clientRunning = false;
+                } else if ("turno".equalsIgnoreCase(serverMessage)) {
+                    turn = true;
+                    refreshMessage("TU TURNO");
+                    unlockCells(cellsRight);
+                } else if ("tiro".equalsIgnoreCase(serverMessage)) {
+                        System.out.println("Nos dieron, fack");
+                } else {
+                    System.out.println("Coordenadas recibidas");
+                    opponentShips = strToCorArray(serverMessage);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("No se puede conectar al host: " + ipHost);
+            e.printStackTrace();
+        }
     }
 
     public void sendClientRequest(String ms) {
