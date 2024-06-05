@@ -199,7 +199,8 @@ public class LanMatchController implements ActionListener {
                 clientConn = serverSocket.accept(); 
 
                 // Leer mensajes del cliente
-                try (ObjectInputStream inObj = new ObjectInputStream(clientConn.getInputStream())) {
+                try (ObjectInputStream inObj = new ObjectInputStream(clientConn.getInputStream())
+                ) {
                     Object receivedObj;
                     while ((receivedObj = inObj.readObject()) != null) {
                         if (receivedObj instanceof String) {
