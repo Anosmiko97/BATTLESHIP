@@ -12,20 +12,44 @@ import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 public class TestScript {
     public static void main(String[] args) {
-        String str = "d:12,2";
-        filterRecivedCors(str);
+        String str = "[1|1],[2|1],[3|1],[3|4],[4|1],[4|4],[5|1],[5|4],[5|6],[6|4],[6|6],[6|8],[7|3],[7|8],[8|3],[8|8],[9|3],";
+        Cor[] cor = strToCorArray(str);
+        System.out.println(cor[0].x + "," + cor[0].y);
+        printCorArray(cor);
     }
 
-    public static void filterRecivedCors(String cors) {
-        String[] filter1 = cors.split(":");
-        String filter2 = String.join("", filter1[1]);
-        String[] filter3 = filter2.split(",");
-        int x = Integer.parseInt(filter3[0]);
-        int y = Integer.parseInt(filter3[1]);
-
-        System.out.println("Coordenadas: " + x + "," + y);
-        //checkCells();
+    public static void printCorArray(Cor[] array) {
+        for (Cor cor : array) {
+            System.out.println(cor.x + "," + cor.y);
+        }
     }
+
+    public static Cor[] strToCorArray(String str) {
+        Cor[] corArray = new Cor[17];
+        str = str.substring(0, str.length() - 1);
+        str = str.replace("[", "").replace("]", "");
+        String[] pairs = str.split(",");
+
+        for (int i = 0; i < pairs.length; i++) {
+            String[] nums = pairs[i].split("\\|");
+            int x = Integer.parseInt(nums[0]);
+            int y = Integer.parseInt(nums[1]);
+            addTo(corArray, x, y);
+        }
+
+        return corArray;
+    }
+
+    private static void addTo(Cor[] cors, int x, int y) {
+        for (int i = 0; i < cors.length; i++) {
+            if (cors[i] == null) {
+                Cor cor = new Cor(x, y);
+                cors[i] = cor;
+                break;
+            }
+        }
+    }
+
 
     public static int[][] convertStringToIntArray(String str) {
         str = str.substring(0, str.length() - 1);

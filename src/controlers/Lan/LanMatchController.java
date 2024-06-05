@@ -420,9 +420,10 @@ public class LanMatchController implements ActionListener {
 
     private void addTo(Cor[] cors, int x, int y) {
         for (int i = 0; i < cors.length; i++) {
-            if (cors[i] != null) {
+            if (cors[i] == null) {
                 Cor cor = new Cor(x, y);
                 cors[i] = cor;
+                break;
             }
         }
     }
