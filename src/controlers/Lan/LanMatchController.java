@@ -224,29 +224,13 @@ public class LanMatchController implements ActionListener {
 
     public void sendServerRequest(String ms) {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(clientConn.getOutputStream());
-            
-            // Envía el objeto (en este caso, una cadena)
-            out.writeObject(ms);
-            out.flush(); // Asegura que el mensaje se envía inmediatamente
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            out.println(ms); 
         } catch (UnknownHostException e) {
             System.err.println("No se puede conectar al cliente en localhost");
             e.printStackTrace();
         } catch (IOException e) {
             System.err.println("Error de entrada/salida al conectar con el cliente: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void sendServerCor(Cor posShip) { // error
-        try (ObjectOutputStream out = new ObjectOutputStream(clientConn.getOutputStream())
-        ) {
-            out.writeObject(posShip);
-        } catch (UnknownHostException e) {
-            System.err.println("No se puede conectar al host: " + ipHost);
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.err.println("Error de entrada/salida al conectar con el servidor: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -308,9 +292,8 @@ public class LanMatchController implements ActionListener {
 
     public void sendClientRequest(String ms) {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-            out.writeObject(ms);
-            out.flush(); // Asegura que el mensaje se envía inmediatamente
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            out.println(ms); 
         } catch (UnknownHostException e) {
             System.err.println("No se puede conectar al cliente en localhost");
             e.printStackTrace();
@@ -318,7 +301,7 @@ public class LanMatchController implements ActionListener {
             System.err.println("Error de entrada/salida al conectar con el cliente: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+    }  
 
     private void sendClientCor(Cor posCell) {
         try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
@@ -370,11 +353,11 @@ public class LanMatchController implements ActionListener {
 
         if (mode.equals("server")) {
             System.out.println("TURNO DEL CLIENTE");
-            sendServerCor(posCell);
+            //sendServerRequest(fletShips);
             sendServerRequest("turno");
         } else if (mode.equals("client")) {
             System.out.println("TURNO DEL RIVAL");
-            sendClientCor(posCell);
+            //sendClientCor(posCell);
             sendClientRequest("turno");
         }
     }
