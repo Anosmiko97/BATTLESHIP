@@ -489,36 +489,17 @@ public class LanMatchController implements ActionListener {
     }
 
     private void checkShips() {
-        for (int i = 0; i < cellsRight.length; i++) {
-            for (int j = 0; j < cellsRight.length; j++) {
-                if (cellsRight[i][i].getCellColor().equals(colorRed)) {
-                    if (!checkRegisteredCor(i, j)) {
-                        shipsSunked += 1;
-                        Cor cor = new Cor(i, j);
-                        addCor(cor);
-                    }
-                }
-            }
+        if (successfulShots >= 2 && successfulShots <= 5) {
+            shipsSunked = 1;
+        } else if (successfulShots > 5 && successfulShots <= 9) {
+            shipsSunked = 2;
+        } else if (successfulShots > 9 && successfulShots <= 12) {
+            shipsSunked = 3;
+        } else if (successfulShots > 12 && successfulShots <= 15) {
+            shipsSunked = 4;
+        } else if (successfulShots == 17) {
+            shipsSunked = 5;
         } 
-    }
-
-    private void addCor(Cor cor) {
-        for (int i = 0; i < registerShipSunked.length; i++) {
-            if (registerShipSunked[i] == null) {
-                registerShipSunked[i] = cor;
-                break;
-            } 
-        }
-    }
-
-    private boolean checkRegisteredCor(int x, int y) {
-        for (int i = 0; i < registerShipSunked.length; i++) {
-            if (registerShipSunked[i].x == x && registerShipSunked[i].y == y) {
-                return true;
-            } 
-        }
-
-        return false;
     }
 
     private void sendResquestShot(Cor posShot) {
