@@ -39,15 +39,13 @@ public class MatchDAO {
              ResultSet rs = pstmt.executeQuery()
         ) {
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String user_id = rs.getString("user_id");
                 Boolean victory = rs.getBoolean("victory");
                 int sunkenBoats = rs.getInt("sunken_boats");
                 int score = rs.getInt("score");
                 int numberOfShots = rs.getInt("number_of_shots");
                 String opponentName = rs.getString("opponent_name");
 
-                Match match = new Match(id, user_id, victory, sunkenBoats, score, numberOfShots, opponentName);
+                Match match = new Match(victory, sunkenBoats, score, numberOfShots, opponentName);
                 matches.add(match);
             }
         } catch (SQLException e) {

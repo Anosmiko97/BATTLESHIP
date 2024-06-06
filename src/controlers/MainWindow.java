@@ -8,8 +8,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import controlers.Lan.LanMatchController;
 import controlers.Local.MatchController;
-import controlers.Server.ClientControler;
-import controlers.Server.ServerControler;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,7 +47,6 @@ public class MainWindow extends JFrame implements ActionListener {
     // Controladores
     private SettingsController settingsController;
     private LanMatchController lanMatchController;
-    private ServerControler serverControler;
     private MatchController matchController;
 
     // Vistas
