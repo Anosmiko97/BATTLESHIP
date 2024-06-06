@@ -21,8 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-
-/* Clases propias */
 import models.AppProperties;
 import models.User;
 
@@ -189,11 +187,11 @@ public class MenuView extends JPanel {
 
         gbc.gridy = 1;
         gbc.gridwidth = 1;
-        gbc.insets = new java.awt.Insets(10, 20, 10, 10); 
+        gbc.insets = new java.awt.Insets(10, 100, 10, 10); 
         panel.add(pveButton, gbc);
 
         gbc.gridx = 1;
-        gbc.insets = new java.awt.Insets(10, 10, 10, 20); 
+        gbc.insets = new java.awt.Insets(10, 10, 10, 10); 
         panel.add(pvpButton, gbc);
 
         return panel;

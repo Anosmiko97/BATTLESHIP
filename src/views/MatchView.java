@@ -32,7 +32,6 @@ public class MatchView extends JPanel {
     private int totalShotsOppponent = 0;
     private int shotsOpponent = 0;
     private int totalShotsOpponent = 0;
-    private JButton startButton;
 
     private JLabel scoreLabel1;
     private JLabel scoreLabel2;
@@ -240,18 +239,13 @@ public class MatchView extends JPanel {
 
     public JPanel createFooterPanel() {
         exitButton = new JButton("Salir de la partida local");
-        startButton = new JButton("Empezar Partida");
         exitButton.setBackground(properties.getButtonColor());
-        startButton.setBackground(properties.getButtonColor());
         exitButton.setFont(new Font("ARIAL", Font.PLAIN, 25));
-        startButton.setFont(new Font("ARIAL", Font.PLAIN, 25));
         exitButton.setForeground(Color.WHITE);
-        startButton.setForeground(Color.WHITE);
 
         JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         exitPanel.setBackground(properties.getHeaderColor());
         exitPanel.setBorder(new EmptyBorder(5, 0, 5, 30));
-        exitPanel.add(startButton);
         exitPanel.add(exitButton);
         return exitPanel;
     }
@@ -275,13 +269,6 @@ public class MatchView extends JPanel {
         this.exitButton = exitButton;
     }
 
-    public JButton getStartButton() {
-        return this.startButton;
-    }
-
-    public void setStartButton(JButton startButton) {
-        this.startButton = startButton;
-    }
 
     public Cell[][] getCellsRigth() {
         return this.cellsRigth;
@@ -373,7 +360,5 @@ public class MatchView extends JPanel {
         exitButton.addActionListener(listener);
     }
 
-    public void addStartButtonListener(ActionListener listener) {
-        startButton.addActionListener(listener);
-    }
+ 
 }

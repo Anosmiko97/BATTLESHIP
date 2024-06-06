@@ -2,6 +2,7 @@
 package controlers.Local;
 
 
+import controlers.MainWindow;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
@@ -13,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import models.Cell;
@@ -20,6 +22,7 @@ import models.Cell.CellState;
 import models.Match;
 import models.MatchDAO;
 import views.MatchView;
+import views.MenuView;
 
 
 public class MatchController implements ActionListener {
@@ -48,6 +51,9 @@ public class MatchController implements ActionListener {
     private int totalShipSunkRight = 0;
     private int totalShipSunkLeft = 0;
 
+    private JFrame mainWindow;
+    private MenuView menuView;
+
 
     // STATS
     int userHitCount;
@@ -55,17 +61,18 @@ public class MatchController implements ActionListener {
     int botHitCount;
     int botMissCount;
 
-    public MatchController(MatchView matchView, Cell[][] cellsRigth, Cell[][] cellsLeft, Cell cell) {
+    public MatchController(MatchView matchView, Cell[][] cellsRigth, Cell[][] cellsLeft, Cell cell, MainWindow mainWindow, MenuView menuView) {
         this.matchView = matchView;
         this.cellsRigth = cellsRigth;
         this.cellsLeft = cellsLeft;
         this.placingShips = true; 
+        this.mainWindow = mainWindow;
+        this.menuView = menuView;
         addKeyListener(); 
         addRightCellsListener();
         addLeftCellsListener();
         placeRandomShipsRight();
         matchView.addExitButtonListener(this);
-        matchView.addStartButtonListener(this);
         updateCursor();
 
         userHitCount = 0;
@@ -372,20 +379,28 @@ public class MatchController implements ActionListener {
     // Verificar si el usuario ha hundido 5 barcos
     if (getTotalShipSunkRight() >= 5) {
         JOptionPane.showMessageDialog(matchView, "¡Felicidades! Has hundido 5 barcos. ¡Ganaste la partida!", "Victoria", JOptionPane.INFORMATION_MESSAGE);
+        returnMenuPanel();
         Match match = new Match(true, totalShipSunkRight, 100, botHitCount + botMissCount, "bot");
         MatchDAO matchDAO = new MatchDAO();
-        matchDAO.insertMatch(match);    
+        matchDAO.insertMatch(match);   
+ 
     }
 
     // Verificar si el bot ha hundido 5 barcos
     if (getTotalShipSunkLeft() >= 5) {
         JOptionPane.showMessageDialog(matchView, "¡El bot ha hundido 5 barcos! Has perdido la partida.", "Derrota", JOptionPane.INFORMATION_MESSAGE);
+        returnMenuPanel();
         Match match = new Match(false, totalShipSunkRight, 0, botHitCount + botMissCount, "bot");
         MatchDAO matchDAO = new MatchDAO();
         matchDAO.insertMatch(match);  
     }
 }
-    
+    public void returnMenuPanel() {
+        mainWindow.getContentPane().removeAll();
+        mainWindow.getContentPane().add(menuView);
+        mainWindow.revalidate();
+        mainWindow.repaint();
+    }
     
     private void placeRandomShipsRight() {
         for (int i = 0; i < shipSizes.length; i++) {
@@ -601,10 +616,7 @@ public class MatchController implements ActionListener {
 public void actionPerformed(ActionEvent e) {
     if (e.getSource().equals(matchView.getExitButton())) {
         System.out.println("Saliendo de la partida");
-        
-    } else if (e.getSource() == matchView.getStartButton()) {
-        startGame();
-    }
+    } 
 }
 
 public void startGame() {

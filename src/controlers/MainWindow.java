@@ -212,7 +212,7 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
         Cell cell = null;
         matchView = new MatchView(userModel, "Ale", cellsRigth, cellsLeft);   
-        matchController = new MatchController(matchView, cellsRigth, cellsLeft, cell);
+        matchController = new MatchController(matchView, cellsRigth, cellsLeft, cell, this, menuView);
         this.matchView.addExitButtonListener(this); 
 
         // key
