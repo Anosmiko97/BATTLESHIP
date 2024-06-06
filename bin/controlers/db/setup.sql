@@ -21,10 +21,9 @@ CREATE TABLE match_party (
 */
 
 /* 
-    INSERT INTO match (user_id, 
-                    victory,
+    INSERT INTO match (victory,
                     sunken_boats,
                     score,
                     number_of_shots,
-                    opponent_name) VALUES (1, TRUE, 5, 20, 27, "ale"); 
+                    opponent_name) VALUES (TRUE, 5, 20, 27, "ale"); 
 */

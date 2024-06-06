@@ -10,11 +10,14 @@ import java.util.Enumeration;
 
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
+import models.Match;
+import models.MatchDAO;
+
 public class TestScript {
     public static void main(String[] args) {
-        String str = "s:1|3|4";
-
-        filterScore(str);
+        Match match = new Match(false, 12, 123, 12, "juan");
+        MatchDAO matchDAO = new MatchDAO();
+        matchDAO.insertMatch(match);
     }
 
     public static void filterScore(String score) {

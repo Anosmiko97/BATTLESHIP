@@ -14,13 +14,17 @@ public class MatchDAO {
 
     public void insertMatch(Match match) {
          try (Connection conn = ConnectionDB.createConnection();
-             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO user (name, flag) VALUES (?,?,?,?,?,?)")
+             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO match_party (victory,\r\n" + //
+                                  "                    sunken_boats,\r\n" + //
+                                  "                    score,\r\n" + //
+                                  "                    number_of_shots,\r\n" + //
+                                  "                    opponent_name) VALUES (?,?,?,?,?)")
         ) {
-            pstmt.setBoolean(2, match.getVictory());
-            pstmt.setInt(3, match.getSunkenBoats());
-            pstmt.setInt(4, match.getScore());
-            pstmt.setInt(5, match.getNumberOfShots());
-            pstmt.setString(6, match.getOpponentName());
+            pstmt.setBoolean(1, match.getVictory());
+            pstmt.setInt(2, match.getSunkenBoats());
+            pstmt.setInt(3, match.getScore());
+            pstmt.setInt(4, match.getNumberOfShots());
+            pstmt.setString(5, match.getOpponentName());
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
