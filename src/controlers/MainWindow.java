@@ -264,7 +264,7 @@ public class MainWindow extends JFrame implements ActionListener {
                     String userResponse = in.readLine();
 
                     // Esperar a recibir nombre
-                    if (userResponse.equalsIgnoreCase("Maria")) {
+                    if (!isIp(userResponse)) {
                         opponentName = userResponse;
                         runServerLanMatch();
                         stopServer(false);
@@ -336,7 +336,7 @@ public class MainWindow extends JFrame implements ActionListener {
                 runLanMatchClient();
             }); 
         } else {
-            JOptionPane.showMessageDialog(joinMatchView, "INGRESE UN NUMERO", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(joinMatchView, "INGRESE UNA IP", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
