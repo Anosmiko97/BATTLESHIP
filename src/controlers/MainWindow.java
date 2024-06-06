@@ -22,14 +22,14 @@ import models.AppProperties;
 import models.Cell;
 import models.User;
 import models.UserDAO;
-import views.MenuView;
-import views.SettingsView;
-import views.SqlErrorView;
 import views.Lan.CreateMatchView;
 import views.Lan.FinishPartyView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanView;
 import views.MatchView;
+import views.MenuView;
+import views.SettingsView;
+import views.SqlErrorView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -81,6 +81,7 @@ public class MainWindow extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         repaint();
+
     }
 
     private void initViewsAndModels() {
@@ -118,6 +119,7 @@ public class MainWindow extends JFrame implements ActionListener {
         return user;
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Salir")) {
@@ -139,7 +141,10 @@ public class MainWindow extends JFrame implements ActionListener {
             lanMatchController.stopClient();
             changePanel(menuView);
 
-        } else if (e.getSource() == menuView.getSettingsButton()) {
+        }else if (e.getActionCommand().equals("Salir de la partida local")) {
+            changePanel(menuView);
+
+        }else if (e.getSource() == menuView.getSettingsButton()) {
             System.out.println("Boton de settings");
             saveNewUser();
 
@@ -205,9 +210,9 @@ public class MainWindow extends JFrame implements ActionListener {
     private void initMatch() { 
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
-
+        Cell cell = null;
         matchView = new MatchView(userModel, "Ale", cellsRigth, cellsLeft);   
-        matchController = new MatchController(matchView, cellsRigth, cellsLeft);
+        matchController = new MatchController(matchView, cellsRigth, cellsLeft, cell);
         this.matchView.addExitButtonListener(this); 
 
         // key

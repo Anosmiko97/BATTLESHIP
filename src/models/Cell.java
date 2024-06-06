@@ -9,16 +9,12 @@ import javax.swing.JButton;
 
 public class Cell {
     AppProperties properties = new AppProperties();
-    private Color colorRed = Color.decode("#FF0000");
-    private Color colorWhite = Color.decode("#FFFFFF");
     private Color cellColor;
-    private int corX;
-    private int corY;
     private String ship;
     private JButton button;
     private CellState state;
-    private String side;
-    
+    private String side;    
+
     // Imagenes de las celdas y barcos
     private ImageIcon missImage1 = new ImageIcon("media/images/missChart1.png");
     private ImageIcon missImage2 = new ImageIcon("media/images/missChart2.png");
@@ -35,16 +31,25 @@ public class Cell {
     private ImageIcon shipChartShoted4Image = new ImageIcon("media/images/shipChartShoted4.png");
     private ImageIcon shipChartShoted5Image = new ImageIcon("media/images/shipChartShoted5.png");
 
-    
     // Posibles estados de cada celda
     public enum CellState {
-        EMPTY,     
-        MISS,     
-        SHIP,     
-        HIT       
+        EMPTY,
+        MISS,
+        SHIP_2,
+        SHIP_3_1,
+        SHIP_3_2,
+        SHIP_4,
+        SHIP_5,
+        HIT_2,
+        HIT_3_1,
+        HIT_3_2,
+        HIT_4,
+        HIT_5,
+        CORD
     }
 
     public Cell(Color cellColor) {
+        side = "";
         button = new JButton();
         Font fontCells = new Font(properties.getFontApp(), Font.PLAIN, 20);
         button.setForeground(Color.WHITE);
@@ -96,47 +101,122 @@ public class Cell {
         this.ship = ship;
     }
 
+    // Logica de cambio de estado
     private void updateButtonAppearance() {
         switch (state) {
             case EMPTY:
-                button.setBackground(cellColor); 
+                button.setBackground(cellColor);
                 button.setText("");
-                button.setIcon(null); // Eliminar cualquier icono existente
+                button.setIcon(null);
                 break;
 
             case MISS:
                 button.setBackground(cellColor);
                 button.setText("");
 
+                if (this.side != null) {
+                    Image img;
+                    if (this.side.equals("right")) {
+                        img = missImage2.getImage();
+                    } else {
+                        img = missImage1.getImage();
+                    }
 
-                Image img = missImage1.getImage();
+                    Image newImg = img.getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_SMOOTH);
+                    ImageIcon scaledIcon = new ImageIcon(newImg);
 
-                if (this.side.equals("left")){
-                    img = missImage1.getImage();
+                    button.setIcon(scaledIcon);
                 }
-                else{
-                    img = missImage2.getImage();
-                }
-                Image newImg = img.getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_SMOOTH);
-                missImage1 = new ImageIcon(newImg);
-                button.setIcon(missImage1);
                 break;
 
-            case SHIP:
-                button.setBackground(Color.GRAY);
+            case SHIP_2:
+                button.setBackground(cellColor);
                 button.setText("");
-                // Configura la imagen de barco según sea necesario
-                // Por ejemplo:
-                button.setIcon(shipChart2Image);
+                if (!"right".equals(this.side)) {
+                    button.setIcon(shipChart2Image);
+                } else {
+                    button.setIcon(null);
+                }
                 break;
 
-            case HIT:
+            case SHIP_3_1:
+                button.setBackground(cellColor);
+                button.setText("");
+                if (!"right".equals(this.side)) {
+                    button.setIcon(shipChart3_1Image);
+                } else {
+                    button.setIcon(null);
+                }
+                break;
+
+            case SHIP_3_2:
+                button.setBackground(cellColor);
+                button.setText("");
+                if (!"right".equals(this.side)) {
+                    button.setIcon(shipChart3_2Image);
+                } else {
+                    button.setIcon(null);
+                }
+                break;
+
+            case SHIP_4:
+                button.setBackground(cellColor);
+                button.setText("");
+                if (!"right".equals(this.side)) {
+                    button.setIcon(shipChart4Image);
+                } else {
+                    button.setIcon(null);
+                }
+                break;
+
+            case SHIP_5:
+                button.setBackground(cellColor);
+                button.setText("");
+                if (!"right".equals(this.side)) {
+                    button.setIcon(shipChart5Image);
+                } else {
+                    button.setIcon(null);
+                }
+                break;
+
+            case HIT_2:
                 button.setBackground(Color.RED);
                 button.setText("X");
-                // Configura la imagen de barco disparado según sea necesario
-                // Por ejemplo:
                 button.setIcon(shipChartShoted2Image);
+                break;
+
+            case HIT_3_1:
+                button.setBackground(Color.RED);
+                button.setText("X");
+                button.setIcon(shipChartShoted3_1Image);
+
+                break;
+
+            case HIT_3_2:
+                button.setBackground(Color.RED);
+                button.setText("X");
+                button.setIcon(shipChartShoted3_2Image);
+
+                break;
+
+            case HIT_4:
+                button.setBackground(Color.RED);
+                button.setText("X");
+                button.setIcon(shipChartShoted4Image);
+
+                break;
+
+            case HIT_5:
+                button.setBackground(Color.RED);
+                button.setText("X");
+                button.setIcon(shipChartShoted5Image);
+
+                break;
+
+            case CORD:
                 break;
         }
     }
+
+    
 }

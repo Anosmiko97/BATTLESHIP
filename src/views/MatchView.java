@@ -31,7 +31,17 @@ public class MatchView extends JPanel {
     private int shipsSunkedOppponent = 0;
     private int totalShotsOppponent = 0;
     private int shotsOpponent = 0;
+    private int totalShotsOpponent = 0;
     private JButton startButton;
+
+    private JLabel scoreLabel1;
+    private JLabel scoreLabel2;
+    private JLabel scoreLabel3;
+
+    private JLabel scoreLabel1Opponent;
+    private JLabel scoreLabel2Opponent;
+    private JLabel scoreLabel3Opponent;
+
 
     public MatchView(User userModel, String opponentName, Cell[][] cells1, Cell[][] cells2) {
         setLayout(new BorderLayout());
@@ -48,6 +58,8 @@ public class MatchView extends JPanel {
         add(headerPanel, BorderLayout.NORTH);
         add(createCenterPanel(), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
+
+  
     }
 
     private JPanel createScorePanel() {
@@ -58,11 +70,11 @@ public class MatchView extends JPanel {
         scorePanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
 
         // Labels para informacion de partida
-        JLabel scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunked);
+        scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunked);
         scoreLabel1.setForeground(Color.WHITE);
-        JLabel scoreLabel2 = new JLabel("Disparos acertados: " + shots);
+        scoreLabel2 = new JLabel("Disparos acertados: " + shots);
         scoreLabel2.setForeground(Color.WHITE);
-        JLabel scoreLabel3 = new JLabel("Total de disparos: " + totalShots);
+        scoreLabel3 = new JLabel("Total de disparos: " + totalShots);
         scoreLabel2.setForeground(Color.WHITE);
         
         scorePanel.add(scoreLabel1);
@@ -73,25 +85,38 @@ public class MatchView extends JPanel {
     }
 
     private JPanel createOpponentScorePanel() {
-        JPanel scorePanel = new JPanel(new GridLayout(3, 1));
-        scorePanel.setBackground(properties.getNamesPanelColor());
+        JPanel scorePanelOponent = new JPanel(new GridLayout(3, 1));
+        scorePanelOponent.setBackground(properties.getNamesPanelColor());
         
         int padding = 10;
-        scorePanel.setBorder(new EmptyBorder(padding, padding, padding, padding));
-
+        scorePanelOponent.setBorder(new EmptyBorder(padding, padding, padding, padding));
+    
         // Labels para informacion de partida
-        JLabel scoreLabel1 = new JLabel("Barcos hundidos: " + shipsSunkedOppponent);
-        scoreLabel1.setForeground(Color.WHITE);
-        JLabel scoreLabel2 = new JLabel("Disparos acertados: " + shotsOpponent);
-        scoreLabel2.setForeground(Color.WHITE);
-        JLabel scoreLabel3 = new JLabel("Total de disparos: " + totalShotsOppponent);
-        scoreLabel2.setForeground(Color.WHITE);
+        scoreLabel1Opponent = new JLabel("Barcos hundidos: " + shipsSunkedOppponent);
+        scoreLabel1Opponent.setForeground(Color.WHITE);
+        scoreLabel2Opponent = new JLabel("Disparos acertados: " + shotsOpponent);
+        scoreLabel2Opponent.setForeground(Color.WHITE);
+        scoreLabel3Opponent = new JLabel("Total de disparos: " + totalShotsOpponent);
+        scoreLabel3Opponent.setForeground(Color.WHITE);
         
-        scorePanel.add(scoreLabel1);
-        scorePanel.add(scoreLabel2);
-        scorePanel.add(scoreLabel3);
+        scorePanelOponent.add(scoreLabel1Opponent);
+        scorePanelOponent.add(scoreLabel2Opponent);
+        scorePanelOponent.add(scoreLabel3Opponent);
+    
+        return scorePanelOponent;
+    }
+    
 
-        return scorePanel;
+    public void updateScoreLabels(int shipsSunked, int shots, int totalShots) {
+        scoreLabel1.setText("Barcos hundidos: " + shipsSunked);
+        scoreLabel2.setText("Disparos acertados: " + shots);
+        scoreLabel3.setText("Total de disparos: " + totalShots);
+    }
+    
+    public void updateOpponentScoreLabels(int shipsSunkedOpponent, int shotsOpponent, int totalShotsOpponent) {
+        scoreLabel1Opponent.setText("Barcos hundidos: " + shipsSunkedOpponent);
+        scoreLabel2Opponent.setText("Disparos acertados: " + shotsOpponent);
+        scoreLabel3Opponent.setText("Total de disparos: " + totalShotsOpponent);
     }
 
     private JPanel createInfoPanel(String name, String position) {
@@ -113,7 +138,7 @@ public class MatchView extends JPanel {
         userPanel.add(opponentLabel);
 
 
-        if (position.equals("left")) {
+        if (position.equals("right")) {
             infoPanel.add(createOpponentScorePanel());
             infoPanel.add(opponentLabel);
         } else {
@@ -214,7 +239,7 @@ public class MatchView extends JPanel {
     }
 
     public JPanel createFooterPanel() {
-        exitButton = new JButton("Salir de la partida");
+        exitButton = new JButton("Salir de la partida local");
         startButton = new JButton("Empezar Partida");
         exitButton.setBackground(properties.getButtonColor());
         startButton.setBackground(properties.getButtonColor());
@@ -228,7 +253,6 @@ public class MatchView extends JPanel {
         exitPanel.setBorder(new EmptyBorder(5, 0, 5, 30));
         exitPanel.add(startButton);
         exitPanel.add(exitButton);
-
         return exitPanel;
     }
 
