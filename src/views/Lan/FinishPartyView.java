@@ -41,6 +41,7 @@ public class FinishPartyView extends JDialog {
 
         add(mainPanel);
         setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     private JPanel createHeaderPanel() {
