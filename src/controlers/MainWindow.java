@@ -296,10 +296,10 @@ public class MainWindow extends JFrame implements ActionListener {
 
         lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
         if (mode.equals("client")) {
-            lanMatchController = new LanMatchController(ipHost,lanMatchView, cellsRigth, cellsLeft, "client");
+            lanMatchController = new LanMatchController(ipHost, opponentName,lanMatchView, cellsRigth, cellsLeft, "client");
             
         } else if (mode.equals("server")) {
-            lanMatchController = new LanMatchController(ipHost, lanMatchView, cellsRigth, cellsLeft, "server");
+            lanMatchController = new LanMatchController(ipHost, opponentName, lanMatchView, cellsRigth, cellsLeft, "server");
             
         }
         this.lanMatchView.addExitButtonListener(this);

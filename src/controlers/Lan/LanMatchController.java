@@ -71,8 +71,9 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(String ipHost, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
+    public LanMatchController(String ipHost, String opponentName, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
+        this.opponentName = opponentName;
         shipsSended = false;
         this.ipHost = ipHost;
         setPosShips(cellsRight, cellsLeft);
