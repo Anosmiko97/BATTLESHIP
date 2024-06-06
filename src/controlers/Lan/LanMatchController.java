@@ -30,7 +30,7 @@ public class LanMatchController implements ActionListener {
     private MenuView menuView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
-    private MatchDAO matchDAO;
+    private MatchDAO matchDAO = new MatchDAO();
 
     /* Atributos para conexion */
     private ServerSocket serverSocket;
