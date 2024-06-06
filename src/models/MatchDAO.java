@@ -12,11 +12,10 @@ import controlers.db.ConnectionDB;
 
 public class MatchDAO {
 
-    public void insertMatch(Match match, User user) {
+    public void insertMatch(Match match) {
          try (Connection conn = ConnectionDB.createConnection();
              PreparedStatement pstmt = conn.prepareStatement("INSERT INTO user (name, flag) VALUES (?,?,?,?,?,?)")
         ) {
-            pstmt.setInt(1, user.getId());
             pstmt.setBoolean(2, match.getVictory());
             pstmt.setInt(3, match.getSunkenBoats());
             pstmt.setInt(4, match.getScore());

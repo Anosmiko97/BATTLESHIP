@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 
 /* Clases propias */
 import models.Cell;
+import models.Match;
+import models.MatchDAO;
 import models.ShipsPos;
 import models.AppProperties;
 import views.MatchView;
@@ -28,6 +30,7 @@ public class LanMatchController implements ActionListener {
     private MenuView menuView;
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
+    private MatchDAO matchDAO;
 
     /* Atributos para conexion */
     private ServerSocket serverSocket;
@@ -221,20 +224,25 @@ public class LanMatchController implements ActionListener {
 
     private void stopGame() {  
         if (mode.equals("server")) {
-            matchView.setMessage("PERDISTE");
-            lockCells(cellsRight);
-            matchView.refreshMessagePanel();
-            matchView.refreshHeaderPanel();
-            stopServer(false);
-            FinishPartyView finishPartyView = new FinishPartyView(false);
+           stopGameActions();
         } else {
-            matchView.setMessage("PERDISTE");
-            lockCells(cellsRight);
-            matchView.refreshMessagePanel();
-            matchView.refreshHeaderPanel();
-            stopClient();
-            FinishPartyView finishPartyView = new FinishPartyView(false);
+            stopGameActions();
         }
+    }
+
+    private void stopGameActions() {
+        matchView.setMessage("PERDISTE");
+        lockCells(cellsRight);
+        matchView.refreshMessagePanel();
+        matchView.refreshHeaderPanel();
+        if (mode.equals("server")) {
+            stopServer(false);
+        } else {
+            stopClient();
+        }
+        Match match = new Match(false, shipsSunked, successfulShots, totalShots, opponentName);
+        matchDAO.insertMatch(match);
+        FinishPartyView finishPartyView = new FinishPartyView(false);
     }
 
     public void sendServerRequest(String ms) {
@@ -446,20 +454,25 @@ public class LanMatchController implements ActionListener {
 
     private void endGame() {
         if (mode.equals("server")) {
-            matchView.setMessage("GANASTE");
-            lockCells(cellsRight);
-            matchView.refreshMessagePanel();
-            matchView.refreshHeaderPanel();
-            sendServerRequest("gane");
-            FinishPartyView finishPartyView = new FinishPartyView(true);
+            endGameActions();
         } else if (mode.equals("client")) {
-            matchView.setMessage("GANASTE");
-            lockCells(cellsRight);
-            matchView.refreshMessagePanel();
-            matchView.refreshHeaderPanel();
-            sendClientRequest("gane");
-            FinishPartyView finishPartyView = new FinishPartyView(true);
+            endGameActions();
         }
+    }
+
+    private void endGameActions() {
+        matchView.setMessage("GANASTE");
+        lockCells(cellsRight);
+        matchView.refreshMessagePanel();
+        matchView.refreshHeaderPanel();
+        if (mode.equals("server")) {
+            sendServerRequest("gane");
+        } else {
+            sendClientRequest("gane");
+        }
+        Match match = new Match(true, shipsSunked, successfulShots, totalShots, opponentName);
+        matchDAO.insertMatch(match);
+        FinishPartyView finishPartyView = new FinishPartyView(true);
     }
 
     private void checkShips(int x, int y) {
