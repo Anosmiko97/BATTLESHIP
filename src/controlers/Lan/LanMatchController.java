@@ -196,6 +196,7 @@ public class LanMatchController implements ActionListener {
                 processDataServer();
             }
         } catch (IOException e) {
+            returnMenuPanel();
             JOptionPane.showMessageDialog(menuView, "Error la iniciar servidor", "ERROR", JOptionPane.ERROR_MESSAGE);
         } 
     }
@@ -224,6 +225,7 @@ public class LanMatchController implements ActionListener {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            returnMenuPanel();
         }
     }
 
@@ -303,6 +305,7 @@ public class LanMatchController implements ActionListener {
         } catch (IOException e) {
             System.err.println("Error de entrada/salida al conectar con el servidor: " + e.getMessage());
             e.printStackTrace();
+            returnMenuPanel();
         } 
     }
 
@@ -344,6 +347,7 @@ public class LanMatchController implements ActionListener {
         } catch (IOException e) {
             System.err.println("No se puede conectar al host: " + ipHost);
             e.printStackTrace();
+            returnMenuPanel();
         }
     }
 
@@ -491,7 +495,7 @@ public class LanMatchController implements ActionListener {
     }
 
     private void checkShips() {
-        if (successfulShots <= 5 && totalShips >= 2) {
+        if (successfulShots <= 5 && successfulShots >= 2) {
             shipsSunked += 1;   
         } else if (successfulShots > 5) {
             shipsSunked += 1;
