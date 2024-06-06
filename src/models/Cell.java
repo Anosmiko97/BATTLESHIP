@@ -89,6 +89,13 @@ public class Cell {
         this.side = side;
     }
 
+    public String getShip() {
+        return ship;
+    }
+    public void setShip(String ship) {
+        this.ship = ship;
+    }
+
     private void updateButtonAppearance() {
         switch (state) {
             case EMPTY:
