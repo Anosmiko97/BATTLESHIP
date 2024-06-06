@@ -11,6 +11,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -31,6 +33,7 @@ public class LanMatchController implements ActionListener {
     private Cell[][] cellsRight;
     private Cell[][] cellsLeft;
     private MatchDAO matchDAO = new MatchDAO();
+    private JFrame mainFrame;
 
     /* Atributos para conexion */
     private ServerSocket serverSocket;
@@ -52,7 +55,6 @@ public class LanMatchController implements ActionListener {
     private Color colorWhite = Color.decode("#FFFFFF");
     private Color colorShip = Color.decode("#343434");
     private int totalShips = 17;
-    private int cellsShips = 0;
     private String opponentName;
     private ShipsPos pos = new ShipsPos();
     private String fletShips = "";
@@ -71,8 +73,10 @@ public class LanMatchController implements ActionListener {
     private int submarine = 3;
     private int destroyer = 2;
 
-    public LanMatchController(String ipHost, String opponentName, MatchView matchView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
+    public LanMatchController(JFrame main, String ipHost, String opponentName, MatchView matchView, MenuView menuView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
+        this.menuView = menuView;
+        this.mainFrame = main;
         this.opponentName = opponentName;
         shipsSended = false;
         this.ipHost = ipHost;
@@ -244,6 +248,14 @@ public class LanMatchController implements ActionListener {
         Match match = new Match(false, shipsSunked, successfulShots, totalShots, opponentName);
         matchDAO.insertMatch(match);
         FinishPartyView finishPartyView = new FinishPartyView(false);
+        returnMenuPanel();
+    }
+
+    public void returnMenuPanel() {
+        mainFrame.getContentPane().removeAll();
+        mainFrame.getContentPane().add(menuView);
+        mainFrame.revalidate();
+        mainFrame.repaint();
     }
 
     public void sendServerRequest(String ms) {
@@ -474,6 +486,7 @@ public class LanMatchController implements ActionListener {
         Match match = new Match(true, shipsSunked, successfulShots, totalShots, opponentName);
         matchDAO.insertMatch(match);
         FinishPartyView finishPartyView = new FinishPartyView(true);
+        returnMenuPanel();
     }
 
     private void checkShips(int x, int y) {

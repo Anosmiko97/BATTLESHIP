@@ -183,7 +183,7 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-    private void changePanel(JPanel panel) {
+    public void changePanel(JPanel panel) {
         getContentPane().removeAll();
         getContentPane().add(panel);
         revalidate();
@@ -296,10 +296,10 @@ public class MainWindow extends JFrame implements ActionListener {
 
         lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
         if (mode.equals("client")) {
-            lanMatchController = new LanMatchController(ipHost, opponentName,lanMatchView, cellsRigth, cellsLeft, "client");
+            lanMatchController = new LanMatchController(this, ipHost, opponentName,lanMatchView, menuView, cellsRigth, cellsLeft, "client");
             
         } else if (mode.equals("server")) {
-            lanMatchController = new LanMatchController(ipHost, opponentName, lanMatchView, cellsRigth, cellsLeft, "server");
+            lanMatchController = new LanMatchController(this, ipHost, opponentName, lanMatchView, menuView, cellsRigth, cellsLeft, "server");
             
         }
         this.lanMatchView.addExitButtonListener(this);

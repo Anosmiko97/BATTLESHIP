@@ -131,20 +131,21 @@ public class MenuView extends JPanel {
     
     public JPanel createMainPanel() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout()); 
+        panel.setLayout(new GridBagLayout());
         panel.setOpaque(false);
-        Dimension buttonSize = new Dimension(100, 50); 
+        Dimension buttonSize = new Dimension(200, 100); 
 
+        // Cargar y escalar imágenes de los botones
         ImageIcon pveImage = new ImageIcon("media/images/PVE.png");
         ImageIcon pvpImage = new ImageIcon("media/images/PVP.png");
-        
-        Image pveImageScaled = pveImage.getImage().getScaledInstance(100, 75, Image.SCALE_SMOOTH);
+
+        Image pveImageScaled = pveImage.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
         ImageIcon pveIcon = new ImageIcon(pveImageScaled);
-        
-        Image pvpImageScaled = pvpImage.getImage().getScaledInstance(100, 75, Image.SCALE_SMOOTH);
+
+        Image pvpImageScaled = pvpImage.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
         ImageIcon pvpIcon = new ImageIcon(pvpImageScaled);
 
-        // Boton de partida lan
+        // Botones de partida
         pveButton = new JButton(pveIcon);
         pvpButton = new JButton(pvpIcon);
         pveButton.setPreferredSize(buttonSize);
@@ -153,46 +154,46 @@ public class MenuView extends JPanel {
         pveButton.setBorderPainted(false);
         pveButton.setContentAreaFilled(false);
         pveButton.setFocusPainted(false);
-        
+
         pvpButton.setBorderPainted(false);
         pvpButton.setContentAreaFilled(false);
-        pveButton.setFocusPainted(false);
-        
+        pvpButton.setFocusPainted(false);
+
+        // Cargar fuente personalizada
         try {
             File fontFile = new File("media/fonts/quickynick.ttf");
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-            customFontBold = customFont.deriveFont(Font.BOLD, 60);
-          
+            customFontBold = customFont.deriveFont(Font.BOLD, 100); 
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
-        
+
+        // Campo de texto para el título
         title = new JTextField("BATTLESHIP");
         title.setFont(customFontBold);
-        title.setPreferredSize(buttonSize);
-        title.setEditable(false); 
-        title.setHorizontalAlignment(JTextField.CENTER); 
+        title.setPreferredSize(new Dimension(600, 100)); 
         title.setEditable(false);
+        title.setHorizontalAlignment(JTextField.CENTER);
         title.setOpaque(false);
         title.setBorder(null);
-        title.setForeground(new Color(255, 182, 55));        
+        title.setForeground(new Color(255, 182, 55));
         title.setColumns(10);
-        
+
+        // Configuración del layout
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;   
-        gbc.gridwidth = 2; 
-        gbc.insets = new java.awt.Insets(5, 5, 5, 5); 
-                
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new java.awt.Insets(20, 20, 20, 20); 
         panel.add(title, gbc);
 
-        gbc.gridy = 1; 
-        gbc.gridwidth = 1; 
-        
-        gbc.insets = new java.awt.Insets(5, 26, 5, 5); 
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.insets = new java.awt.Insets(10, 20, 10, 10); 
         panel.add(pveButton, gbc);
 
         gbc.gridx = 1;
+        gbc.insets = new java.awt.Insets(10, 10, 10, 20); 
         panel.add(pvpButton, gbc);
 
         return panel;
