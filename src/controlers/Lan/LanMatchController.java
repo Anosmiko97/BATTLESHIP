@@ -65,13 +65,7 @@ public class LanMatchController implements ActionListener {
     private int shipsSunked = 0;
     private int totalShots = 0;
     private int successfulShots = 0;
-
-    /* Barcos */
-    private int carrier = 5;
-    private int battleship = 4;
-    private int cruiser = 3;
-    private int submarine = 3;
-    private int destroyer = 2;
+    private Cor[] registerShipSunked = new Cor[17];
 
     public LanMatchController(JFrame main, String ipHost, String opponentName, MatchView matchView, MenuView menuView, Cell[][] cellsRight, Cell[][] cellsLeft, String mode) {
         this.mode = mode;
@@ -495,11 +489,36 @@ public class LanMatchController implements ActionListener {
     }
 
     private void checkShips() {
-        if (successfulShots <= 5 && successfulShots >= 2) {
-            shipsSunked += 1;   
-        } else if (successfulShots > 5) {
-            shipsSunked += 1;
+        for (int i = 0; i < cellsRight.length; i++) {
+            for (int j = 0; j < cellsRight.length; j++) {
+                if (cellsRight[i][i].getCellColor().equals(colorRed)) {
+                    if (!checkRegisteredCor(i, j)) {
+                        shipsSunked += 1;
+                        Cor cor = new Cor(i, j);
+                        addCor(cor);
+                    }
+                }
+            }
         } 
+    }
+
+    private void addCor(Cor cor) {
+        for (int i = 0; i < registerShipSunked.length; i++) {
+            if (registerShipSunked[i] == null) {
+                registerShipSunked[i] = cor;
+                break;
+            } 
+        }
+    }
+
+    private boolean checkRegisteredCor(int x, int y) {
+        for (int i = 0; i < registerShipSunked.length; i++) {
+            if (registerShipSunked[i].x == x && registerShipSunked[i].y == y) {
+                return true;
+            } 
+        }
+
+        return false;
     }
 
     private void sendResquestShot(Cor posShot) {
