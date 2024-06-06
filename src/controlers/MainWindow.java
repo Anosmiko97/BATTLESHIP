@@ -1,14 +1,7 @@
 package controlers;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import controlers.Lan.LanMatchController;
 import controlers.Local.MatchController;
-import controlers.Server.ClientControler;
 import controlers.Server.ServerControler;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -22,21 +15,21 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Random;
-
-/* Clases propias */
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import models.AppProperties;
 import models.Cell;
 import models.User;
 import models.UserDAO;
-import views.MenuView;
-import views.SettingsView;
 import views.Lan.CreateMatchView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanMatchView;
 import views.Lan.LanView;
 import views.Local.MatchView;
-import views.Lan.LanMatchView;
+import views.MenuView;
+import views.SettingsView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -202,6 +195,11 @@ public class MainWindow extends JFrame implements ActionListener {
         matchView = new MatchView(userModel, cellsRigth, cellsLeft);   
         matchController = new MatchController(matchView, cellsRigth, cellsLeft);
         this.matchView.addExitButtonListener(this); 
+
+        // key
+        SwingUtilities.invokeLater(() -> {
+            matchView.requestFocusInWindow();
+        });
     }
 
     private void initLanMatch() { 
