@@ -2,6 +2,7 @@ package controlers;
 
 import controlers.Lan.LanMatchController;
 import controlers.Local.MatchController;
+import controlers.Server.ClientControler;
 import controlers.Server.ServerControler;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -23,13 +24,14 @@ import models.AppProperties;
 import models.Cell;
 import models.User;
 import models.UserDAO;
-import views.Lan.CreateMatchView;
-import views.Lan.JoinMatchView;
-import views.Lan.LanMatchView;
-import views.Lan.LanView;
-import views.Local.MatchView;
 import views.MenuView;
 import views.SettingsView;
+import views.Lan.CreateMatchView;
+import views.Lan.FinishPartyView;
+import views.Lan.JoinMatchView;
+import views.Lan.LanView;
+import views.Local.MatchView;
+import views.Lan.LanMatchView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
@@ -41,21 +43,22 @@ public class MainWindow extends JFrame implements ActionListener {
     // Controladores
     private SettingsController settingsController;
     private LanMatchController lanMatchController;
-    private ServerControler serverControler;
     private MatchController matchController;
 
     // Vistas
     private MenuView menuView;
-    private LanMatchView lanMatchView;
+    private MatchView lanMatchView;
     private MatchView matchView;
     private LanView lanView;
     private SettingsView settingsView;
     private CreateMatchView createMatchView;
     private JoinMatchView joinMatchView;
+    private SqlErrorView errorSql;
+    private FinishPartyView finishPartyView;
 
     // Atributos para servidor y cliente
+    private String ipHost;
     private boolean runningServer;
-    private boolean runningClient;
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private int port = properties.getPort();
@@ -63,8 +66,9 @@ public class MainWindow extends JFrame implements ActionListener {
     private String host = AppProperties.getWifiIp(wifiInter);
     private Thread serverThread;
     private Thread clientThread;
-    private boolean isConnected = false;
-    private boolean closeConn = false;
+
+    // Atributos
+    private String opponentName;
 
     public MainWindow() {
         setBounds(500, 100, 900, 675);
@@ -72,13 +76,27 @@ public class MainWindow extends JFrame implements ActionListener {
         getContentPane().setBackground(properties.getBackgroundColor());
         setTitle("battleship");
 
-        userDAO = new UserDAO();
-        userModel = setNameAndFlag();
-        menuView = new MenuView(userModel);
-        lanView = new LanView(userModel);
-        serverControler = new ServerControler();
+        initViewsAndModels();
+        initListeners();      
 
-        // Listeners 
+        add(menuView);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+        repaint();
+    }
+
+    private void initViewsAndModels() {
+        try {
+            userDAO = new UserDAO(); 
+            userModel = setNameAndFlag();
+            menuView = new MenuView(userModel);
+            lanView = new LanView(userModel);  
+        } catch (Exception e) {
+            errorSql = new SqlErrorView();
+        }
+    }
+
+    private void initListeners() {
         this.menuView.addPvpButtonListener(this);
         this.menuView.addPveButtonListener(this);
         this.menuView.addExitButtonListener(this);
@@ -86,13 +104,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.menuView.addMakeReportListener(this);
         this.lanView.addReturnButtonListener(this);
         this.lanView.addJoinMatchButtonListener(this);
-        this.lanView.addMakeMatchButtonListener(this);      
-
-        add(menuView);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-        repaint();
+        this.lanView.addMakeMatchButtonListener(this); 
     }
 
     private User setNameAndFlag() {
@@ -124,9 +136,9 @@ public class MainWindow extends JFrame implements ActionListener {
             changePanel(lanView);
         
         } else if (e.getActionCommand().equals("Salir de la partida")) {
-            System.out.println("Boton de salir [match]");
-            isRunningServer();
-            closeConn = true;
+            lanMatchController.setMenuView(menuView);
+            lanMatchController.stopServer(false);
+            lanMatchController.stopClient();
             changePanel(menuView);
 
         } else if (e.getSource() == menuView.getSettingsButton()) {
@@ -135,7 +147,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         } else if (e.getActionCommand().equals("Regresar")) {
             System.out.println("Regresar al menu [desde lan]");
-            isRunningServer();
+            stopServer(false);
             changePanel(menuView);
         
         } else if (e.getActionCommand().equals("UNIRSE A PARTIDA")) {
@@ -148,22 +160,26 @@ public class MainWindow extends JFrame implements ActionListener {
             LanServer();
 
         } else if (e.getActionCommand().equals("Crear reporte")) {
-            System.out.println("boton de pdf");
+            System.out.println("boton de pdf");   
 
         } else if (e.getActionCommand().equals("CANCELAR")) {
             System.out.println("boton de cancelar [CREAR PARTIDA]");
             createMatchView.dispose();
-            isRunningClient();
-            isRunningServer();
+            stopServer(false);
             serverThread.interrupt();
 
         } else if (e.getActionCommand().equals("UNIRSE")) {
             System.out.println("boton de unirse a partida");
-            LanClient(); 
+            try {
+                LanClient();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         }
     }
 
-    private void changePanel(JPanel panel) {
+    public void changePanel(JPanel panel) {
         getContentPane().removeAll();
         getContentPane().add(panel);
         revalidate();
@@ -192,7 +208,7 @@ public class MainWindow extends JFrame implements ActionListener {
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-        matchView = new MatchView(userModel, cellsRigth, cellsLeft);   
+        matchView = new MatchView(userModel, "Ale", cellsRigth, cellsLeft);   
         matchController = new MatchController(matchView, cellsRigth, cellsLeft);
         this.matchView.addExitButtonListener(this); 
 
@@ -200,15 +216,6 @@ public class MainWindow extends JFrame implements ActionListener {
         SwingUtilities.invokeLater(() -> {
             matchView.requestFocusInWindow();
         });
-    }
-
-    private void initLanMatch() { 
-        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
-        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
-
-        lanMatchView = new LanMatchView(userModel,cellsRigth, cellsLeft);   
-        lanMatchController = new LanMatchController(lanMatchView, cellsRigth, cellsLeft);
-        this.lanMatchView.addExitButtonListener(this); 
     }
 
     private Cell[][] initCells(Color color) {
@@ -224,8 +231,6 @@ public class MainWindow extends JFrame implements ActionListener {
 
     /* Parte de servidor */
     public void LanServer() {
-        runningServer = true;
-        
         // Ejecutar servidor y vistas de manera paralela
         serverThread = new Thread(() -> {
             runServer();
@@ -237,90 +242,80 @@ public class MainWindow extends JFrame implements ActionListener {
             createMatchView.addWindowCloseListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    stopServer();
+                    stopServer(false);
                 }
             });
         });
     }
 
     private void runServer() {
+        runningServer = true;
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Servidor escuchando en el puerto " + port);
             while (runningServer) {
-                try (Socket clientSocket = serverSocket.accept();
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
-                    ) {
-                        isConnected = true;
-                        System.out.println("Usuario conectado: " + clientSocket.getRemoteSocketAddress());
-                        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                        runServerLanMatch();
+                Socket clientConn = serverSocket.accept();
+                try (PrintWriter out = new PrintWriter(clientConn.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientConn.getInputStream()));
+                ) {
+                    // Enviar ip y nombre
+                    String serverIP = clientConn.getLocalAddress().getHostAddress();
+                    out.println(serverIP + "," + userModel.getName());
+                    
+                    // Leer la respuesta del cliente
+                    String userResponse = in.readLine();
 
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null) {
-                            System.out.println("Recibido del cliente: " + inputLine);
-                            out.println("Servidor: " + inputLine); // Enviar respuesta al cliente
-        
-                            // Verificar si se debe cerrar la conexión
-                            if (closeConn) {
-                                sendResponse(out, "close");
-                                break;
-                            }
-                            isConnected = false;
-                        }         
+                    // Esperar a recibir nombre
+                    if (!isIp(userResponse)) {
+                        opponentName = userResponse;
+                        runServerLanMatch();
+                        stopServer(false);
+                        break;
+                    }
                 } catch (IOException e) {
-                    isConnected = false;
-                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(createMatchView, "Error de conexion", "ERROR", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(createMatchView, "Error al iniciar el servidor", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
     private void runServerLanMatch() {
         createMatchView.dispose();
         serverThread.interrupt();
-
+    
         // Desplegar juego
         SwingUtilities.invokeLater(() -> {
-            initLanMatch(); 
-            changePanel(lanMatchView);                   
-        });
+            initLanMatch("server"); 
+            changePanel(lanMatchView);                  
+        });  
     }
 
-    private void sendResponse(PrintWriter out, String message) {
-        out.println(message);
-    }
+    private void initLanMatch(String mode) { 
+        Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
+        Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
-    private void isRunningServer() {
-        if (runningServer == true) {
-            stopServer();
+        lanMatchView = new MatchView(userModel, opponentName, cellsRigth, cellsLeft);   
+        if (mode.equals("client")) {
+            lanMatchController = new LanMatchController(this, ipHost, opponentName,lanMatchView, menuView, cellsRigth, cellsLeft, "client");
+            
+        } else if (mode.equals("server")) {
+            lanMatchController = new LanMatchController(this, ipHost, opponentName, lanMatchView, menuView, cellsRigth, cellsLeft, "server");
+            
         }
+        this.lanMatchView.addExitButtonListener(this);
     }
 
-    private void stopServer() {
+    private void stopServer(Boolean message) {
         runningServer = false;
 
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
                 serverSocket.close();
-                System.out.println("Servidor detenido");
-                JOptionPane.showMessageDialog(createMatchView, "Servidor detenido", "ERROR", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                System.out.println("Error al cerrar el servidor: " + e.getMessage());
-            }
-        }
-    }
 
-    public void stopClient() {
-        runningClient = false;
-        if (clientSocket != null && !clientSocket.isClosed()) {
-            try {
-                serverSocket.close();
-                System.out.println("Servidor detenido");
+                if (message) {
+                    JOptionPane.showMessageDialog(createMatchView, "Servidor detenido", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                }
             } catch (IOException e) {
                 System.out.println("Error al cerrar el servidor: " + e.getMessage());
             }
@@ -328,7 +323,7 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     /* Parte de cliente */
-    public void LanClient() {
+    public void LanClient() throws IOException {
         if (checkFields()) {
             System.out.println("pasamos al cliente");
             joinMatchView.dispose();
@@ -340,19 +335,12 @@ public class MainWindow extends JFrame implements ActionListener {
             clientThread.start();
             javax.swing.SwingUtilities.invokeLater(() -> {
                 runLanMatchClient();
-                /*joinMatchView.addWindowCloseListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        stopServer();
-                    }
-                });*/
             }); 
         } else {
-            JOptionPane.showMessageDialog(joinMatchView, "INGRESE UN NUMERO", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(joinMatchView, "INGRESE UNA IP", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
-    // CAMBIAR ESTO A IP, EL TRUE ES SOLO PA PRUEBAS
     private boolean checkFields() {
         String ip = joinMatchView.getKeyField().getText();
         return ip != null && isIp(ip); 
@@ -368,47 +356,31 @@ public class MainWindow extends JFrame implements ActionListener {
     }
     
     private void runClient() {
-        runningClient = true;
-        String host = joinMatchView.getKeyField().getText();
-        try {clientSocket = new Socket(host, port);
-             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-
-            String userInput;
-            System.out.println("Introduce un texto (\"exit\" para salir): ");
-            while ((userInput = stdIn.readLine()) != null && !userInput.equalsIgnoreCase("exit")) {
-                out.println(userInput);
-                String response = in.readLine();
-                System.out.println("Respuesta del servidor: " + response);
-                
-                if (response == "close") {
-                    JOptionPane.showMessageDialog(createMatchView, "El host abandono la partida", "Status", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("CONEXION CON HOST CERRADA");
-                }
+        try {
+            clientSocket = new Socket(host, port);
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             
-            }
+            // Enviar nombre al servidor
+            out.println(userModel.getName());
+            System.out.println("Nombre enviado: " + userModel.getName());
+
+            // Recibir y almacenar la dirección IP del servidor
+            String response = in.readLine();
+            String[] splitResponse = response.split(",");
+            ipHost = splitResponse[0];
+            opponentName = splitResponse[1];
         } catch (UnknownHostException e) {
-            System.err.println("No se puede encontrar el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "No se puede encontrar el host", "ERROR", JOptionPane.ERROR_MESSAGE);
-
         } catch (IOException e) {
-            System.err.println("Error al comunicar con el host: " + host);
             JOptionPane.showMessageDialog(createMatchView, "Error al comunicar con el host", "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
+        } 
     }
 
-    private void runLanMatchClient() {
-        JOptionPane.showMessageDialog(createMatchView, "Conexion establecida con el host", "Estado", JOptionPane.INFORMATION_MESSAGE);
-        initLanMatch(); 
-        changePanel(lanMatchView);                   
+    public void runLanMatchClient() {
+        initLanMatch("client");
+        changePanel(lanMatchView);
     }
-
-    public void isRunningClient() {
-        if (runningClient == true) {
-            stopServer();
-        }
-    }  
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();

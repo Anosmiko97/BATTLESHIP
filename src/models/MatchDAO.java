@@ -12,16 +12,19 @@ import controlers.db.ConnectionDB;
 
 public class MatchDAO {
 
-    public void insertMatch(Match match, User user) {
+    public void insertMatch(Match match) {
          try (Connection conn = ConnectionDB.createConnection();
-             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO user (name, flag) VALUES (?,?,?,?,?,?)")
+             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO match_party (victory,\r\n" + //
+                                  "                    sunken_boats,\r\n" + //
+                                  "                    score,\r\n" + //
+                                  "                    number_of_shots,\r\n" + //
+                                  "                    opponent_name) VALUES (?,?,?,?,?)")
         ) {
-            pstmt.setInt(1, user.getId());
-            pstmt.setBoolean(2, match.getVictory());
-            pstmt.setInt(3, match.getSunkenBoats());
-            pstmt.setInt(4, match.getScore());
-            pstmt.setInt(5, match.getNumberOfShots());
-            pstmt.setString(6, match.getOpponentName());
+            pstmt.setBoolean(1, match.getVictory());
+            pstmt.setInt(2, match.getSunkenBoats());
+            pstmt.setInt(3, match.getScore());
+            pstmt.setInt(4, match.getNumberOfShots());
+            pstmt.setString(5, match.getOpponentName());
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -40,15 +43,13 @@ public class MatchDAO {
              ResultSet rs = pstmt.executeQuery()
         ) {
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String user_id = rs.getString("user_id");
                 Boolean victory = rs.getBoolean("victory");
                 int sunkenBoats = rs.getInt("sunken_boats");
                 int score = rs.getInt("score");
                 int numberOfShots = rs.getInt("number_of_shots");
                 String opponentName = rs.getString("opponent_name");
 
-                Match match = new Match(id, user_id, victory, sunkenBoats, score, numberOfShots, opponentName);
+                Match match = new Match(victory, sunkenBoats, score, numberOfShots, opponentName);
                 matches.add(match);
             }
         } catch (SQLException e) {

@@ -1,6 +1,9 @@
 package controlers.test;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import javax.swing.JFrame;
 
@@ -8,23 +11,27 @@ import controlers.Lan.LanMatchController;
 /* Clases propias */
 import views.SettingsView;
 import views.Lan.CreateMatchView;
+import views.Lan.FinishPartyView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanView;
+import views.SqlErrorView;
 import models.UserDAO;
-import views.Lan.LanMatchView;
+import views.MatchView;
 import views.MenuView;
 import models.AppProperties;
 import models.Cell;
 import models.User;
+import views.MatchView;
+import controlers.Local.MatchController;
 
 public class TestView extends JFrame{
     AppProperties properties = new AppProperties();
 
-    public static void main(String[] args) {
-        TestView t = new TestView();
+    public static void main(String[] args) throws IOException {
+        FinishPartyView s = new FinishPartyView(false);
     }
     
-    public TestView() {
+    public TestView() throws IOException {
         setBounds(500, 100, 900, 675);
         setResizable(true);
         getContentPane().setBackground(properties.getBackgroundColor());
@@ -33,9 +40,11 @@ public class TestView extends JFrame{
         Cell[][] cellsRigth = initCells(Color.decode("#A6A6A6"));
         Cell[][] cellsLeft = initCells(Color.decode("#033A84"));
 
+        Socket client = new Socket();
+        ServerSocket server = new ServerSocket();
         User user = new User("Uriel");
-        LanMatchView v = new LanMatchView(user,cellsRigth, cellsLeft);   
-        LanMatchController c = new LanMatchController(v, cellsRigth, cellsLeft);
+        MatchView v = new MatchView(user, "Ale", cellsRigth, cellsLeft);   
+        MatchController c = new MatchController(v, cellsRigth, cellsLeft);
 
         add(v);
 

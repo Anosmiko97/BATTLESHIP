@@ -18,7 +18,7 @@ import org.w3c.dom.events.MouseEvent;
 
 import models.Cell;
 import models.Cell.CellState;
-import views.Local.MatchView;
+import views.MatchView;
 
 public class MatchController implements ActionListener {
     private MatchView matchView;
