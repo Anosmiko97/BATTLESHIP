@@ -414,12 +414,12 @@ public class LanMatchController implements ActionListener {
 
         if (mode.equals("server")) {
             System.out.println("TURNO DEL CLIENTE");
-            updateScores(i, j);
+            updateScores();
             sendScoreToRival();
             sendServerRequest("turno");
         } else if (mode.equals("client")) {
             System.out.println("TURNO DEL RIVAL");
-            updateScores(i, j);
+            updateScores();
             sendScoreToRival();
             sendClientRequest("turno");
         }
@@ -440,8 +440,9 @@ public class LanMatchController implements ActionListener {
         }          
     }
 
-    private void updateScores(int x, int y) {
-        checkShips(x, y);
+    private void updateScores() {
+        checkShips();
+        matchView.setShipsSunked(shipsSunked);
         matchView.setShots(successfulShots);
         matchView.setTotalShots(totalShots);
         matchView.refreshHeaderPanel();
@@ -489,27 +490,12 @@ public class LanMatchController implements ActionListener {
         returnMenuPanel();
     }
 
-    private void checkShips(int x, int y) {
-        if (cellsLeft[x][y].getShip() == "carrier") {
-            updateSunkedShips(carrier, 5);
-        } else if (cellsLeft[x][y].getShip() == "battleship") {
-            updateSunkedShips(battleship, 4);
-        } else if (cellsLeft[x][y].getShip() == "cruiser") {
-            updateSunkedShips(cruiser, 3);
-        } else if (cellsLeft[x][y].getShip() == "submarine") {
-            updateSunkedShips(submarine, 3);
-        } else if (cellsLeft[x][y].getShip() == "destroyer") {
-            updateSunkedShips(destroyer, 2);
-        }
-    }
-
-    private void updateSunkedShips(int ship, int num) {
-        if (ship <= num) {
-            ship += 1;
-        } else {
+    private void checkShips() {
+        if (successfulShots <= 5 && totalShips >= 2) {
+            shipsSunked += 1;   
+        } else if (successfulShots > 5) {
             shipsSunked += 1;
-            matchView.setShipsSunked(shipsSunked);
-        }
+        } 
     }
 
     private void sendResquestShot(Cor posShot) {
