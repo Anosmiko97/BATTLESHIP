@@ -2,8 +2,6 @@ package controlers;
 
 import controlers.Lan.LanMatchController;
 import controlers.Local.MatchController;
-import controlers.Server.ClientControler;
-import controlers.Server.ServerControler;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,12 +24,12 @@ import models.User;
 import models.UserDAO;
 import views.MenuView;
 import views.SettingsView;
+import views.SqlErrorView;
 import views.Lan.CreateMatchView;
 import views.Lan.FinishPartyView;
 import views.Lan.JoinMatchView;
 import views.Lan.LanView;
-import views.Local.MatchView;
-import views.Lan.LanMatchView;
+import views.MatchView;
 
 public class MainWindow extends JFrame implements ActionListener {
     private AppProperties properties = new AppProperties();
